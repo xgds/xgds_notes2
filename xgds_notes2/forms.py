@@ -14,4 +14,40 @@
 # specific language governing permissions and limitations under the License.
 # __END_LICENSE__
 
+import datetime
+
 from django import forms
+from django.conf import settings
+from geocamUtil.loader import LazyGetModelByName
+
+Note = LazyGetModelByName(settings.XGDS_NOTES_NOTE_MODEL)
+UserSession = LazyGetModelByName(settings.XGDS_NOTES_USER_SESSION_MODEL)
+
+class UserSessionForm(forms.ModelForm):
+    class Meta:
+        model = UserSession.get()
+        fields = ["role", "location"] 
+
+
+class NoteForm(forms.ModelForm):
+    class Meta:
+        model = Note.get()
+        fields = Note.get().getFormFields()
+
+    date_formats = list(forms.DateTimeField.input_formats) + [
+        '%Y/%m/%d %H:%M:%S',
+        '%Y/%m/%d %H:%M:%S UTC',
+    ]
+    event_time = forms.DateTimeField(input_formats=date_formats, required=False)
+    extras = forms.CharField(widget=forms.HiddenInput(), required=False)
+
+    # populate the event time with NOW if it is blank.
+    def clean_event_time(self):
+        etime = self.cleaned_data['event_time']
+        if not etime:
+            rightnow = datetime.datetime.utcnow()
+            return rightnow
+        return etime
+
+    def __unicode__(self):
+        return self.as_fieldsets()

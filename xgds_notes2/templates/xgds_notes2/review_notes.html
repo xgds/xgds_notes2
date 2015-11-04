@@ -1,0 +1,31 @@
+{% extends "xgds_notes2/notes_base.html" %}
+{% load url from future %}
+{% load tz_convert %}
+
+{% block scripts %}
+{{ block.super }}
+<script type="text/javascript">
+$('#pick_master').change(function() { 
+	var val = $('#pick_master')[0].checked;
+	$('input[id^=pick]').each(function(index, cbox) { 
+	    $(cbox).prop('checked',val);
+	}); 
+});
+</script>
+{% endblock scripts %}
+
+{% block content %}
+
+{% if messages %} <div id="messages"> {% for message in messages %}
+    <p>{{message}}</p>
+{% endfor %}</div>{% endif %}
+
+{% if not note_list %}
+<p>
+No notes found.
+</p>
+{% endif %}
+{% include 'xgds_notes2/notes_table.html' with notes_list=notes_list %}
+
+{% endblock content %}
+

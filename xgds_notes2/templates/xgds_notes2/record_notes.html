@@ -1,0 +1,34 @@
+{% extends 'xgds_notes2/notes_base.html' %}
+{% load url from future %}
+{% block siteSection %}Record Console Log{% endblock %}
+
+{% load tz %}
+{% load tz_convert %}
+
+{% block content %}
+<p text-align="right">You are {{ user.username }} (at {{ user_session.role }}, {{ user_session.location }}) [<a href="{% url 'xgds_notes_edit_user_session' %}" >change role/location</a>]</p>
+<form id="create_note" action="{% url 'xgds_notes_record' %}" method="post">
+	<table>
+    {{ form.as_table }}
+    </table>
+    <div id="buttons" >
+        <input id="save_note" class="mybutton" type="submit" value="Save">
+    </div>
+</form>
+
+<p style="font-style: italic;">Entries you logged in the past 12 hours are displayed below.  Double-click a field to edit.</p>
+
+{% include 'xgds_notes2/notes_table.html' with notes_list=notes_list %}
+
+{% endblock content %}
+
+{% block scripts %}
+{{block.super}}
+	<script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/note_create_form.js"></script>
+{% endblock scripts %}
+
+{% block jsInit %}
+	var server_time_url = "{% url 'server_time' %}";
+	initializeNotesForm();
+{% endblock jsInit %}
+

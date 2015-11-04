@@ -14,11 +14,16 @@
 # specific language governing permissions and limitations under the License.
 # __END_LICENSE__
 
-from django.conf.urls import patterns, include
+from django.conf.urls import patterns, include, url
 
 from django.views.generic.base import TemplateView
 
+import xgds_notes2.views as views
+
 
 urlpatterns = patterns('',
-                       (r'^$', TemplateView.as_view(template_name='xgds_notes2/index.html'), {}, 'index'),
+                       url(r'^review/?$', views.review, {}, 'xgds_notes_review'),
+                       url(r'^record/?$', views.record, {}, 'xgds_notes_record'),
+                       url(r'^record/session/?$', views.edit_user_session, {}, 'xgds_notes_edit_user_session'),
+                       url(r'time.txt', views.server_time, {}, 'server_time'),
                        )

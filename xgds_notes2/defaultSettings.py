@@ -35,4 +35,39 @@ Don't try to get the value of FOO from django.conf.settings.  That
 settings object will not know about the default value!
 """
 
-xgds_notes2_BOWER_INSTALLED_APPS = ()
+XGDS_NOTES_MONIKER = 'Notes' # Sometimes we call them Console Log
+XGDS_NOTES_ALLOW_MAPPING = True
+XGDS_NOTES_ENABLE_GEOCAM_TRACK_MAPPING = True
+
+XGDS_NOTES_NOTE_MODEL = 'xgds_notes2.LocatedNote'
+XGDS_NOTES_TAG_MODEL = 'xgds_notes2.HierarchichalTag'
+XGDS_NOTES_TAGGED_ITEM_MODEL = 'xgds_notes2.TaggedNote'
+
+XGDS_NOTES_USER_SESSION_MODEL = 'xgds_notes2.UserSession'
+
+XGDS_NOTES_REVIEW_DEFAULT_SORT = '-event_time'
+
+# If the default sort is not adequate, you can define a function to do your sort order for review.
+# It currently takes no parameters.
+XGDS_NOTES_SORT_FUNCTION = None
+
+# Override this in your application with the path to a django_filters.FilterSet subclass to customise the available filters.
+XGDS_NOTES_REVIEW_FILTER_CLASS = None
+
+# All timestamps in xgds_notes data tables should always use the UTC
+# time zone.  XGDS_NOTES_OPS_TIME_ZONE is currently used only to
+# choose how to split up days in the daily notes index. We split at
+# midnight in the specified time zone. Since ops are usually idle at
+# night and we want to split during the idle period, we usually set this
+# to the time zone where most ops actually occur.
+# note this duplicates functionality in GEOCAM_TRACK so in your siteSettings you might set
+# XGDS_NOTES_OPS_TIME_ZONE = GEOCAM_TRACK_OPS_TIME_ZONE
+XGDS_NOTES_OPS_TIME_ZONE = 'UTC'
+
+XGDS_NOTES_KML_EXPORT = False
+
+XGDS_NOTES_NOTES_CHANNEL = 'live/notes'
+
+XGDS_NOTES_BOWER_INSTALLED_APPS = ('moment',
+                                   'fancytree=fancytree',
+                                   )

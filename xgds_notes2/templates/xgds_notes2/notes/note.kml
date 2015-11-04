@@ -1,0 +1,62 @@
+{% load tz_convert %}
+    <Placemark>
+          {% if animated %}
+          <TimeSpan>
+            <begin>%s</begin> % note.timestamp.strftime('%Y-%m-%dT%H:%M:%SZ')
+          </TimeSpan>
+          {% endif %}
+      <name>{{note.getLabel}}</name>
+      <description><![CDATA[
+        <table>
+         <tr>
+            <td>Time:</td>
+            <td>{{note.event_time|utc_to_django|date:"Y-m-d H:i e"}}</td>
+          </tr>
+          <tr>
+            <td valign=top>Content:</td>
+            <td>{{note.content}}</td>
+          </tr>
+          {% if note.tags.all %}
+          <tr>
+            <td valign=top>Tags:</td>
+            <td>{% for tag in note.tags.all %}{{tag}} {% endfor %}</td>
+          </tr>
+          {% endif %}
+          <tr>
+            <td>Lat:</td>
+            <td>{{ note.getPosition.latitude }}
+            </td>
+          </tr>
+          <tr>
+            <td>Lon:</td>
+            <td>{{ note.getPosition.longitude }}
+            </td>
+          </tr>
+          {% if note.getPosition.altitude %}
+          <tr>
+            <td>Altitude:</td>
+            <td>{{ note.getPosition.altitude }}</td>
+          </tr>
+          {% endif %}
+        </table>
+        <p><em>--{{ note.author.first_name }} {{note.author.last_name}}<br/> ({{note.console_position}})</p>
+      ]]></description>
+
+      <Style>
+        <IconStyle>
+          <scale>0.75</scale>
+          <Icon>
+            <href>http://maps.google.com/mapfiles/kml/shapes/post_office.png</href>
+          </Icon>
+        </IconStyle>
+        <LabelStyle>
+          <scale>0.8</scale>
+        </LabelStyle>
+        <BalloonStyle>
+         <text><h3>$[name]</h3>$[description]</text>
+        </BalloonStyle>
+      </Style>
+      <Point>
+        <coordinates>{{note.getPosition.longitude}}, {{note.getPosition.latitude}}, {{note.getPosition.altitude|default_if_none:"0"}}</coordinates>
+      </Point>
+    </Placemark>

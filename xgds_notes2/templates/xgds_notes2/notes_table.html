@@ -1,0 +1,32 @@
+<table id="notes_list" class="notes_list display" width="100%">
+    <thead>
+        <tr>
+            <th style="width:10mm;">Select</th>
+            <th>Time</th>
+            <th>Author</th>
+            <th>Tags</th>
+            <th>Content</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for note in notes_list %}
+        <tr id="note_{{note.id}}">
+        <td class="actions">
+            <input type="checkbox" class="select" id="{{note.id}}__select" name="{{note.id}}__select">{% if note.draft %}<span class='draftspan'>(draft)</span>{% endif %}
+        </td>
+        <td>
+        	{{note.event_time|date:"Y-m-d H:i e"}} {#note.event_time|utc_to_django|date:"Y-m-d H:i e"#}
+        </td>
+		<td>
+        	{{ note.author.get_full_name }}
+        </td>
+		<td>
+    		TODO TAGS    	
+        </td>
+		<td>
+        	{{ note.content|safe }}
+        </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
