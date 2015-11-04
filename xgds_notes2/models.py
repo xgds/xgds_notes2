@@ -37,6 +37,8 @@ from taggit.managers import TaggableManager
 
 class HierarchichalTag(TagBase, MP_Node):
     node_order_by = ['name']
+    abbreviation = models.CharField(max_length=8, blank=True)
+    description = models.TextField(blank=True, null=True)
     
     def fillId(self):
         index = self.__class__.objects.count() + 1
@@ -45,6 +47,26 @@ class HierarchichalTag(TagBase, MP_Node):
     def save(self, *args, **kwargs):
         self.name = self.name.lower()
         super(HierarchichalTag, self).save(*args, **kwargs)
+        
+    def getTreeJson(self):
+        """ get the JSON block for fancytree """
+        result = {"title": self.name,
+                  "key": self.pk,
+                  "folder": True if self.numchild else False,
+                  "lazy": True,
+                  "data": {"parentId": None,
+                           "abbreviation": self.abbreviation,
+                           "description": self.description
+                           }
+                  }
+        parent = self.get_parent()
+        if parent:
+            result['data']['parentId'] = parent.pk
+        return result
+    
+    @classmethod
+    def getFormFields(cls):
+        return ["abbreviation", "name", "description"]
         
     class Meta(TagBase.Meta):
         db_table = 'taggit_tag'

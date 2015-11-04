@@ -68,6 +68,9 @@ XGDS_NOTES_KML_EXPORT = False
 
 XGDS_NOTES_NOTES_CHANNEL = 'live/notes'
 
+XGDS_NOTES_TAG_TREE_URL = '/notes/tagsTree/'
+
 XGDS_NOTES_BOWER_INSTALLED_APPS = ('moment',
+                                   'lodash#3.10.0',
                                    'fancytree=fancytree',
                                    )

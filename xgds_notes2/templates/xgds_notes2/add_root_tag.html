@@ -1,0 +1,14 @@
+{% extends "xgds_notes2/notes_base.html" %}
+{% load url from future %}
+
+{% block content %}
+<h4>Add Root Tag</h4>
+<form id="xgds_notes_add_root_tag" action="{% url 'xgds_notes_add_root_tag' %}" method="post">
+	<table>
+    {{ form.as_table }}
+    </table>
+    <div id="buttons" >
+        <input id="save_tag" class="mybutton" type="submit" value="Save">
+    </div>
+</form>
+{% endblock content %}

@@ -21,6 +21,7 @@ import json
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
 from django.http import HttpResponse
 
 from django.shortcuts import render_to_response, redirect, render
@@ -29,15 +30,17 @@ from django.template import RequestContext
 from django.utils.translation import ugettext, ugettext_lazy as _
 
 from geocamUtil.datetimeJsonEncoder import DatetimeJsonEncoder
-from geocamUtil.loader import LazyGetModelByName
+from geocamUtil.loader import LazyGetModelByName, getClassByName
+from treebeard.mp_tree import MP_Node
 
-from xgds_notes2.forms import NoteForm, UserSessionForm
+from xgds_notes2.forms import NoteForm, UserSessionForm, TagForm
 
 if settings.XGDS_SSE:
     from sse_wrapper.events import send_event
 
 
 Note = LazyGetModelByName(getattr(settings, 'XGDS_NOTES_NOTE_MODEL'))
+Tag = LazyGetModelByName(getattr(settings, 'XGDS_NOTES_TAG_MODEL'))
 
 
 def server_time(request):
@@ -179,3 +182,65 @@ def review(request, **kwargs):
                'notes_list': notes_list
            },
        )   
+
+@login_required
+def edit_tags(request):
+    return render(
+                request,
+                'xgds_notes2/tags_tree.html',
+                {},
+            )
+
+def build_tag_json(root):
+    if root is None:
+        return []
+    root_json = root.getTreeJson()
+    root_json['expanded'] = True
+    
+    if root.numchild:
+        children_json = []
+        for child in root.get_children():
+            children_json.append(child.getTreeJson())
+            root_json['children'] = children_json
+    return root_json
+
+@never_cache
+def get_tags_json(request, root=None):
+    """
+    json tree of tags one level deep
+    note that this does json for jstree
+    """
+    roots = []
+    if not root:
+        roots = Tag.get().get_root_nodes()
+    else:
+        roots.append(Tag.get().objects.get(pk=root))
+    
+    keys_json = []
+    for root in roots:
+        keys_json.append(build_tag_json(root))
+    
+    json_data = json.dumps(keys_json)
+    return HttpResponse(content=json_data,
+                        content_type="application/json")
+
+
+@login_required
+def add_root_tag(request):
+    if request.method == 'POST':
+        form = TagForm(request.POST)
+        if form.is_valid():
+            Tag.get().add_root(**form.cleaned_data)
+            return redirect('xgds_notes_edit_tags')
+        else:
+            return HttpResponse(str(form.errors), status=400)  # Bad Request
+    elif request.method == 'GET':
+            return render(
+                request,
+                'xgds_notes2/add_root_tag.html',
+                {
+                    'form': TagForm()
+                },
+            )
+    else:
+        raise Exception("Request method %s not supported." % request.method)

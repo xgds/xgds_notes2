@@ -19,14 +19,16 @@ import datetime
 from django import forms
 from django.conf import settings
 from geocamUtil.loader import LazyGetModelByName
+from xgds_notes2.models import HierarchichalTag
 
 Note = LazyGetModelByName(settings.XGDS_NOTES_NOTE_MODEL)
 UserSession = LazyGetModelByName(settings.XGDS_NOTES_USER_SESSION_MODEL)
+Tag = LazyGetModelByName(settings.XGDS_NOTES_TAG_MODEL)
 
 class UserSessionForm(forms.ModelForm):
     class Meta:
         model = UserSession.get()
-        fields = ["role", "location"] 
+        fields = UserSession.get().getFormFields()
 
 
 class NoteForm(forms.ModelForm):
@@ -51,3 +53,9 @@ class NoteForm(forms.ModelForm):
 
     def __unicode__(self):
         return self.as_fieldsets()
+
+
+class TagForm(forms.ModelForm):
+    class Meta:
+        model = Tag.get()
+        fields = Tag.get().getFormFields()

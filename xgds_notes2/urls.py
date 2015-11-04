@@ -26,4 +26,8 @@ urlpatterns = patterns('',
                        url(r'^record/?$', views.record, {}, 'xgds_notes_record'),
                        url(r'^record/session/?$', views.edit_user_session, {}, 'xgds_notes_edit_user_session'),
                        url(r'time.txt', views.server_time, {}, 'server_time'),
+                       url(r'^editTags/?$', views.edit_tags, {}, 'xgds_notes_edit_tags'),
+                       url(r'^addRootTag/?$', views.add_root_tag, {}, 'xgds_notes_add_root_tag'),
+                       url(r'^tagsTree/?$', views.get_tags_json, {}, 'xgds_notes_get_root_tags'),
+                       url(r'^tagsTree/(?P<root>[\w]*[\d]+)$', views.get_tags_json, {}, 'xgds_notes_get_tags'),
                        )
