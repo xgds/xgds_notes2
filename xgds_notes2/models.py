@@ -50,7 +50,6 @@ class HierarchichalTag(TagBase, MP_Node):
             title = title + '(' + self.abbreviation + ')'
         result = {"title": title,
                   "key": self.pk,
-                  "folder": False, 
                   "tooltip": self.description,
                   "extraClasses": 'tag',
                   "lazy": True,
