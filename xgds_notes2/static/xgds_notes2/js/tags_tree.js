@@ -5,13 +5,22 @@ var addTagDialog = undefined;
 var initializeTree = function(data) {
     tagtreeNode.fancytree({
 	source: data,
-	checkbox: true,
+	checkbox: false,
 	extensions: ["dnd"],
 	autoActivate: false,
+	selectMode: 1,
 	autoScroll: false,
-	dblclick: function(event, data) {
-	    //window.location.href=data.node.data.href;
-	},
+	lazyLoad: function(event, data){
+	      var node = data.node;
+	      url = '/notes/tagsChildrenTree/' + node.key;
+	      data.result = {
+	        url: url,
+	        cache: false
+	      };
+	  },
+//	  postProcess: function(event, data) {
+//	      data.response = data.response.children;
+//	    },
 	dnd: {
 	    autoExpandMS: 400,
 	    focusOnClick: true,
@@ -28,15 +37,15 @@ var initializeTree = function(data) {
 		return false;
 	    },
 	    dragDrop: function(node, data) {
-		var params = { 'nodeUuid': data.otherNode.key, 'parentUuid': data.node.key};
-		$.ajax({url: moveNodeURL,
+		var params = { 'tag_id': data.otherNode.key, 'parent_id': data.node.key};
+		$.ajax({url: '/notes/moveTag/',
 		    type: 'POST',
 		    dataType: 'json',
 		    data: params,
 		}).success(function() {
 		    data.otherNode.moveTo(node, data.hitMode);
 		}).error(function() {
-		    alert("Problem moving node, try again.");
+		    alert("Problem moving tag, try again.");
 		});
 	    }
 	},
@@ -47,7 +56,8 @@ var initializeTree = function(data) {
 	menu: [
 	       {title: "Add", cmd: "add", uiIcon: "ui-icon-plus"},
 	       {title: "Edit", cmd: "edit", uiIcon: "ui-icon-pencil" },
-	       {title: "Delete", cmd: "delete", uiIcon: "ui-icon-trash" }
+	       {title: "Delete", cmd: "delete", uiIcon: "ui-icon-trash" },
+	       {title: "Make Root", cmd: "rootify", uiIcon: "ui-icon-carat-1-ne" }
 	       ],
 	       beforeOpen: function(event, ui) {
 		   var node = $.ui.fancytree.getNode(ui.target);
@@ -63,7 +73,7 @@ var initializeTree = function(data) {
 };
 
 var handleCommand = function(command, node) {
-    if (command == "delete"){
+    if (command === "delete"){
 	var deleteURL = '/notes/deleteTag/' + node.key;
 	$.ajax({url: deleteURL,
 	    type: 'POST',
@@ -72,6 +82,16 @@ var handleCommand = function(command, node) {
 	    node.remove();
 	}).error(function() {
 	    alert("Problem deleting tag " + node.label);
+	});
+    } else if (command === 'rootify'){
+	var rootURL = '/notes/makeRoot/' + node.key;
+	$.ajax({url: rootURL,
+	    type: 'POST',
+	    dataType: 'json'
+	}).success(function() {
+	    node.moveTo(theTree.getRootNode());
+	}).error(function() {
+	    alert("Problem making root tag " + node.label);
 	});
     } else {
 	showAddTagDialog(command, node);

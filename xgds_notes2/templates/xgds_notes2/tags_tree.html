@@ -41,7 +41,6 @@
 
 {% block jsInit %}
 {{ block.super }}
-   var moveNodeURL = "{# moveNodeURL #}";
    var layerFeedUrl =  "{{ settings.XGDS_NOTES_TAG_TREE_URL }}";
    $.ajax({url: layerFeedUrl,
            dataType: 'json',

@@ -195,14 +195,31 @@ def buildTagJson(root):
     if root is None:
         return []
     root_json = root.getTreeJson()
-    root_json['expanded'] = True
+#     root_json['expanded'] = True
     
+#     if root.numchild:
+#         children_json = []
+#         for child in root.get_children():
+#             children_json.append(child.getTreeJson())
+#             root_json['children'] = children_json
+    return root_json
+
+
+@never_cache
+def getChildrenJson(request, root=None):
+    """
+    json tree of children
+    note that this does json for jstree
+    """
+    root = Tag.get().objects.get(pk=root)
+    children_json = []
     if root.numchild:
-        children_json = []
         for child in root.get_children():
             children_json.append(child.getTreeJson())
-            root_json['children'] = children_json
-    return root_json
+    
+    json_data = json.dumps(children_json)
+    return HttpResponse(content=json_data,
+                        content_type="application/json")
 
 @never_cache
 def getTagsJson(request, root=None):
@@ -229,7 +246,10 @@ def getTagsJson(request, root=None):
 def deleteTag(request, tag_id):
     found_tag = Tag.get().objects.get(pk=tag_id)
     if found_tag:
-        if LazyGetModelByName(settings.XGDS_NOTES_TAGGED_NOTE_MODEL).get().objects.filter(tag=found_tag):
+        if found_tag.get_descendant_count() > 0:
+            # TODO need to check all the descendant tags; right now this is disabled.
+            return HttpResponse(json.dumps({'failed': found_tag.name + ' had children; cannot delete.'}), content_type='application/json', status=200)
+        elif LazyGetModelByName(settings.XGDS_NOTES_TAGGED_NOTE_MODEL).get().objects.filter(tag=found_tag):
             # cannot delete, this tag is in use
             return HttpResponse(json.dumps({'failed': found_tag.name + ' is in use; cannot delete.'}), content_type='application/json', status=200)
         else:
@@ -245,6 +265,17 @@ def addRootTag(request):
             return HttpResponse(json.dumps(new_root.getTreeJson()), content_type='application/json')
         else:
             return HttpResponse(json.dumps({'failed': 'Problem adding root: ' + form.errors}), content_type='application/json', status=200)
+
+@login_required
+def makeRootTag(request, tag_id):
+    if request.method == 'POST':
+        tag = Tag.get().objects.get(pk=tag_id)
+        if not tag.is_root():
+            tag.move(Tag.get().get_root_nodes()[0], 'sorted-sibling')
+            return HttpResponse(json.dumps({'success': 'true'}), content_type='application/json')
+        else:
+            return HttpResponse(json.dumps({'failed': 'Problem making root'}), content_type='application/json', status=200)
+
             
 @login_required
 def addTag(request):
@@ -272,16 +303,16 @@ def editTag(request, tag_id):
 
 
 @login_required
-def moveTag(request, tag_id, parent_id):
-    found_tag = Tag.get().objects.get(pk=tag_id)
-    found_parent = Tag.get().objects.get(pk=parent_id)
-    if found_tag and found_parent:
-        try:
-            found_parent.add_child(found_tag)
-            return HttpResponse(json.dumps({'success': 'true'}), content_type='application/json')
-        except:
-            # cannot delete, this tag is in use
-            return HttpResponse(json.dumps({'failed': found_tag.name + ' is in use; cannot delete.'}), content_type='application/json', status=200)
-        else:
-            found_tag.delete()
+def moveTag(request):
+    if request.method == 'POST':
+        parent_id = request.POST.get('parent_id')
+        tag_id = request.POST.get('tag_id')
+        found_tag = Tag.get().objects.get(pk=tag_id)
+        found_parent = Tag.get().objects.get(pk=parent_id)
+        if found_tag and found_parent:
+            try:
+                found_tag.move(found_parent, 'sorted-child')
+                return HttpResponse(json.dumps({'success': 'true'}), content_type='application/json')
+            except:
+                return HttpResponse(json.dumps({'failed': 'badness.'}), content_type='application/json', status=200)
             
