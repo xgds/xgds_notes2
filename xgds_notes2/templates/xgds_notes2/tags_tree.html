@@ -12,10 +12,10 @@
 {% endblock %}
 
 {% block contents %}
-<a href="#" class="button small" onclick="showAddTagDialog('root', null);" id="addRootButton">&nbsp;Add Root Tag&nbsp;</a>
 <style scoped>
   @import url('{{EXTERNAL_URL}}jquery-ui/themes/base/jquery-ui.css');
   @import url('{{ EXTERNAL_URL }}fancytree/dist/skin-lion/ui.fancytree.min.css');
+  @import url('{{ STATIC_URL }}xgds_notes2/css/fancytree_tags.css');
   ul.fancytree-container {
  	 height: 400px;
   	 width: 95%;
@@ -23,8 +23,11 @@
 </style>
 
 <div id="tagtreeContainer">
+	<p>
 	<i class="icon-arrows-ccw" alt="refresh" id="refreshTreeLink" onclick="javascript: refreshTree();"></i>
-	Drag and drop to reorganize tags.  Right-click for menu. 
+	<a href="#" class="button small" onclick="showAddTagDialog('root', null);" id="addRootButton">&nbsp;Add Root Tag&nbsp;</a>
+	&nbsp;Drag and drop to reorganize tags.  Right-click for menu.
+	</p> 
 	<div id="tagtree" ></div> 
  </div>
  

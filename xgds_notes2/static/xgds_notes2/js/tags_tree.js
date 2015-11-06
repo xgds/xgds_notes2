@@ -10,6 +10,7 @@ var initializeTree = function(data) {
 	autoActivate: false,
 	selectMode: 1,
 	autoScroll: false,
+	imagePath: "/static/xgds_notes/icons/",
 	lazyLoad: function(event, data){
 	      var node = data.node;
 	      url = '/notes/tagsChildrenTree/' + node.key;
@@ -18,9 +19,6 @@ var initializeTree = function(data) {
 	        cache: false
 	      };
 	  },
-//	  postProcess: function(event, data) {
-//	      data.response = data.response.children;
-//	    },
 	dnd: {
 	    autoExpandMS: 400,
 	    focusOnClick: true,
@@ -30,11 +28,7 @@ var initializeTree = function(data) {
 		return true;
 	    },
 	    dragEnter: function(node, data) {
-		// we only support dropping onto a folder, we don't do reordering
-		if (!_.isUndefined(data.node.folder) && (data.node.folder == true)) {
-		    return 'over';
-		}
-		return false;
+		return 'over';
 	    },
 	    dragDrop: function(node, data) {
 		var params = { 'tag_id': data.otherNode.key, 'parent_id': data.node.key};
@@ -69,6 +63,7 @@ var initializeTree = function(data) {
 
 	       }
     });
+    
     theTree = tagtreeNode.fancytree("getTree");
 };
 
