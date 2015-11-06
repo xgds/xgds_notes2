@@ -25,7 +25,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.template.loader import get_template
 from django.template import Context
 
-from geocamUtil.models import AbstractEnumModel
+from geocamUtil.models import AbstractEnumModel, ServerIdModel
 from geocamUtil.models.UuidField import UuidField, makeUuid
 from geocamUtil.modelJson import modelToDict
 from geocamUtil.defaultSettings import HOSTNAME
@@ -40,21 +40,20 @@ class HierarchichalTag(TagBase, MP_Node):
     abbreviation = models.CharField(max_length=8, blank=True)
     description = models.TextField(blank=True, null=True)
     
-    def fillId(self):
-        index = self.__class__.objects.count() + 1
-        self.pk = HOSTNAME + "_" + str(index)
-        
-    def save(self, *args, **kwargs):
+    def preSave(self):
         self.name = self.name.lower()
-        super(HierarchichalTag, self).save(*args, **kwargs)
         
     def getTreeJson(self):
         """ get the JSON block for fancytree """
-        result = {"title": self.name,
+        title = self.name
+        if self.abbreviation:
+            title = title + '(' + self.abbreviation + ')'
+        result = {"title": title,
                   "key": self.pk,
                   "folder": True if self.numchild else False,
                   "lazy": True,
                   "data": {"parentId": None,
+                           "name": self.name,
                            "abbreviation": self.abbreviation,
                            "description": self.description
                            }
@@ -73,18 +72,10 @@ class HierarchichalTag(TagBase, MP_Node):
     
 
 class TaggedNote(ItemBase):
+    uuid = UuidField(default=makeUuid(), primary_key=True)
     content_object = models.ForeignKey(settings.XGDS_NOTES_NOTE_MODEL)
     tag = models.ForeignKey('HierarchichalTag', related_name='tags')
     
-    def fillId(self):
-        index = self.__class__.objects.count() + 1
-        self.pk = HOSTNAME + "_" + str(index)
-
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            self.fillId()
-        super(TaggedNote, self).save(*args, **kwargs)
-
 
 class MissionDay(models.Model):
     name = models.TextField()
@@ -143,10 +134,10 @@ class UserSession(AbstractUserSession):
 class AbstractNote(models.Model):
     ''' Abstract base class for notes
     '''
-    # custom id field for uniqueness
-    id = models.CharField(max_length=128,
-                          unique=True, blank=False,
-                          editable=False, primary_key=True)
+#     # custom id field for uniqueness
+#     id = models.CharField(max_length=128,
+#                           unique=True, blank=False,
+#                           editable=False, primary_key=True)
 
     # Override this to specify a list of related fields
     # to be join-query loaded when notes are listed, as an optimization
@@ -197,22 +188,6 @@ class AbstractNote(models.Model):
 # class. Will fail miserably if it tries to search on this abstract class.
 #    if "SphinxSearch" in globals():
 #        search = SphinxSearch()
-
-    def fillId(self):
-        index = self.__class__.objects.count() + 1
-        self.pk = HOSTNAME + "_" + str(index)
-
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            self.fillId()
-        self.preSave()
-        super(AbstractNote, self).save(*args, **kwargs)
-
-    def preSave(self):
-        """
-        This is so derived classes can do stuff just before saving a note
-        """
-        return
 
     def adjustedEventTime(self):
         """

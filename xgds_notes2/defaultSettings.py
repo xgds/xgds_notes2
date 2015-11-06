@@ -41,7 +41,7 @@ XGDS_NOTES_ENABLE_GEOCAM_TRACK_MAPPING = True
 
 XGDS_NOTES_NOTE_MODEL = 'xgds_notes2.LocatedNote'
 XGDS_NOTES_TAG_MODEL = 'xgds_notes2.HierarchichalTag'
-XGDS_NOTES_TAGGED_ITEM_MODEL = 'xgds_notes2.TaggedNote'
+XGDS_NOTES_TAGGED_NOTE_MODEL = 'xgds_notes2.TaggedNote'
 
 XGDS_NOTES_USER_SESSION_MODEL = 'xgds_notes2.UserSession'
 
@@ -73,4 +73,5 @@ XGDS_NOTES_TAG_TREE_URL = '/notes/tagsTree/'
 XGDS_NOTES_BOWER_INSTALLED_APPS = ('moment',
                                    'lodash#3.10.0',
                                    'fancytree=fancytree',
+                                   'jquery-ui-contextmenu=https://github.com/mar10/jquery-ui-contextmenu.git'
                                    )

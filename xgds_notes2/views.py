@@ -43,14 +43,14 @@ Note = LazyGetModelByName(getattr(settings, 'XGDS_NOTES_NOTE_MODEL'))
 Tag = LazyGetModelByName(getattr(settings, 'XGDS_NOTES_TAG_MODEL'))
 
 
-def server_time(request):
+def serverTime(request):
     return HttpResponse(
         datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
         content_type="text"
     )
     
 @login_required
-def edit_user_session(request):
+def editUserSession(request):
     # display a form to edit the content of the UserSession object in request.session['notes_user_session']
     existing_data = request.session.get('notes_user_session', None)
     if request.method == 'POST':
@@ -184,14 +184,14 @@ def review(request, **kwargs):
        )   
 
 @login_required
-def edit_tags(request):
+def editTags(request):
     return render(
                 request,
                 'xgds_notes2/tags_tree.html',
-                {},
+                {'addTagForm': TagForm()},
             )
 
-def build_tag_json(root):
+def buildTagJson(root):
     if root is None:
         return []
     root_json = root.getTreeJson()
@@ -205,7 +205,7 @@ def build_tag_json(root):
     return root_json
 
 @never_cache
-def get_tags_json(request, root=None):
+def getTagsJson(request, root=None):
     """
     json tree of tags one level deep
     note that this does json for jstree
@@ -218,29 +218,70 @@ def get_tags_json(request, root=None):
     
     keys_json = []
     for root in roots:
-        keys_json.append(build_tag_json(root))
+        keys_json.append(buildTagJson(root))
     
     json_data = json.dumps(keys_json)
     return HttpResponse(content=json_data,
                         content_type="application/json")
+    
 
+@never_cache
+def deleteTag(request, tag_id):
+    found_tag = Tag.get().objects.get(pk=tag_id)
+    if found_tag:
+        if LazyGetModelByName(settings.XGDS_NOTES_TAGGED_NOTE_MODEL).get().objects.filter(tag=found_tag):
+            # cannot delete, this tag is in use
+            return HttpResponse(json.dumps({'failed': found_tag.name + ' is in use; cannot delete.'}), content_type='application/json', status=200)
+        else:
+            found_tag.delete()
+            return HttpResponse(json.dumps({'success': 'true'}), content_type='application/json')
 
 @login_required
-def add_root_tag(request):
+def addRootTag(request):
     if request.method == 'POST':
         form = TagForm(request.POST)
         if form.is_valid():
-            Tag.get().add_root(**form.cleaned_data)
-            return redirect('xgds_notes_edit_tags')
+            new_root = Tag.get().add_root(**form.cleaned_data)
+            return HttpResponse(json.dumps(new_root.getTreeJson()), content_type='application/json')
         else:
-            return HttpResponse(str(form.errors), status=400)  # Bad Request
-    elif request.method == 'GET':
-            return render(
-                request,
-                'xgds_notes2/add_root_tag.html',
-                {
-                    'form': TagForm()
-                },
-            )
-    else:
-        raise Exception("Request method %s not supported." % request.method)
+            return HttpResponse(json.dumps({'failed': 'Problem adding root: ' + form.errors}), content_type='application/json', status=200)
+            
+@login_required
+def addTag(request):
+    if request.method == 'POST':
+        parent_id = request.POST.get('parent_id')
+        parent = Tag.get().objects.get(pk=parent_id)
+        form = TagForm(request.POST)
+        if form.is_valid():
+            new_child = parent.add_child(**form.cleaned_data)
+            return HttpResponse(json.dumps(new_child.getTreeJson()), content_type='application/json')
+        else:
+            return HttpResponse(json.dumps({'failed': 'Problem adding tag: ' + form.errors}), content_type='application/json', status=200)
+
+
+@login_required
+def editTag(request, tag_id):
+    if request.method == 'POST':
+        tag = Tag.get().objects.get(pk=tag_id)
+        form = TagForm(request.POST, instance=tag)
+        if form.is_valid():
+            form.save()
+            return HttpResponse(json.dumps(tag.getTreeJson()), content_type='application/json')
+        else:
+            return HttpResponse(json.dumps({'failed': 'Problem editing tag: ' + form.errors}), content_type='application/json', status=200)
+
+
+@login_required
+def moveTag(request, tag_id, parent_id):
+    found_tag = Tag.get().objects.get(pk=tag_id)
+    found_parent = Tag.get().objects.get(pk=parent_id)
+    if found_tag and found_parent:
+        try:
+            found_parent.add_child(found_tag)
+            return HttpResponse(json.dumps({'success': 'true'}), content_type='application/json')
+        except:
+            # cannot delete, this tag is in use
+            return HttpResponse(json.dumps({'failed': found_tag.name + ' is in use; cannot delete.'}), content_type='application/json', status=200)
+        else:
+            found_tag.delete()
+            
