@@ -1,5 +1,11 @@
 span.fancytree-node.tag span.fancytree-icon
 {
-	background-position: 0 0;
+	background-position: 0px 2px;
 	background-image: url("/static/xgds_notes2/icons/tag.png");
 }
+
+span.fancytree-node.tag:hover span.fancytree-icon:hover {
+  	background-position: 0px 2px;
+	background-image: url("/static/xgds_notes2/icons/tag.png");
+}
+
