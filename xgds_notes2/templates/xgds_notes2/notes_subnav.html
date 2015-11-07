@@ -6,7 +6,8 @@
 	<ul>
 		<li {% currentnav xgds_notes_review %}><a href="{% url 'xgds_notes_review' %}">Review {{ XGDS_NOTES_MONIKER }}</a></li>
 		<li {% currentnav xgds_notes_record %}><a href="{% url 'xgds_notes_record' %}">Record {{ XGDS_NOTES_MONIKER }}</a></li>
-		<li {% currentnav xgds_notes_edit_tags xgds_notes_add_root_tag %}><a href="{% url 'xgds_notes_edit_tags' %}">Edit Tags</a></li>
+		<li {% currentnav xgds_notes_edit_tags  %}><a href="{% url 'xgds_notes_edit_tags' %}">Edit Tags</a></li>
+		<li {% currentnav xgds_notes_import %}><a href="{# url 'xgds_notes_import' #}">Import</a></li>
   	</ul>
   	</nav>
 </div>

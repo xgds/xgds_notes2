@@ -38,8 +38,8 @@ var initializeTree = function(data) {
 		    data: params,
 		}).success(function() {
 		    data.otherNode.moveTo(node, data.hitMode);
-		}).error(function() {
-		    alert("Problem moving tag, try again.");
+		}).error(function(data) {
+		    alert(JSON.parse(data.responseText).failed);
 		});
 	    }
 	},
@@ -73,10 +73,10 @@ var handleCommand = function(command, node) {
 	$.ajax({url: deleteURL,
 	    type: 'POST',
 	    dataType: 'json'
-	}).success(function() {
+	}).success(function(data) {
 	    node.remove();
-	}).error(function() {
-	    alert("Problem deleting tag " + node.label);
+	}).error(function(data) {
+	    alert(JSON.parse(data.responseText).failed);
 	});
     } else if (command === 'rootify'){
 	var rootURL = '/notes/makeRoot/' + node.key;
@@ -85,8 +85,8 @@ var handleCommand = function(command, node) {
 	    dataType: 'json'
 	}).success(function() {
 	    node.moveTo(theTree.getRootNode());
-	}).error(function() {
-	    alert("Problem making root tag " + node.label);
+	}).error(function(data) {
+	    alert(JSON.parse(data.responseText).failed);
 	});
     } else {
 	showAddTagDialog(command, node);
@@ -172,7 +172,7 @@ function doSaveTag(mode, node){
 	    theTree.getRootNode().addChildren([noteJson]);
 	}
 	addTagDialog.dialog('close'); 
-    }).error(function() {
-	alert(errorMsg);
+    }).error(function(data) {
+	alert(JSON.parse(data.responseText).failed);
     });
 }

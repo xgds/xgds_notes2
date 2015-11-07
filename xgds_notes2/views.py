@@ -246,12 +246,12 @@ def getTagsJson(request, root=None):
 def deleteTag(request, tag_id):
     found_tag = Tag.get().objects.get(pk=tag_id)
     if found_tag:
-        if found_tag.get_descendant_count() > 0:
+        if found_tag.numchild > 0:
             # TODO need to check all the descendant tags; right now this is disabled.
-            return HttpResponse(json.dumps({'failed': found_tag.name + ' had children; cannot delete.'}), content_type='application/json', status=200)
+            return HttpResponse(json.dumps({'failed': found_tag.name + " has children, cannot delete."}), content_type='application/json', status=406)
         elif LazyGetModelByName(settings.XGDS_NOTES_TAGGED_NOTE_MODEL).get().objects.filter(tag=found_tag):
             # cannot delete, this tag is in use
-            return HttpResponse(json.dumps({'failed': found_tag.name + ' is in use; cannot delete.'}), content_type='application/json', status=200)
+            return HttpResponse(json.dumps({'failed': found_tag.name + ' is in use; cannot delete.'}), content_type='application/json', status=406)
         else:
             found_tag.delete()
             return HttpResponse(json.dumps({'success': 'true'}), content_type='application/json')
@@ -264,7 +264,7 @@ def addRootTag(request):
             new_root = Tag.get().add_root(**form.cleaned_data)
             return HttpResponse(json.dumps(new_root.getTreeJson()), content_type='application/json')
         else:
-            return HttpResponse(json.dumps({'failed': 'Problem adding root: ' + form.errors}), content_type='application/json', status=200)
+            return HttpResponse(json.dumps({'failed': 'Problem adding root: ' + form.errors}), content_type='application/json', status=406)
 
 @login_required
 def makeRootTag(request, tag_id):
@@ -274,7 +274,7 @@ def makeRootTag(request, tag_id):
             tag.move(Tag.get().get_root_nodes()[0], 'sorted-sibling')
             return HttpResponse(json.dumps({'success': 'true'}), content_type='application/json')
         else:
-            return HttpResponse(json.dumps({'failed': 'Problem making root'}), content_type='application/json', status=200)
+            return HttpResponse(json.dumps({'failed': 'Problem making root'}), content_type='application/json', status=406)
 
             
 @login_required
@@ -287,7 +287,7 @@ def addTag(request):
             new_child = parent.add_child(**form.cleaned_data)
             return HttpResponse(json.dumps(new_child.getTreeJson()), content_type='application/json')
         else:
-            return HttpResponse(json.dumps({'failed': 'Problem adding tag: ' + form.errors}), content_type='application/json', status=200)
+            return HttpResponse(json.dumps({'failed': 'Problem adding tag: ' + form.errors}), content_type='application/json', status=406)
 
 
 @login_required
@@ -299,7 +299,7 @@ def editTag(request, tag_id):
             form.save()
             return HttpResponse(json.dumps(tag.getTreeJson()), content_type='application/json')
         else:
-            return HttpResponse(json.dumps({'failed': 'Problem editing tag: ' + form.errors}), content_type='application/json', status=200)
+            return HttpResponse(json.dumps({'failed': 'Problem editing tag: ' + form.errors}), content_type='application/json', status=406)
 
 
 @login_required
@@ -314,5 +314,5 @@ def moveTag(request):
                 found_tag.move(found_parent, 'sorted-child')
                 return HttpResponse(json.dumps({'success': 'true'}), content_type='application/json')
             except:
-                return HttpResponse(json.dumps({'failed': 'badness.'}), content_type='application/json', status=200)
+                return HttpResponse(json.dumps({'failed': 'badness.'}), content_type='application/json', status=406)
             
