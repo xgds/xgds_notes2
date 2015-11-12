@@ -6,16 +6,15 @@
 {% load tz_convert %}
 
 {% block content %}
-<b>Download Template</b>
+<strong>Download Template</strong>
 <table>
 	<tr><td><a href="/static/xgds_notes2/files/xGDS_Notes_Full_Template.csv">Multiple users with tags</a></td></tr>
-	<tr><td></td><a href="/static/xgds_notes2/files/xGDS_Notes_Yours_Template.csv">Current user with tags</a></tr>
+	<tr><td><a href="/static/xgds_notes2/files/xGDS_Notes_Yours_Template.csv">Current user with tags</a></td></tr>
 	<tr><td><a href="/static/xgds_notes2/files/xGDS_Notes_Tagless_Template.csv">Multiple users no tags</a></td></tr>
-	<tr><td></td><a href="/static/xgds_notes2/files/xGDS_Notes_Yours_Tagless_Template.csv">Current user no tags</a></tr>
+	<tr><td><a href="/static/xgds_notes2/files/xGDS_Notes_Yours_Tagless_Template.csv">Current user no tags</a></td></tr>
 </table>
-<a href="/static/xgds_notes2/files/xGDS_Notes_Full_Template.csv">Template: multiple users</a>
-
-
+<br/>
+<strong>Import Notes</strong>
 <form id="import_notes" action="{% url 'xgds_notes_import' %}" method="post" enctype="multipart/form-data">
 	<table>
     {{ form.as_table }}
