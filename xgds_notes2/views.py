@@ -17,6 +17,10 @@
 from datetime import datetime, timedelta
 import itertools
 import json
+import pytz
+from pytz import timezone
+import csv
+from dateutil.parser import parse as dateparser
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -31,9 +35,10 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 
 from geocamUtil.datetimeJsonEncoder import DatetimeJsonEncoder
 from geocamUtil.loader import LazyGetModelByName, getClassByName
+from geocamUtil import TimeUtil
 from treebeard.mp_tree import MP_Node
 
-from xgds_notes2.forms import NoteForm, UserSessionForm, TagForm
+from xgds_notes2.forms import NoteForm, UserSessionForm, TagForm, ImportNotesForm
 
 if settings.XGDS_SSE:
     from sse_wrapper.events import send_event
@@ -315,4 +320,59 @@ def moveTag(request):
                 return HttpResponse(json.dumps({'success': 'true'}), content_type='application/json')
             except:
                 return HttpResponse(json.dumps({'failed': 'badness.'}), content_type='application/json', status=406)
-            
+
+def doImportNotes(request, sourceFile, tz):
+    dictreader = csv.DictReader(sourceFile)
+    for row in dictreader:
+        row['author'] = request.user
+        if row['content'] or row['tags']:
+            if 'first_name' in row and 'last_name' in row:
+                if row['first_name'] and row['last_name']:
+                    try:
+                        row['author'] = User.objects.get(first_name=row['first_name'], last_name=row['last_name'])
+                        del row['first_name']
+                        del row['last_name']
+                    except:
+                        pass
+        if row['event_time']:
+            event_time = dateparser(row['event_time'])
+            if tz != pytz.utc:
+                localized_time = tz.localize(event_time)
+                event_time = TimeUtil.timeZoneToUtc(localized_time)
+            row['event_time'] = event_time 
+        
+        try:
+            # TODO implement tags when ready
+            del row['tags']
+        except:
+            pass
+        
+        NOTE_MODEL = Note.get()
+        note = NOTE_MODEL(**row)
+        note.creation_time = datetime.utcnow()
+        note.modification_time = datetime.utcnow()
+        note.save()
+    
+    
+@login_required
+def importNotes(request):
+    errors = None
+    if request.method == 'POST':
+        form = ImportNotesForm(request.POST, request.FILES)
+        if form.is_valid():
+            if form.cleaned_data['timezone'] == 'utc':
+                tz = pytz.utc
+            else:
+                tz = timezone(settings.XGDS_SITEFRAMES[form.cleaned_data['timezone']]['timezone'])
+            doImportNotes(request, request.FILES['sourceFile'], tz)
+            return redirect('xgds_notes_review')
+        else:
+            errors = form.errors
+    return render(
+        request,
+        'xgds_notes2/import_notes.html',
+        {
+            'form': ImportNotesForm(),
+            'errorstring': errors
+        },
+    )

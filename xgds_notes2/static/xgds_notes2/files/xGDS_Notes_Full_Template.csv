@@ -1,0 +1,2 @@
+event_time,first_name,last_name,tags,content
+2015-11-05 21:15:49,John,Doe,tag1|tag2,"Sample note, with a comma." 

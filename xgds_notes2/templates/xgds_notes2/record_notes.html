@@ -1,6 +1,6 @@
 {% extends 'xgds_notes2/notes_base.html' %}
 {% load url from future %}
-{% block siteSection %}Record Console Log{% endblock %}
+{% block siteSection %}Record {{settings.XGDS_NOTES_MONIKER}}{% endblock %}
 
 {% load tz %}
 {% load tz_convert %}

@@ -19,7 +19,12 @@ import datetime
 from django import forms
 from django.conf import settings
 from geocamUtil.loader import LazyGetModelByName
+from geocamUtil.extFileField import ExtFileField
+from geocamUtil.forms.SiteframeChoiceField import SiteframeChoiceField
+
 from xgds_notes2.models import HierarchichalTag
+from django.forms.models import ModelChoiceField
+from django.forms.fields import ChoiceField
 
 Note = LazyGetModelByName(settings.XGDS_NOTES_NOTE_MODEL)
 UserSession = LazyGetModelByName(settings.XGDS_NOTES_USER_SESSION_MODEL)
@@ -59,3 +64,8 @@ class TagForm(forms.ModelForm):
     class Meta:
         model = Tag.get()
         fields = Tag.get().getFormFields()
+
+class ImportNotesForm(forms.Form):
+    timezone = SiteframeChoiceField(required=True, choices=(('utc', 'UTC'),))
+    sourceFile = ExtFileField(ext_whitelist=(".csv", ), required=True)
+

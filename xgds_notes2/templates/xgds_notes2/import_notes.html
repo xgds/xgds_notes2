@@ -1,0 +1,27 @@
+{% extends 'xgds_notes2/notes_base.html' %}
+{% load url from future %}
+{% block siteSection %}Import {{settings.XGDS_NOTES_MONIKER}}{% endblock %}
+
+{% load tz %}
+{% load tz_convert %}
+
+{% block content %}
+<b>Download Template</b>
+<table>
+	<tr><td><a href="/static/xgds_notes2/files/xGDS_Notes_Full_Template.csv">Multiple users with tags</a></td></tr>
+	<tr><td></td><a href="/static/xgds_notes2/files/xGDS_Notes_Yours_Template.csv">Current user with tags</a></tr>
+	<tr><td><a href="/static/xgds_notes2/files/xGDS_Notes_Tagless_Template.csv">Multiple users no tags</a></td></tr>
+	<tr><td></td><a href="/static/xgds_notes2/files/xGDS_Notes_Yours_Tagless_Template.csv">Current user no tags</a></tr>
+</table>
+<a href="/static/xgds_notes2/files/xGDS_Notes_Full_Template.csv">Template: multiple users</a>
+
+
+<form id="import_notes" action="{% url 'xgds_notes_import' %}" method="post" enctype="multipart/form-data">
+	<table>
+    {{ form.as_table }}
+    </table>
+    <div id="buttons" >
+        <input id="save" class="mybutton" type="submit" value="Import">
+    </div>
+</form>
+{% endblock content %}
