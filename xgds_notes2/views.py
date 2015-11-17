@@ -36,6 +36,9 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from geocamUtil.datetimeJsonEncoder import DatetimeJsonEncoder
 from geocamUtil.loader import LazyGetModelByName, getClassByName
 from geocamUtil import TimeUtil
+
+from geocamTrack.views import getClosestPosition
+
 from treebeard.mp_tree import MP_Node
 
 from xgds_notes2.forms import NoteForm, UserSessionForm, TagForm, ImportNotesForm
@@ -46,7 +49,7 @@ if settings.XGDS_SSE:
 
 Note = LazyGetModelByName(getattr(settings, 'XGDS_NOTES_NOTE_MODEL'))
 Tag = LazyGetModelByName(getattr(settings, 'XGDS_NOTES_TAG_MODEL'))
-
+Resource = LazyGetModelByName(settings.GEOCAM_TRACK_RESOURCE_MODEL)
 
 def serverTime(request):
     return HttpResponse(
@@ -321,7 +324,7 @@ def moveTag(request):
             except:
                 return HttpResponse(json.dumps({'failed': 'badness.'}), content_type='application/json', status=406)
 
-def doImportNotes(request, sourceFile, tz):
+def doImportNotes(request, sourceFile, tz, resource):
     dictreader = csv.DictReader(sourceFile)
     for row in dictreader:
         row['author'] = request.user
@@ -351,6 +354,9 @@ def doImportNotes(request, sourceFile, tz):
         note = NOTE_MODEL(**row)
         note.creation_time = datetime.utcnow()
         note.modification_time = datetime.utcnow()
+        
+        if resource:
+            note.position = getClosestPosition(timestamp=note.event_time, resource=resource)
         note.save()
     
     
@@ -364,7 +370,12 @@ def importNotes(request):
                 tz = pytz.utc
             else:
                 tz = timezone(settings.XGDS_SITEFRAMES[form.cleaned_data['timezone']]['timezone'])
-            doImportNotes(request, request.FILES['sourceFile'], tz)
+            
+            if form.cleaned_data['resource']:
+                resource = form.cleaned_data['resource']
+            else:
+                resource = None
+            doImportNotes(request, request.FILES['sourceFile'], tz, resource)
             return redirect('xgds_notes_review')
         else:
             errors = form.errors

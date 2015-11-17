@@ -29,6 +29,7 @@ from django.forms.fields import ChoiceField
 Note = LazyGetModelByName(settings.XGDS_NOTES_NOTE_MODEL)
 UserSession = LazyGetModelByName(settings.XGDS_NOTES_USER_SESSION_MODEL)
 Tag = LazyGetModelByName(settings.XGDS_NOTES_TAG_MODEL)
+Resource = LazyGetModelByName(settings.GEOCAM_TRACK_RESOURCE_MODEL)
 
 class UserSessionForm(forms.ModelForm):
     class Meta:
@@ -67,5 +68,6 @@ class TagForm(forms.ModelForm):
 
 class ImportNotesForm(forms.Form):
     timezone = SiteframeChoiceField(required=True, choices=(('utc', 'UTC'),))
+    resource = ModelChoiceField(required=False, queryset=Resource.get().objects.all(), label=settings.GEOCAM_TRACK_RESOURCE_VERBOSE_NAME)
     sourceFile = ExtFileField(ext_whitelist=(".csv", ), required=True)
 
