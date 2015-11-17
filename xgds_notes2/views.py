@@ -366,16 +366,7 @@ def importNotes(request):
     if request.method == 'POST':
         form = ImportNotesForm(request.POST, request.FILES)
         if form.is_valid():
-            if form.cleaned_data['timezone'] == 'utc':
-                tz = pytz.utc
-            else:
-                tz = timezone(settings.XGDS_SITEFRAMES[form.cleaned_data['timezone']]['timezone'])
-            
-            if form.cleaned_data['resource']:
-                resource = form.cleaned_data['resource']
-            else:
-                resource = None
-            doImportNotes(request, request.FILES['sourceFile'], tz, resource)
+            doImportNotes(request, request.FILES['sourceFile'], form.getTimezone(), form.getResource())
             return redirect('xgds_notes_review')
         else:
             errors = form.errors
