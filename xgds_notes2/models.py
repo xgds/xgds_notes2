@@ -25,7 +25,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.template.loader import get_template
 from django.template import Context
 
-from geocamUtil.models import AbstractEnumModel, ServerIdModel
+from geocamUtil.models import AbstractEnumModel
+from geocamUtil.models.ServerIdModel import ServerIdModel
 from geocamUtil.models.UuidField import UuidField, makeUuid
 from geocamUtil.modelJson import modelToDict
 from geocamUtil.defaultSettings import HOSTNAME
@@ -132,7 +133,7 @@ class UserSession(AbstractUserSession):
                 'location']
     
 
-class AbstractNote(models.Model):
+class AbstractNote(ServerIdModel):
     ''' Abstract base class for notes
     '''
 #     # custom id field for uniqueness
