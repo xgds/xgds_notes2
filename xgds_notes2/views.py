@@ -143,7 +143,7 @@ def record(request):
     elif request.method == 'GET':
 
         if 'notes_user_session' not in request.session:
-            return redirect('edit_user_session')
+            return redirect('xgds_notes_edit_user_session')
         else:
             form = NoteForm()
 
