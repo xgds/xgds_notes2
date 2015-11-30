@@ -26,8 +26,6 @@ from django.template.loader import get_template
 from django.template import Context
 
 from geocamUtil.models import AbstractEnumModel
-from geocamUtil.models.ServerIdModel import ServerIdModel
-from geocamUtil.models.UuidField import UuidField, makeUuid
 from geocamUtil.modelJson import modelToDict
 from geocamUtil.defaultSettings import HOSTNAME
 
@@ -74,7 +72,6 @@ class HierarchichalTag(TagBase, MP_Node):
     
 
 class TaggedNote(ItemBase):
-    uuid = UuidField(default=makeUuid(), primary_key=True)
     content_object = models.ForeignKey(settings.XGDS_NOTES_NOTE_MODEL)
     tag = models.ForeignKey('HierarchichalTag', related_name='tags')
     
@@ -133,7 +130,7 @@ class UserSession(AbstractUserSession):
                 'location']
     
 
-class AbstractNote(ServerIdModel):
+class AbstractNote(models.Model):
     ''' Abstract base class for notes
     '''
 #     # custom id field for uniqueness
@@ -147,8 +144,6 @@ class AbstractNote(ServerIdModel):
 
     # select related for forward releationships.  prefetch for reverse or for many to many.
     select_related_fields = ['author', 'role']
-
-    uuid = UuidField(default=makeUuid())
 
     show_on_map = models.BooleanField(default=False) # broadcast this note on the map by default
 
