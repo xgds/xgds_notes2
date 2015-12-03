@@ -21,7 +21,7 @@
         	{{ note.author.get_full_name }}
         </td>
 		<td>
-    		{% for t in note.tags.names %}{{ t|safe }}&nbsp;{% endfor %}   	
+    		{% for t in note.tags.names %}{% if not forloop.first %},&nbsp;{% endif %}{{ t|safe }}{% endfor %}   	
         </td>
 		<td>
         	{{ note.content|safe }}
