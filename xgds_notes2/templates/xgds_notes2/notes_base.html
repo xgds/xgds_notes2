@@ -3,6 +3,12 @@
 
 {% block cssExtras %}
 <link rel="stylesheet" type="text/css" href="{{ EXTERNAL_URL }}jquery-ui/themes/base/jquery-ui.min.css" ></link>
+<!-- <link rel="stylesheet" type="text/css" href="{{ EXTERNAL_URL }}bootstrap/dist/css/bootstrap.min.css" ></link>
+ -->
+ <!-- <link rel="stylesheet" type="text/css" href="{{ EXTERNAL_URL }}bootstrap/dist/css/bootstrap-theme.min.css" ></link>
+ -->
+ <link rel="stylesheet" type="text/css" href="{{ EXTERNAL_URL }}bootstrap-tagsinput/dist/bootstrap-tagsinput.css"></link>
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}xgds_notes2/css/tags_input.css"></link>
 {% endblock cssExtras %}
 
 {% block sitemenu-content-secondary %}
@@ -12,5 +18,8 @@
 {% block scripts %}
 {{ block.super }}
 <script language="javascript" type="text/javascript" src="{{ EXTERNAL_URL }}jquery-ui/jquery-ui.min.js"></script>
+<script language="javascript" type="text/javascript" src="{{ EXTERNAL_URL }}bootstrap/dist/js/bootstrap.min.js"></script>
+<script language="javascript" type="text/javascript" src="{{ EXTERNAL_URL }}typeahead.js/dist/typeahead.bundle.min.js"></script>
+<script language="javascript" type="text/javascript" src="{{ EXTERNAL_URL }}bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js"></script>
 {% endblock scripts %}
 

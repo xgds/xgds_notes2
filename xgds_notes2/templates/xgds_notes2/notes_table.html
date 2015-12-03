@@ -21,7 +21,7 @@
         	{{ note.author.get_full_name }}
         </td>
 		<td>
-    		TODO TAGS    	
+    		{% for t in note.tags.names %}{{ t|safe }}&nbsp;{% endfor %}   	
         </td>
 		<td>
         	{{ note.content|safe }}

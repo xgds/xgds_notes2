@@ -73,5 +73,8 @@ XGDS_NOTES_TAG_TREE_URL = '/notes/tagsTree/'
 XGDS_NOTES_BOWER_INSTALLED_APPS = ('moment',
                                    'lodash#3.10.0',
                                    'fancytree=fancytree',
-                                   'jquery-ui-contextmenu=https://github.com/mar10/jquery-ui-contextmenu.git'
+                                   'jquery-ui-contextmenu=https://github.com/mar10/jquery-ui-contextmenu.git',
+                                   'bootstrap-tagsinput',
+#                                    'bootstrap3-typeahead',
+                                   'typeahead.js'
                                    )

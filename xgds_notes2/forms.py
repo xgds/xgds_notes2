@@ -24,6 +24,8 @@ from geocamUtil.extFileField import ExtFileField
 from xgds_notes2.models import HierarchichalTag
 from geocamTrack.forms import AbstractImportTrackedForm
 
+from taggit.forms import *
+
 Note = LazyGetModelByName(settings.XGDS_NOTES_NOTE_MODEL)
 UserSession = LazyGetModelByName(settings.XGDS_NOTES_USER_SESSION_MODEL)
 Tag = LazyGetModelByName(settings.XGDS_NOTES_TAG_MODEL)
@@ -36,6 +38,10 @@ class UserSessionForm(forms.ModelForm):
 
 
 class NoteForm(forms.ModelForm):
+    tags = TagField(required=False,
+                    widget=TagWidget(attrs={'class': 'taginput', 
+                                            'data-role':'tagsinput'}))
+    
     class Meta:
         model = Note.get()
         fields = Note.get().getFormFields()

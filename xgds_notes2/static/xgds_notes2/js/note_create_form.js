@@ -32,6 +32,12 @@ function initializeNotesForm() {
             });
         }
     }).blur(function(e) { $(this).unbind('keydown.content_input') });
+   
+    $('input').on('itemAdded', function(event) {
+	if (! time_input.attr('value')) {
+            set_event_time();
+        }
+    });
     
     time_input.after($('<button name="Now" class="small">Now</button>').click(function(e) {
         e.preventDefault();

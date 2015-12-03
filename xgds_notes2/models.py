@@ -13,10 +13,10 @@
 # CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 #__END_LICENSE__
-
 from datetime import datetime
 
 from django.db import models
+from django.db.models.query import QuerySet
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -66,14 +66,31 @@ class HierarchichalTag(TagBase, MP_Node):
     @classmethod
     def getFormFields(cls):
         return ["abbreviation", "name", "description"]
-        
-    class Meta(TagBase.Meta):
-        db_table = 'taggit_tag'
+    
+    def toSimpleDict(self):
+        return {'id': self.id,
+                'name': self.name,
+                'abb': self.abbreviation}
     
 
 class TaggedNote(ItemBase):
     content_object = models.ForeignKey(settings.XGDS_NOTES_NOTE_MODEL)
-    tag = models.ForeignKey('HierarchichalTag', related_name='tags')
+    tag = models.ForeignKey('HierarchichalTag', 
+                            related_name="htags",
+                            blank=True)
+
+    @classmethod
+    def tags_for(cls, model, instance=None, **extra_filters):
+        kwargs = extra_filters or {}
+        if instance is not None:
+            kwargs.update({
+                '%s__content_object' % cls.tag_relname(): instance
+            })
+            return cls.tag_model().objects.filter(**kwargs)
+        kwargs.update({
+            '%s__content_object__isnull' % cls.tag_relname(): False
+        })
+        return cls.tag_model().objects.filter(**kwargs).distinct()
     
 
 class MissionDay(models.Model):
@@ -233,11 +250,9 @@ class AbstractNote(models.Model):
         result['role'] = self.role.display_name
         result['event_time'] = self.adjustedEventTime()
         
-        if self.label:
-            if 'tags' in result:
-                result['tags'].append(self.label.display_name)
-            else:
-                result['tags'] = [self.label.display_name]
+        tags = self.tags.names()
+        if tags:
+            result["tags"] = tags
         else:
             result['tags'] = ''
         

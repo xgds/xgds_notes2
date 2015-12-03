@@ -12,7 +12,7 @@
     {{ form.as_table }}
     </table>
     <div id="buttons" >
-        <input id="save_note" class="mybutton" type="submit" value="Save">
+        <input id="save_note" class="mybutton small" type="submit" value="Save">
     </div>
 </form>
 
@@ -24,10 +24,30 @@
 {% block scripts %}
 {{block.super}}
 	<script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/note_create_form.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/tags_input.js"></script>
 {% endblock scripts %}
 
 {% block jsInit %}
 	var server_time_url = "{% url 'server_time' %}";
+	initializeTags();
+	initializeInput();
 	initializeNotesForm();
+
+/*
+$(function() {
+    $('input, select').on('change', function(event) {
+      var $element = $(event.target),
+        $container = $element.closest('.example');
+
+      if (!$element.data('tagsinput'))
+        return;
+
+      var val = $element.val();
+      if (val === null)
+        val = "null";
+      $('code', $('pre.val', $container)).html( ($.isArray(val) ? JSON.stringify(val) : "\"" + val.replace('"', '\\"') + "\"") );
+      $('code', $('pre.items', $container)).html(JSON.stringify($element.tagsinput('items')));
+    }).trigger('change');
+  });  */
 {% endblock jsInit %}
 

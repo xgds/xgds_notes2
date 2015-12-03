@@ -35,6 +35,7 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 
 from geocamUtil.datetimeJsonEncoder import DatetimeJsonEncoder
 from geocamUtil.loader import LazyGetModelByName, getClassByName
+from geocamUtil.modelJson import modelToDict
 from geocamUtil import TimeUtil
 
 from geocamTrack.views import getClosestPosition
@@ -91,7 +92,6 @@ def editUserSession(request):
             },
         )
 
-
 @login_required
 def record(request):
     if request.method == 'POST':
@@ -112,6 +112,7 @@ def record(request):
             data.update(session_data)
 
             data['author'] = request.user
+            
             tags = data.pop('tags')
             data = {str(k): v
                     for k, v in data.items()}
@@ -199,22 +200,38 @@ def editTags(request):
                 {'addTagForm': TagForm()},
             )
 
-def buildTagJson(root):
+def tagsGetRootTreesJson(root):
     if root is None:
         return []
     root_json = root.getTreeJson()
-#     root_json['expanded'] = True
-    
-#     if root.numchild:
-#         children_json = []
-#         for child in root.get_children():
-#             children_json.append(child.getTreeJson())
-#             root_json['children'] = children_json
     return root_json
 
 
+def tagsJsonArray(request):
+    allTags = Tag.get().objects.all()
+    return HttpResponse(json.dumps([tag.toSimpleDict() for tag in allTags], separators=(', ',': ')).replace("},","},\n").replace("}]","}\n]"),
+                        content_type="application/json"
+    )
+
+
+def tagsSearchJsonArray(request):
+    search_term = request.GET.get('term', '')
+    # TODO: execute a prefix search with Sphinx, if available
+    tfilter = Tag.get().objects.filter
+    result = []
+    for tag in tfilter(name__istartswith=search_term):
+        result.append(tag.name)
+    
+    for tag in tfilter(abbreviation__istartswith=search_term):
+        result.append(tag.abbreviation)
+    result.sort()
+
+    return HttpResponse(json.dumps(result),
+                        content_type="application/json"
+    )
+
 @never_cache
-def getChildrenJson(request, root=None):
+def tagsGetTreeJson(request, root=None):
     """
     json tree of children
     note that this does json for jstree
@@ -230,7 +247,7 @@ def getChildrenJson(request, root=None):
                         content_type="application/json")
 
 @never_cache
-def getTagsJson(request, root=None):
+def tagsGetOneLevelTreeJson(request, root=None):
     """
     json tree of tags one level deep
     note that this does json for jstree
@@ -243,7 +260,7 @@ def getTagsJson(request, root=None):
     
     keys_json = []
     for root in roots:
-        keys_json.append(buildTagJson(root))
+        keys_json.append(tagsGetRootTreesJson(root))
     
     json_data = json.dumps(keys_json)
     return HttpResponse(content=json_data,
