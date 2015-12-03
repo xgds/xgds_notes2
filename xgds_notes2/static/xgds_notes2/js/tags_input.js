@@ -32,8 +32,9 @@ function initializeTags() {
 function initializeInput() {
     
     $('.taginput').tagsinput({
-	  itemValue: 'name',
+	  itemValue: 'id',
 	  itemText: 'name',
+	  freeInput: false,
 	  typeaheadjs: {
 	    name: 'allTags',
 	    displayKey: 'name',

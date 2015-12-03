@@ -43,6 +43,7 @@ from geocamTrack.views import getClosestPosition
 from treebeard.mp_tree import MP_Node
 
 from xgds_notes2.forms import NoteForm, UserSessionForm, TagForm, ImportNotesForm
+from models import HierarchichalTag
 
 if settings.XGDS_SSE:
     from sse_wrapper.events import send_event
@@ -95,7 +96,6 @@ def editUserSession(request):
 @login_required
 def record(request):
     if request.method == 'POST':
-
         form = NoteForm(request.POST)
         if form.is_valid():
 #             note = form.save(commit=False)
@@ -128,9 +128,12 @@ def record(request):
             # this is to handle delay state shifting of event time by default it does not change event time
             note.event_time = note.calculateDelayedEventTime()
             note.save()
-
+            
             if tags:
-                note.tags.set(*tags)
+                note.tags.clear()
+                for t in tags:
+                    tag = HierarchichalTag.objects.get(pk=int(t))
+                    note.tags.add(tag)
 
             if settings.XGDS_SSE:
                 json_data = json.dumps([note.toMapDict()], cls=DatetimeJsonEncoder)

@@ -70,7 +70,8 @@ class HierarchichalTag(TagBase, MP_Node):
     def toSimpleDict(self):
         return {'id': self.id,
                 'name': self.name,
-                'abb': self.abbreviation}
+                'abb': self.abbreviation,
+                'slug': self.slug}
     
 
 class TaggedNote(ItemBase):

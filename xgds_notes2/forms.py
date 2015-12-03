@@ -35,12 +35,12 @@ class UserSessionForm(forms.ModelForm):
     class Meta:
         model = UserSession.get()
         fields = UserSession.get().getFormFields()
-
-
+    
 class NoteForm(forms.ModelForm):
     tags = TagField(required=False,
                     widget=TagWidget(attrs={'class': 'taginput', 
-                                            'data-role':'tagsinput'}))
+                                            'data-role':'tagsinput',
+                                            'placeholder': 'Choose tags'}))
     
     class Meta:
         model = Note.get()
