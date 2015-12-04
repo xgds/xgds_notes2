@@ -34,11 +34,18 @@ function initializeInput() {
     $('.taginput').tagsinput({
 	  itemValue: 'id',
 	  itemText: 'name',
-	  freeInput: false,
+//	  confirmKeys: [13, 44],
 	  typeaheadjs: {
 	    name: 'allTags',
 	    displayKey: 'name',
-	    source: allTags.ttAdapter()
+	    source: allTags.ttAdapter(),
+	    templates: {
+		    empty: [
+		      '<div class="empty-message">',
+		        '&nbsp;Tag not found',
+		      '</div>'
+		    ].join('\n')
+		  }
 	  }
 	});
     
