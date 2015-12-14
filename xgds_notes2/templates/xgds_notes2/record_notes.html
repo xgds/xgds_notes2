@@ -16,8 +16,7 @@
     </div>
 </form>
 
-<p style="font-style: italic;">Entries you logged in the past 12 hours are displayed below.  Double-click a field to edit.</p>
-
+<p style="font-style: italic;">Entries you logged in the past 12 hours are displayed below.</p>
 {% include 'xgds_notes2/notes_table.html' with notes_list=notes_list %}
 {% endblock content %}
 
@@ -32,22 +31,5 @@
 	initializeTags();
 	initializeInput();
 	initializeNotesForm();
-
-/*
-$(function() {
-    $('input, select').on('change', function(event) {
-      var $element = $(event.target),
-        $container = $element.closest('.example');
-
-      if (!$element.data('tagsinput'))
-        return;
-
-      var val = $element.val();
-      if (val === null)
-        val = "null";
-      $('code', $('pre.val', $container)).html( ($.isArray(val) ? JSON.stringify(val) : "\"" + val.replace('"', '\\"') + "\"") );
-      $('code', $('pre.items', $container)).html(JSON.stringify($element.tagsinput('items')));
-    }).trigger('change');
-  });  */
 {% endblock jsInit %}
 

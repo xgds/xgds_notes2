@@ -3,17 +3,16 @@
 
 {% block scripts %}
 {{ block.super }}
-    <script type="text/javascript" src='{{ EXTERNAL_URL }}jquery-ui/jquery-ui.min.js'></script>
     <script type="text/javascript" src='{{ EXTERNAL_URL }}fancytree/dist/jquery.fancytree.js'></script>
     <script type="text/javascript" src='{{ EXTERNAL_URL }}fancytree/dist/src/jquery.fancytree.dnd.js'></script>
     <script type="text/javascript" src='{{ EXTERNAL_URL }}jquery-ui-contextmenu/jquery.ui-contextmenu.js'></script>
     <script type="text/javascript" src='{{ EXTERNAL_URL }}lodash/lodash.min.js'></script>
     <script type="text/javascript" src='{{ STATIC_URL }}xgds_notes2/js/tags_tree.js'></script>
-{% endblock %}
+	<script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/tags_input.js"></script>
+{% endblock scripts %}
 
 {% block contents %}
 <style scoped>
-  @import url('{{EXTERNAL_URL}}jquery-ui/themes/base/jquery-ui.css');
   @import url('{{ EXTERNAL_URL }}fancytree/dist/skin-lion/ui.fancytree.min.css');
   @import url('{{ STATIC_URL }}xgds_notes2/css/fancytree_tags.css');
   ul.fancytree-container {
@@ -23,11 +22,10 @@
 </style>
 
 <div id="tagtreeContainer">
-	<p>
+	<strong>Drag and drop to reorganize tags.  Right-click for menu.</strong><br/>
 	<i class="icon-arrows-ccw" alt="refresh" id="refreshTreeLink" onclick="javascript: refreshTree();"></i>
 	<a href="#" class="button small" onclick="showAddTagDialog('root', null);" id="addRootButton">&nbsp;Add Root Tag&nbsp;</a>
-	&nbsp;Drag and drop to reorganize tags.  Right-click for menu.
-	</p> 
+	<input id="id_tags" class="taginput" data-role="tagsinput" placeholder='Type to check tag' width="200px"/>
 	<div id="tagtree" ></div> 
  </div>
  
@@ -51,4 +49,6 @@
            		initializeTree(data);
          	})
          });
+   initializeTags();
+   initializeInput();
 {% endblock %}
