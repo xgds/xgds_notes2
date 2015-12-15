@@ -20,16 +20,19 @@
 {% include 'xgds_notes2/notes_table.html' with notes_list=notes_list %}
 {% endblock content %}
 
-{% block scripts %}
-{{block.super}}
-	<script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/note_create_form.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/tags_input.js"></script>
-{% endblock scripts %}
-
 {% block jsInit %}
-	var server_time_url = "{% url 'server_time' %}";
-	initializeTags();
-	initializeInput();
-	initializeNotesForm();
+{% include "xgds_notes2/NoteJSInit.html" %}
 {% endblock jsInit %}
 
+{% block scripts %}
+<script language="javascript" type="text/javascript">
+	    server_time_url = "{% url 'server_time' %}";
+</script>
+<script src="{{ EXTERNAL_URL }}jquery/dist/jquery.min.js"></script>
+<script language="javascript" type="text/javascript" src="{{ EXTERNAL_URL }}jquery-ui/jquery-ui.min.js"></script>
+<script language="javascript" type="text/javascript" src="{{ EXTERNAL_URL }}bootstrap/dist/js/bootstrap.min.js"></script>
+<script language="javascript" type="text/javascript" src="{{ EXTERNAL_URL }}typeahead.js/dist/typeahead.bundle.min.js"></script>
+<script language="javascript" type="text/javascript" src="{{ EXTERNAL_URL }}bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/note_create_form.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/tags_input.js"></script>
+{% endblock scripts %}

@@ -14,19 +14,21 @@
 // specific language governing permissions and limitations under the License.
 //__END_LICENSE__
 
-var allTags;
+var allTags = undefined;
 
 function initializeTags() {
-    allTags = new Bloodhound({
-	  datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
-	  queryTokenizer: Bloodhound.tokenizers.whitespace,
-	  prefetch: {
-	      cache: false, // for now while we build up tag library
-	      ttl: 1,
-	      url: '/notes/tagsArray.json'
-	  }
-	});
-    allTags.initialize();
+    if (allTags == undefined){
+        allTags = new Bloodhound({
+    	  datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+    	  queryTokenizer: Bloodhound.tokenizers.whitespace,
+    	  prefetch: {
+    	      cache: false, // for now while we build up tag library
+    	      ttl: 1,
+    	      url: '/notes/tagsArray.json'
+    	  }
+    	});
+        allTags.initialize();
+    }
 }
 
 function initializeInput() {

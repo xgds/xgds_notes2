@@ -16,7 +16,14 @@
 
 var time_input;
 
-function initializeNotesForm() {
+function initializeNotesReference(app_label, model_type, object_id, event_time){
+    $('#id_app_label').val(app_label);
+    $('#id_model_type').val(model_type);
+    $('#id_object_id').val(object_id);
+    $('#id_event_time').val(event_time);
+}
+
+function initializeNotesForm(addNow) {
 //    notes.setTabOrder(['#id_content', '#id_tags_tag', '#save_note', 'fieldset.selects select']);
     
     time_input = $('form#create_note #id_event_time');
@@ -39,10 +46,12 @@ function initializeNotesForm() {
         }
     });
     
-    time_input.after($('<button name="Now" class="small">Now</button>').click(function(e) {
-        e.preventDefault();
-        set_event_time();
-    }));
+    if (addNow){
+	time_input.after($('<button name="Now" class="small">Now</button>').click(function(e) {
+	    e.preventDefault();
+	    set_event_time();
+	}));
+    }
 }
 
 

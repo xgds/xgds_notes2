@@ -24,6 +24,7 @@ import xgds_notes2.views as views
 urlpatterns = patterns('',
                        url(r'^review/?$', views.review, {}, 'xgds_notes_review'),
                        url(r'^record/?$', views.record, {}, 'xgds_notes_record'),
+                       url(r'^recordSimple/?$', views.recordSimple, {}, 'record_simple'),
                        url(r'^record/session/?$', views.editUserSession, {}, 'xgds_notes_edit_user_session'),
                        url(r'time.txt', views.serverTime, {}, 'server_time'),
                        url(r'^editTags/?$', views.editTags, {}, 'xgds_notes_edit_tags'),

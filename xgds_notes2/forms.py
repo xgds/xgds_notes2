@@ -53,6 +53,12 @@ class NoteForm(forms.ModelForm):
     event_time = forms.DateTimeField(input_formats=date_formats, required=False)
     extras = forms.CharField(widget=forms.HiddenInput(), required=False)
 
+    # for generic foreign key use
+    app_label = forms.CharField(widget=forms.HiddenInput(), required=False)
+    model_type = forms.CharField(widget=forms.HiddenInput(), required=False)
+    object_id = forms.IntegerField(widget=forms.HiddenInput(), required=False)
+    position_id = forms.IntegerField(widget=forms.HiddenInput(), required=False)
+
     # populate the event time with NOW if it is blank.
     def clean_event_time(self):
         etime = self.cleaned_data['event_time']

@@ -13,7 +13,6 @@
 # CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 #__END_LICENSE__
-
 from datetime import datetime, timedelta
 import itertools
 import json
@@ -25,6 +24,7 @@ from dateutil.parser import parse as dateparser
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.contrib.contenttypes.models import ContentType
 from django.views.decorators.cache import never_cache
 from django.http import HttpResponse
 
@@ -113,6 +113,11 @@ def record(request):
 
             data['author'] = request.user
             
+            if data['app_label'] and data['model_type']:
+                data['content_type'] = ContentType.objects.get(app_label=data['app_label'], model=data['model_type'])
+            data.pop('app_label')
+            data.pop('model_type')
+        
             tags = data.pop('tags')
             data = {str(k): v
                     for k, v in data.items()}
@@ -173,6 +178,62 @@ def record(request):
             )
     else:
         raise Exception("Request method %s not supported." % request.method)
+
+
+@login_required
+def recordSimple(request):
+    if request.method != 'POST':
+        return HttpResponse(json.dumps({'error': {'code': -32099,
+                                                  'message': 'You must post, cheater.'}
+                                        }),
+                            content_type='application/json')
+
+    form = NoteForm(request.POST)
+    if form.is_valid():
+        data = form.cleaned_data
+        data['author'] = request.user
+        data['content'] = str(data['content'])
+        
+        if data['app_label'] and data['model_type']:
+            data['content_type'] = ContentType.objects.get(app_label=data['app_label'], model=data['model_type'])
+        data.pop('app_label')
+        data.pop('model_type')
+            
+        data.pop('extras')
+        
+        tags = data.pop('tags')
+        NOTE_MODEL = Note.get()
+        note = NOTE_MODEL(**data)
+        note.creation_time = datetime.utcnow()
+        note.modification_time = datetime.utcnow()
+        if 'serverNow' in request.POST:
+            note.event_time = datetime.utcnow()
+        note.save()
+
+        if tags:
+            note.tags.set(*tags)
+
+        note = NOTE_MODEL.objects.get(id=note.id)
+        note.save()
+
+        if settings.XGDS_SSE:
+            json_data = json.dumps([note.toMapDict()], cls=DatetimeJsonEncoder)
+            channels = note.getChannels()
+            for channel in channels:
+                send_event('notes', json_data, channel)
+
+        response_data = {}
+        response_data['success'] = 'true'
+        response_data['event_time'] = note.event_time.isoformat()
+        response = HttpResponse(json.dumps(response_data),
+                                content_type='application/json')
+        return response
+    else:
+        return HttpResponse(json.dumps({'error': {'code': -32099,
+                                                  'message': 'problem submitting note',
+                                                  'data': form._get_errors()}
+                                        }),
+                            content_type='application/json')
 
 
 def getSortOrder():
