@@ -92,7 +92,7 @@ $(function() {
             url: note_submit_url,
             data: dataString,
             success: function(response) {
-                var printtime = iso_string;
+                var printtime = '';
                 try {
                     printtime = response['event_time'];
                     m = moment(new Date(response['event_time']));
