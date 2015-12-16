@@ -211,23 +211,19 @@ def recordSimple(request):
         note.save()
 
         if tags:
-            note.tags.set(*tags)
+            for t in tags:
+                tag = HierarchichalTag.objects.get(pk=int(t))
+                note.tags.add(tag)
+            note.save()
 
-        note = NOTE_MODEL.objects.get(id=note.id)
-        note.save()
-
+        json_data = json.dumps([note.toMapDict()], cls=DatetimeJsonEncoder)
         if settings.XGDS_SSE:
-            json_data = json.dumps([note.toMapDict()], cls=DatetimeJsonEncoder)
             channels = note.getChannels()
             for channel in channels:
                 send_event('notes', json_data, channel)
 
-        response_data = {}
-        response_data['success'] = 'true'
-        response_data['event_time'] = note.event_time.isoformat()
-        response = HttpResponse(json.dumps(response_data),
-                                content_type='application/json')
-        return response
+        return HttpResponse(json_data,
+                            content_type='application/json')
     else:
         return HttpResponse(json.dumps({'error': {'code': -32099,
                                                   'message': 'problem submitting note',
@@ -459,3 +455,19 @@ def importNotes(request):
             'errorstring': errors
         },
     )
+
+
+def getObjectNotes(request, app_label, model_type, obj_pk):
+    """
+    For a given object, get the notes on that object and return as a json dictionary from oldest to newest
+    """
+    ctype = ContentType.objects.get(app_label=app_label, model=model_type)
+    result = Note.get().objects.filter(content_type__pk = ctype.id, object_id=obj_pk).order_by('event_time', 'creation_time')
+    resultList = []
+    for n in result:
+        resultList.append(n.toMapDict())
+    json_data = json.dumps(resultList, cls=DatetimeJsonEncoder)
+    return HttpResponse(content=json_data,
+                        content_type="application/json")
+    
+    

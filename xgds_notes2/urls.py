@@ -39,5 +39,6 @@ urlpatterns = patterns('',
                        url(r'^deleteTag/(?P<tag_id>[\d]+)$', views.deleteTag, {}, 'xgds_notes_delete_tag'),
                        url(r'^tagsArray.json$', views.tagsJsonArray, {}, 'xgds_notes_tags_array'),
                        url(r'^import/?$', views.importNotes, {}, 'xgds_notes_import'),
+                       url(r'^notes/(?P<app_label>[\w]+)/(?P<model_type>[\w]+)/(?P<obj_pk>[\d]+)$', views.getObjectNotes, {}, 'xgds_notes_object_notes'),
                        
                        )

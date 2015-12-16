@@ -7,17 +7,14 @@
 		<input type="hidden" id="id_object_id" >
 		<input type="hidden" id="id_position_id" >
 		<div id="error_div" class="noteerrordiv">
-			<span id="error_icon" width="12"></span>
-			<span id="error_content" ></span>
+			<span id="error_icon">&nbsp;</span>
+			<span id="error_content"></span>
 		</div>
 		<div class="notecontainer" > 
-				<label for="id_content" class="notelabel ">Note:</label>
-				<textarea class="noteinput"  id="id_content" type="text" name="content" maxlength="500" style="height:50px;width:65%;margin-right:5px;"></textarea>
-			<div class="noteitem" > 
-				<label for="id_tags" class="notelabel">Tags:</label>
-	        	<input class="taginput" data-role="tagsinput" id="id_tags" name="tags" placeholder="Choose tags" type="text" />
-	        	<input id="save_note" type="submit" value="Save" class="mybutton noteSubmit small">
-	        </div>
+			<label for="id_content" class="notelabel ">Note:</label>
+			<textarea class="noteinput"  id="id_content" type="text" name="content" maxlength="500" style="height:50px;"></textarea>
+	        <input class="taginput" data-role="tagsinput" id="id_tags" name="tags" placeholder="Choose tags" type="text" />
+	        <input id="save_note" type="submit" value="Save" class="mybutton noteSubmit small">
         </div>
   </form>
 </div>

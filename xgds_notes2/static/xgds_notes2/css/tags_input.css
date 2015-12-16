@@ -1,5 +1,6 @@
 .bootstrap-tagsinput {
-    width: 100%;
+    width: auto;
+    margin-right: 5px;
 }
 
 .label-info {

@@ -25,6 +25,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.template.loader import get_template
 from django.template import Context
 
+from geocamUtil.loader import LazyGetModelByName
 from geocamUtil.models import AbstractEnumModel
 from geocamUtil.modelJson import modelToDict
 from geocamUtil.defaultSettings import HOSTNAME
@@ -248,12 +249,16 @@ class AbstractNote(models.Model):
 
         result['type'] = self.__class__.__name__
         result['author'] = self.getAuthorName()
-        result['role'] = self.role.display_name
+        if self.role:
+            result['role'] = self.role.display_name
+        else:
+            result['role'] = ''
+            
         result['event_time'] = self.adjustedEventTime()
         
         tags = self.tags.names()
         if tags:
-            result["tags"] = tags
+            result["tags"] = [t.encode('utf-8') for t in tags]
         else:
             result['tags'] = ''
         
@@ -350,3 +355,14 @@ class LocatedNote(AbstractNote):
         return result
 
 
+class NoteMixin(object):
+
+    @property
+    def notes(self):
+        ctype = ContentType.objects.get_for_model(self.__class__)
+        Note = LazyGetModelByName(getattr(settings, 'XGDS_NOTES_NOTE_MODEL'))
+
+        try:
+            return Note.get().objects.filter(content_type__pk = ctype.id, object_id=self.pk)
+        except:
+            return None

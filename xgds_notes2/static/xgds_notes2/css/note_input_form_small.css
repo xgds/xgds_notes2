@@ -1,0 +1,51 @@
+.notelabel {
+	width: 40px;
+	vertical-align: text-top;
+}
+
+.noteinput{
+	min-height:20px;
+	margin-right: 5px;
+	padding-bottom: 0px;
+	width: 50%;
+}
+
+.notediv {
+	padding-top:2px; 
+}
+
+.noteerrordiv {
+	/*float:left; */ 
+	height:20px;
+	padding-bottom:2px;
+	margin-top: -5px;
+}
+
+#error_icon {
+	display: inline-block;
+}
+
+#error_content {
+	font-size: 0.7em;
+	vertical-align:top;
+}
+
+blocky div label input{
+	display: inline-block !important;
+}
+
+.notecontainer {
+	display: flex;
+	align-content: stretch;
+	flex-wrap: wrap;
+	flex-flow: row wrap;
+	width: 100%;
+}
+
+.noteitem {
+	flex-basis: auto;
+}
+
+.noteitem.stretch {
+	align-self: stretch;
+}

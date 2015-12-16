@@ -55,18 +55,9 @@ $(function() {
         var contentVal = content_text.val();
 
         hideError();
-        var tagsId = 'input#id_tags';
-        var tagInput = parent.find(tagsId);
+        var tagInput = parent.find('input#id_tags');
         var tags = tagInput.val();
 
-//        if (tags == '') {
-//            var addtag = parent.find('input#id_tags_tag');
-//            // see if we have any contents in the tag that should be created as a tag
-//            if (addtag.val() != '' && addtag.val() != 'add a tag') {
-//                tagInput.addTag(addtag.val());
-//                tags = tagInput.val();
-//            }
-//        }
         if ((content == '') && (tags == '')) {
             content_text.focus();
             showError('Note must not be empty.');
@@ -77,6 +68,10 @@ $(function() {
         dataString = dataString + '&object_id=' + parent.find('#id_object_id').val();
         dataString = dataString + '&app_label=' + parent.find('#id_app_label').val();
         dataString = dataString + '&model_type=' + parent.find('#id_model_type').val();
+        dataString = dataString + '&position_id=' + parent.find('#id_position_id').val();
+        
+        var event_hidden = parent.find('hidden#id_event_time');
+        var event_timestring = event_hidden.val();
         try {
             if (event_timestring !== undefined){
                 dataString = dataString + '&event_time=' + event_timestring;
@@ -91,18 +86,16 @@ $(function() {
             type: 'POST',
             url: note_submit_url,
             data: dataString,
-            success: function(response) {
-                var printtime = '';
-                try {
-                    printtime = response['event_time'];
-                    m = moment(new Date(response['event_time']));
-                    printtime = m.format("MM/DD/YYYY HH:mm:ss");
-                } catch(err) {
-                    // pass
-                }
-                showSuccess('Saved ' + contentVal + ' ' + printtime);
+            success: function(data) {
+        	var content = data[0].content;
+        	if (content.length > 30){
+        	    content = content.substring(0, 30);
+        	}
+                showSuccess('Saved ' + content);
                 content_text.val('');
-//                tagInput.importTags('');
+                tagInput.tagsinput('removeAll');
+//                var note_table = parent.parent().parent().find('table');
+                theNotesTable.dataTable().fnAddData(data[0]);
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 if (errorThrown == '' && textStatus == 'error') {
