@@ -31,51 +31,62 @@ var noteColumns = [{ "mRender": function(data, type, full) {
 		 }
 	];
 
+
+var noteDefaultOptions = {
+	aoColumns: noteColumns,
+        bAutoWidth: true,
+        stateSave: true,
+        bPaginate: true,
+        iDisplayLength: -1, 
+        bLengthChange: true,
+        bSort: true,
+        bJQueryUI: false,
+        scrollY:  200,
+        searching: false,
+        paging: false,
+        ordering: false,
+        info: false,
+        fnCreatedRow: function(nRow, aData, iDataIndex) { // add image id to row
+    		$(nRow).attr('id', aData['id'])
+        }
+};
+
+
 /* 
  * Table View
  */
-function setupNotesTable(divID, tableID, initialData){
+function setupNotesTable(divID, table, initialData){
 	// initialize the table with json of existing data.
-	defaultOptions["aaData"] = initialData;
-	defaultOptions["aoColumns"] = noteColumns;
-	defaultOptions["scrollY"] = 200;
-	defaultOptions["searching"] = false;
-	defaultOptions["paging"] = false;
-	defaultOptions["ordering"] = false;
-	
-	defaultOptions["info"] = false;
-	defaultOptions["fnCreatedRow"] = function(nRow, aData, iDataIndex) { // add image id to row
-		$(nRow).attr('id', aData['id'])
-	}
-	
-	if ( ! $.fn.DataTable.isDataTable( '#' + tableID ) ) {
-	    theNotesTable = $('#' + tableID ).dataTable(defaultOptions);
-	}
-	
-	// handle resizing
-	var tableResizeTimeout;
-	$('#' + divID).resize(function() {
-	    // debounce
-	    if ( tableResizeTimeout ) {
-		clearTimeout( tableResizeTimeout );
-	    }
+	if ( ! $.fn.DataTable.isDataTable( table) ) {
+	    noteDefaultOptions["aaData"] = initialData;
+	    var theNotesTable = $(table).dataTable(noteDefaultOptions);
+	 // handle resizing
+	    var tableResizeTimeout;
+		$('#' + divID).resize(function() {
+		    // debounce
+		    if ( tableResizeTimeout ) {
+			clearTimeout( tableResizeTimeout );
+		    }
 
-	    tableResizeTimeout = setTimeout( function() {
-		updateTableScrollY(divID, tableID);
-	    }, 30 );
-	});
-	
+		    tableResizeTimeout = setTimeout( function() {
+			updateTableScrollY(divID, table.id);
+		    }, 30 );
+		});
+	} else {
+	    // set the data for existing datatable
+	    var dt = $(table).dataTable();
+	    dt.fnClearTable();
+	    dt.fnAddData(initialData);
+	}
 }
 
-function getNotesForObject(app_label, model_type, object_id, divID, tableID){
+function getNotesForObject(app_label, model_type, object_id, divID, table){
     url = '/notes/notes/' + app_label + '/' + model_type + '/' + object_id;
     $.ajax({url: url,
 	    type: 'POST',
 	    dataType: 'json'
 	}).success(function(data) {
-	    if (data.length > 0){
-		setupNotesTable(divID, tableID, data)
-	    }
+	    setupNotesTable(divID, table, data)
 	}).error(function(data) {
 	    console.log('no notes');
 	});

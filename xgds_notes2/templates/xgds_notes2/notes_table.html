@@ -5,8 +5,8 @@
             <th style="width:10mm;">Select</th>
             <th>Time</th>
             <th>Author</th>
-            <th>Tags</th>
             <th>Content</th>
+            <th>Tags</th>
         </tr>
     </thead>
     <tbody>
@@ -22,10 +22,10 @@
         	{{ note.author.get_full_name }}
         </td>
 		<td>
-    		{% for t in note.tags.names %}{% if not forloop.first %},&nbsp;{% endif %}{{ t|safe }}{% endfor %}   	
-        </td>
-		<td>
         	{{ note.content|safe }}
+        </td>
+        <td>
+    		{% for t in note.tags.names %}{% if not forloop.first %},&nbsp;{% endif %}{{ t|safe }}{% endfor %}   	
         </td>
         </tr>
         {% endfor %}

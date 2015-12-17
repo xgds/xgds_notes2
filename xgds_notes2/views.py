@@ -44,6 +44,7 @@ from treebeard.mp_tree import MP_Node
 
 from xgds_notes2.forms import NoteForm, UserSessionForm, TagForm, ImportNotesForm
 from models import HierarchichalTag
+from httplib2 import ServerNotFoundError
 
 if settings.XGDS_SSE:
     from sse_wrapper.events import send_event
@@ -93,64 +94,87 @@ def editUserSession(request):
             },
         )
 
+def populateNoteData(request, form):
+    """ Populate the basic data dictionary for a new note from a submitted form
+    Form must already be valid
+    """
+    data = form.cleaned_data
+
+    # Hijack the UserSessionForm's validation method to translate enumerations to objects in session data
+    session_form = UserSessionForm()
+    session_data = {k: session_form.fields[k].clean(v)
+                    for k, v in request.session['notes_user_session'].iteritems()
+                    if k in session_form.fields}
+    data.update(session_data)
+
+    data['author'] = request.user
+    
+    if data['app_label'] and data['model_type']:
+        data['content_type'] = ContentType.objects.get(app_label=data['app_label'], model=data['model_type'])
+    data.pop('app_label')
+    data.pop('model_type')
+    tags = data.pop('tags')
+    
+    #TODO deal with extras
+    data.pop('extras')
+
+    return data, tags
+
+
+def linkTags(note, tags):
+    if tags:
+        note.tags.clear()
+        for t in tags:
+            tag = HierarchichalTag.objects.get(pk=int(t))
+            note.tags.add(tag)
+        note.save()
+
+def createNoteFromData(data, delay=True, serverNow=False):
+    NOTE_MODEL = Note.get()
+    note = NOTE_MODEL(**data)
+    for (key, value) in data.items():
+        setattr(note, key, value)
+    note.creation_time = datetime.utcnow()
+    note.modification_time = note.creation_time
+
+    if delay:
+        # this is to handle delay state shifting of event time by default it does not change event time
+        note.event_time = note.calculateDelayedEventTime()
+    elif serverNow:
+        note.event_time = note.creation_time
+    note.save()
+    return note
+
+def broadcastNote(note):
+    """
+    Send the json note information out on SSE
+    return json note information regardless
+    """
+    json_data = json.dumps([note.toMapDict()], cls=DatetimeJsonEncoder)
+
+    if settings.XGDS_SSE:
+        channels = note.getChannels()
+        for channel in channels:
+            send_event('notes', json_data, channel)
+    return json_data
+    
 @login_required
 def record(request):
     if request.method == 'POST':
         form = NoteForm(request.POST)
         if form.is_valid():
-#             note = form.save(commit=False)
-            data = form.cleaned_data
-
-            last_note_values = {}
-            request.session['last_note_values'] = last_note_values
-
-            # Hijack the UserSessionForm's validation method to translate enumerations to objects in session data
-            session_form = UserSessionForm()
-            session_data = {k: session_form.fields[k].clean(v)
-                            for k, v in request.session['notes_user_session'].iteritems()
-                            if k in session_form.fields}
-            data.update(session_data)
-
-            data['author'] = request.user
+            data, tags = populateNoteData(request, form)
             
-            if data['app_label'] and data['model_type']:
-                data['content_type'] = ContentType.objects.get(app_label=data['app_label'], model=data['model_type'])
-            data.pop('app_label')
-            data.pop('model_type')
-        
-            tags = data.pop('tags')
             data = {str(k): v
                     for k, v in data.items()}
 
-            del data['extras']
-            NOTE_MODEL = Note.get()
-            note = NOTE_MODEL(**data)
-            for (key, value) in data.items():
-                setattr(note, key, value)
-            note.creation_time = datetime.utcnow()
-            note.modification_time = datetime.utcnow()
-
-            # this is to handle delay state shifting of event time by default it does not change event time
-            note.event_time = note.calculateDelayedEventTime()
-            note.save()
-            
-            if tags:
-                note.tags.clear()
-                for t in tags:
-                    tag = HierarchichalTag.objects.get(pk=int(t))
-                    note.tags.add(tag)
-
-            if settings.XGDS_SSE:
-                json_data = json.dumps([note.toMapDict()], cls=DatetimeJsonEncoder)
-                channels = note.getChannels()
-                for channel in channels:
-                    send_event('notes', json_data, channel)
-
+            note = createNoteFromData(data)
+            linkTags(note, tags)
+            broadcastNote(note)
             return redirect('xgds_notes_record')
         else:
             return HttpResponse(str(form.errors), status=400)  # Bad Request
     elif request.method == 'GET':
-
         if 'notes_user_session' not in request.session:
             return redirect('xgds_notes_edit_user_session')
         else:
@@ -160,7 +184,6 @@ def record(request):
             user_session = {field.name: field.field.clean(field.data)
                             for field in usersession_form}
 
-            #notes_list = [ NoteForm(instance=n) for n in Note.get().objects.with_drafts().filter(author=request.user).order_by('-creation_time') ]
             notes_list = Note.get().objects.filter(author=request.user, creation_time__gte=datetime.utcnow() - timedelta(hours=12)).order_by('-creation_time')
             # filter results to notes CREATED < 12 hours old.
 #             notes_list = notes_list.filter(creation_time__gte=datetime.utcnow() - timedelta(hours=12))
@@ -190,37 +213,29 @@ def recordSimple(request):
 
     form = NoteForm(request.POST)
     if form.is_valid():
-        data = form.cleaned_data
-        data['author'] = request.user
-        data['content'] = str(data['content'])
-        
-        if data['app_label'] and data['model_type']:
-            data['content_type'] = ContentType.objects.get(app_label=data['app_label'], model=data['model_type'])
-        data.pop('app_label')
-        data.pop('model_type')
+        data, tags = populateNoteData(request, form)
             
-        data.pop('extras')
+#         data = form.cleaned_data
+#         data['author'] = request.user
+#         data['content'] = str(data['content'])
+#         
+#         # Hijack the UserSessionForm's validation method to translate enumerations to objects in session data
+#         session_form = UserSessionForm()
+#         session_data = {k: session_form.fields[k].clean(v)
+#                         for k, v in request.session['notes_user_session'].iteritems()
+#                         if k in session_form.fields}
+#         data.update(session_data)
+#         
+#         if data['app_label'] and data['model_type']:
+#             data['content_type'] = ContentType.objects.get(app_label=data['app_label'], model=data['model_type'])
+#         data.pop('app_label')
+#         data.pop('model_type')
+#             
+#         data.pop('extras')
         
-        tags = data.pop('tags')
-        NOTE_MODEL = Note.get()
-        note = NOTE_MODEL(**data)
-        note.creation_time = datetime.utcnow()
-        note.modification_time = datetime.utcnow()
-        if 'serverNow' in request.POST:
-            note.event_time = datetime.utcnow()
-        note.save()
-
-        if tags:
-            for t in tags:
-                tag = HierarchichalTag.objects.get(pk=int(t))
-                note.tags.add(tag)
-            note.save()
-
-        json_data = json.dumps([note.toMapDict()], cls=DatetimeJsonEncoder)
-        if settings.XGDS_SSE:
-            channels = note.getChannels()
-            for channel in channels:
-                send_event('notes', json_data, channel)
+        note = createNoteFromData(data, False, 'serverNow' in request.POST)
+        linkTags(note, tags)
+        json_data = broadcastNote(note)
 
         return HttpResponse(json_data,
                             content_type='application/json')
