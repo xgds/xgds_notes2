@@ -74,7 +74,7 @@ function setupNotesTable(divID, table, initialData){
 		});
 	} else {
 	    // set the data for existing datatable
-	    var dt = $(table).dataTable();
+	    var dt = table.dataTable();
 	    dt.fnClearTable();
 	    dt.fnAddData(initialData);
 	}

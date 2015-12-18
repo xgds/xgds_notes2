@@ -94,8 +94,10 @@ $(function() {
                 showSuccess('Saved ' + content);
                 content_text.val('');
                 tagInput.tagsinput('removeAll');
-//                var note_table = parent.parent().parent().find('table');
-                theNotesTable.dataTable().fnAddData(data[0]);
+                var theNotesTable = parent.parent().parent().find('table#notes_list');
+                if (theNotesTable.length > 0){
+                    theNotesTable.dataTable().fnAddData(data[0]);
+                }
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 if (errorThrown == '' && textStatus == 'error') {
