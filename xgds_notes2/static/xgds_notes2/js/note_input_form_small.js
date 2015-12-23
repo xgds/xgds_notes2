@@ -21,40 +21,42 @@ var options = {
         timeout: 3000
 };
 
-function showSuccess(errorMessage) {
-    $('#error_content').text(errorMessage);
-    $('#error_icon').removeClass();
-    $('#error_icon').addClass('ui-icon');
-    $('#error_icon').addClass('ui-icon-circle-check');
-    $('#error_div').show();
+function showSuccess(errorMessage, parent) {
+    parent.find('#error_content').text(errorMessage);
+    parent.find('#error_icon').removeClass();
+    parent.find('#error_icon').addClass('ui-icon');
+    parent.find('#error_icon').addClass('ui-icon-circle-check');
+    parent.find('#error_div').show();
 }
 
-function showError(errorMessage) {
-    $('#error_content').text(errorMessage);
-    $('#error_icon').removeClass();
-    $('#error_icon').addClass('ui-icon');
-    $('#error_icon').addClass('ui-icon-circle-close');
-    $('#error_div').show();
+function showError(errorMessage, parent) {
+    parent.find('#error_content').text(errorMessage);
+    parent.find('#error_icon').removeClass();
+    parent.find('#error_icon').addClass('ui-icon');
+    parent.find('#error_icon').addClass('ui-icon-circle-close');
+    parent.find('#error_div').show();
 }
 
-function hideError() {
-    $('#error_div').hide();
+function hideError(parent) {
+    parent.find('#error_div').hide();
 }
 
 /*
  * Form submission
  *
  */
-$(function() {
+function hookNoteSubmit() {
     $('.noteSubmit').on('click', function(e) {
         e.preventDefault();
         var parent = $(this).closest('form');
+        var containerDiv = parent.parent().parent();
+        
         // validate and process form here
         var content_text = parent.find('textarea#id_content');
         var content = content_text.serialize(); 
         var contentVal = content_text.val();
 
-        hideError();
+        hideError(containerDiv);
         var tagInput = parent.find('input#id_tags');
         var tags = tagInput.val();
 
@@ -82,6 +84,7 @@ $(function() {
         catch(err) {
             dataString = dataString + "&serverNow=true";
         }
+        
         $.ajax({
             type: 'POST',
             url: note_submit_url,
@@ -91,55 +94,29 @@ $(function() {
         	if (content.length > 30){
         	    content = content.substring(0, 30);
         	}
-                showSuccess('Saved ' + content);
+                showSuccess('Saved ' + content, containerDiv);
                 content_text.val('');
                 tagInput.tagsinput('removeAll');
-                var theNotesTable = parent.parent().parent().find('table#notes_list');
+                var theNotesTable = containerDiv.find('table#notes_list');
                 if (theNotesTable.length > 0){
-                    theNotesTable.dataTable().fnAddData(data[0]);
+                    if ( !$.fn.DataTable.isDataTable( theNotesTable) ) {
+                	setupNotesTable(containerDiv.id, theNotesTable, data[0]);
+                    } else {
+                	theNotesTable.dataTable().fnAddData(data[0]);
+                    }
                 }
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 if (errorThrown == '' && textStatus == 'error') {
-                    showError('Lost server connection');
+                    showError('Lost server connection', containerDiv);
                 } else {
-                    showError(textStatus + ' ' + errorThrown);
+                    showError(textStatus + ' ' + errorThrown, containerDiv);
                 }
                 console.log(jqXHR.getAllResponseHeaders());
             }
 
         });
     });
-});
-
-/*
- * // pre-submit callback function showRequest(formData, jqForm, options) { //
- * formData is an array; here we use $.param to convert it to a string to
- * display it // but the form plugin does this for you automatically when it
- * submits the data var queryString = $.param(formData); // jqForm is a jQuery
- * object encapsulating the form element. To access the // DOM element for the
- * form do this: // var formElement = jqForm[0];
- *
- * alert('About to submit: \n\n' + queryString); // here we could return false
- * to prevent the form from being submitted; // returning anything other than
- * false will allow the form submit to continue return true; }
- */
-
-//post-submit callback
-function showResponse(responseText, statusText, xhr, $form) {
-    // for normal html responses, the first argument to the success callback
-    // is the XMLHttpRequest object's responseText property
-
-    // if the ajaxForm method was passed an Options Object with the dataType
-    // property set to 'xml' then the first argument to the success callback
-    // is the XMLHttpRequest object's responseXML property
-
-    // if the ajaxForm method was passed an Options Object with the dataType
-    // property set to 'json' then the first argument to the success callback
-    // is the json data object returned by the server
-
-    alert('status: ' + statusText + '\n\nresponseText: \n' + responseText +
-    '\n\nThe output div should have already been updated with the responseText.');
 }
 
 function setupNotesUI(){
@@ -148,6 +125,8 @@ function setupNotesUI(){
     
     var $tagsElems = $(".tagsinput");
     $tagsElems.resizable();
+    
+    hookNoteSubmit();
     
     if (!_.isUndefined(xgds_video.displaySegments)){
         for (var source in xgds_video.displaySegments) {

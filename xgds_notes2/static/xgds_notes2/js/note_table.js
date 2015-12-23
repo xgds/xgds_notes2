@@ -46,6 +46,9 @@ var noteDefaultOptions = {
         paging: false,
         ordering: false,
         info: false,
+        language: {
+            emptyTable: "No notes"
+          },
         fnCreatedRow: function(nRow, aData, iDataIndex) { // add image id to row
     		$(nRow).attr('id', aData['id'])
         }
@@ -76,7 +79,9 @@ function setupNotesTable(divID, table, initialData){
 	    // set the data for existing datatable
 	    var dt = table.dataTable();
 	    dt.fnClearTable();
-	    dt.fnAddData(initialData);
+	    if (initialData.length > 0){
+		dt.fnAddData(initialData);
+	    }
 	}
 }
 
@@ -86,8 +91,9 @@ function getNotesForObject(app_label, model_type, object_id, divID, table){
 	    type: 'POST',
 	    dataType: 'json'
 	}).success(function(data) {
-	    setupNotesTable(divID, table, data)
+	    setupNotesTable(divID, table, data);
 	}).error(function(data) {
+	    setupNotesTable(divID, table, []);
 	    console.log('no notes');
 	});
 }

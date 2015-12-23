@@ -31,9 +31,12 @@ function initializeTags() {
     }
 }
 
-function initializeInput() {
+function initializeInput(input) {
+    if (input == undefined){
+	input = $('.taginput');
+    }
     
-    $('.taginput').tagsinput({
+    $(input).tagsinput({
 	  itemValue: 'id',
 	  itemText: 'name',
 //	  confirmKeys: [13, 44],
