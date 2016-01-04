@@ -48,7 +48,8 @@ from httplib2 import ServerNotFoundError
 
 if settings.XGDS_SSE:
     from sse_wrapper.events import send_event
-
+    
+UNSET_SESSION = 'Unset Session'
 
 Note = LazyGetModelByName(getattr(settings, 'XGDS_NOTES_NOTE_MODEL'))
 Tag = LazyGetModelByName(getattr(settings, 'XGDS_NOTES_TAG_MODEL'))
@@ -98,14 +99,18 @@ def populateNoteData(request, form):
     """ Populate the basic data dictionary for a new note from a submitted form
     Form must already be valid
     """
+    errors = []
     data = form.cleaned_data
 
     # Hijack the UserSessionForm's validation method to translate enumerations to objects in session data
-    session_form = UserSessionForm()
-    session_data = {k: session_form.fields[k].clean(v)
-                    for k, v in request.session['notes_user_session'].iteritems()
-                    if k in session_form.fields}
-    data.update(session_data)
+    if 'notes_user_session' in request.session.keys():
+        session_form = UserSessionForm()
+        session_data = {k: session_form.fields[k].clean(v)
+                        for k, v in request.session['notes_user_session'].iteritems()
+                        if k in session_form.fields}
+        data.update(session_data)
+    else:
+        errors.append(UNSET_SESSION)
 
     data['author'] = request.user
     
@@ -118,7 +123,7 @@ def populateNoteData(request, form):
     #TODO deal with extras
     data.pop('extras')
 
-    return data, tags
+    return data, tags, errors
 
 
 def linkTags(note, tags):
@@ -163,7 +168,7 @@ def record(request):
     if request.method == 'POST':
         form = NoteForm(request.POST)
         if form.is_valid():
-            data, tags = populateNoteData(request, form)
+            data, tags, errors = populateNoteData(request, form)
             
             data = {str(k): v
                     for k, v in data.items()}
@@ -213,26 +218,7 @@ def recordSimple(request):
 
     form = NoteForm(request.POST)
     if form.is_valid():
-        data, tags = populateNoteData(request, form)
-            
-#         data = form.cleaned_data
-#         data['author'] = request.user
-#         data['content'] = str(data['content'])
-#         
-#         # Hijack the UserSessionForm's validation method to translate enumerations to objects in session data
-#         session_form = UserSessionForm()
-#         session_data = {k: session_form.fields[k].clean(v)
-#                         for k, v in request.session['notes_user_session'].iteritems()
-#                         if k in session_form.fields}
-#         data.update(session_data)
-#         
-#         if data['app_label'] and data['model_type']:
-#             data['content_type'] = ContentType.objects.get(app_label=data['app_label'], model=data['model_type'])
-#         data.pop('app_label')
-#         data.pop('model_type')
-#             
-#         data.pop('extras')
-        
+        data, tags, errors = populateNoteData(request, form)
         note = createNoteFromData(data, False, 'serverNow' in request.POST)
         linkTags(note, tags)
         json_data = broadcastNote(note)
