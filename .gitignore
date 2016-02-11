@@ -9,3 +9,4 @@
 /static/css/*.r*.css
 /xgds_notes2/build
 TEST
+migrations/
