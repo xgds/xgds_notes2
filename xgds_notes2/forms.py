@@ -15,6 +15,7 @@
 #__END_LICENSE__
 
 import datetime
+import pytz
 
 from django import forms
 from django.conf import settings
@@ -48,7 +49,7 @@ class NoteForm(forms.ModelForm):
 
     date_formats = list(forms.DateTimeField.input_formats) + [
         '%Y/%m/%d %H:%M:%S',
-        '%Y/%m/%d %H:%M:%S UTC',
+        '%Y/%m/%d %H:%M:%S UTC'
     ]
     event_time = forms.DateTimeField(input_formats=date_formats, required=False)
     extras = forms.CharField(widget=forms.HiddenInput(), required=False)
@@ -63,7 +64,7 @@ class NoteForm(forms.ModelForm):
     def clean_event_time(self):
         etime = self.cleaned_data['event_time']
         if not etime:
-            rightnow = datetime.datetime.utcnow()
+            rightnow = datetime.datetime.now(pytz.utc)
             return rightnow
         return etime
 

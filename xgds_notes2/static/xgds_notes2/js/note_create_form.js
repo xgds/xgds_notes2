@@ -68,7 +68,7 @@ function set_event_time() {
         server_time_url,
         {},
         function(data) {
-            time_input.attr('value', data);
+            time_input.attr('value', getLocalTimeString(data, serverTimezone));
             time_input.attr({disabled: false});
         },
         'text'

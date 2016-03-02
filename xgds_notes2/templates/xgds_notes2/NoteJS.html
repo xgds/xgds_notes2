@@ -2,6 +2,7 @@
 	    server_time_url = "{% url 'server_time' %}";
 	    note_submit_url = "{% url 'record_simple' %}";
 </script>
+{% include "xgds_core/timeJS.html" %}
 <script language="javascript" type="text/javascript" src="{{ EXTERNAL_URL }}bootstrap/dist/js/bootstrap.min.js"></script>
 <script language="javascript" type="text/javascript" src="{{ EXTERNAL_URL }}typeahead.js/dist/typeahead.bundle.min.js"></script>
 <script language="javascript" type="text/javascript" src="{{ EXTERNAL_URL }}bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js"></script>

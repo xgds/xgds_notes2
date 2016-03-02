@@ -13,7 +13,7 @@
 # CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 #__END_LICENSE__
-from datetime import datetime
+from django.utils import timezone
 
 from django.db import models
 from django.db.models.query import QuerySet
@@ -167,8 +167,9 @@ class AbstractNote(models.Model):
     show_on_map = models.BooleanField(default=False) # broadcast this note on the map by default
 
     event_time = models.DateTimeField(null=True, blank=False)
-    creation_time = models.DateTimeField(blank=True, default=datetime.utcnow(), editable=False)
-    modification_time = models.DateTimeField(blank=True, default=datetime.utcnow(), editable=False)
+    event_timezone = models.CharField(null=True, blank=False, max_length=128)
+    creation_time = models.DateTimeField(blank=True, default=timezone.now, editable=False)
+    modification_time = models.DateTimeField(blank=True, default=timezone.now, editable=False)
 
     author = models.ForeignKey(User)
     role = models.ForeignKey(Role, null=True)

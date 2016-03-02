@@ -2,7 +2,6 @@
 {% block siteSection %}Record {{settings.XGDS_NOTES_MONIKER}}{% endblock %}
 
 {% load tz %}
-{% load tz_convert %}
 
 {% block content %}
 <p text-align="right">You are {{ user.username }} (at {{ user_session.role }}, {{ user_session.location }}) [<a href="{% url 'xgds_notes_edit_user_session' %}" >change role/location</a>]</p>
@@ -24,14 +23,44 @@
 {% endblock jsInit %}
 
 {% block scripts %}
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 	    server_time_url = "{% url 'server_time' %}";
+	    serverTimezone = "{{TIME_ZONE}}";
 </script>
 <script src="{{ EXTERNAL_URL }}jquery/dist/jquery.min.js"></script>
-<script language="javascript" type="text/javascript" src="{{ EXTERNAL_URL }}jquery-ui/jquery-ui.min.js"></script>
-<script language="javascript" type="text/javascript" src="{{ EXTERNAL_URL }}bootstrap/dist/js/bootstrap.min.js"></script>
-<script language="javascript" type="text/javascript" src="{{ EXTERNAL_URL }}typeahead.js/dist/typeahead.bundle.min.js"></script>
-<script language="javascript" type="text/javascript" src="{{ EXTERNAL_URL }}bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js"></script>
+<script type="text/javascript" src="{{ EXTERNAL_URL }}jquery-ui/jquery-ui.min.js"></script>
+{% include "xgds_core/timeJS.html" %}
+<script type="text/javascript" src="{{ EXTERNAL_URL }}bootstrap/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="{{ EXTERNAL_URL }}typeahead.js/dist/typeahead.bundle.min.js"></script>
+<script type="text/javascript" src="{{ EXTERNAL_URL }}bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/note_create_form.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/tags_input.js"></script>
+<script type="text/javascript">
+$('#save_note').click(function(event) {
+	event.preventDefault();
+    var theForm = $("#create_note");
+	var postData = theForm.serializeArray();
+	// update the date to be in utc
+	//moment.tz.setDefault(app.getTimeZone());
+	//var tzified = moment.tz(postData[2].value, 'MM/DD/YYYY HH:mm', serverTimezone);
+	var tzified = getUTCTime(postData[0].value, serverTimezone);
+	var theUtc = tzified.utc().format('YYYY/MM/DD HH:mm:ss') + ' UTC';
+	postData[0].value = theUtc;
+    $.ajax(
+    {
+        url: "{% url 'xgds_notes_record' %}",
+        type: "POST",
+        dataType: 'json',
+        data: postData,
+        success: function(data)
+        {
+        	console.log("yay");
+        },
+        error: function(data)
+        {
+        	console.log("boo");
+        }
+    });
+});
+</script>
 {% endblock scripts %}

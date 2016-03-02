@@ -43,6 +43,7 @@ from geocamTrack.views import getClosestPosition
 from treebeard.mp_tree import MP_Node
 
 from xgds_notes2.forms import NoteForm, UserSessionForm, TagForm, ImportNotesForm
+from xgds_core.views import getTimeZone
 from models import HierarchichalTag
 from httplib2 import ServerNotFoundError
 
@@ -57,7 +58,7 @@ Resource = LazyGetModelByName(settings.GEOCAM_TRACK_RESOURCE_MODEL)
 
 def serverTime(request):
     return HttpResponse(
-        datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
+        datetime.now(pytz.utc).strftime('%Y-%m-%d %H:%M:%S'),
         content_type="text"
     )
     
@@ -139,14 +140,15 @@ def createNoteFromData(data, delay=True, serverNow=False):
     note = NOTE_MODEL(**data)
     for (key, value) in data.items():
         setattr(note, key, value)
-    note.creation_time = datetime.utcnow()
+    note.creation_time = datetime.now(pytz.utc)
     note.modification_time = note.creation_time
 
     if delay:
         # this is to handle delay state shifting of event time by default it does not change event time
-        note.event_time = note.calculateDelayedEventTime()
+        note.event_time = note.calculateDelayedEventTime(data['event_time'])
     elif serverNow:
         note.event_time = note.creation_time
+    note.event_timezone = getTimeZone(note.event_time)
     note.save()
     return note
 
@@ -175,8 +177,10 @@ def record(request):
 
             note = createNoteFromData(data)
             linkTags(note, tags)
-            broadcastNote(note)
-            return redirect('xgds_notes_record')
+            jsonNote = broadcastNote(note)
+            return HttpResponse(jsonNote,
+                                content_type='application/json')
+            #return redirect('xgds_notes_record')
         else:
             return HttpResponse(str(form.errors), status=400)  # Bad Request
     elif request.method == 'GET':
@@ -189,9 +193,9 @@ def record(request):
             user_session = {field.name: field.field.clean(field.data)
                             for field in usersession_form}
 
-            notes_list = Note.get().objects.filter(author=request.user, creation_time__gte=datetime.utcnow() - timedelta(hours=12)).order_by('-creation_time')
+            notes_list = Note.get().objects.filter(author=request.user, creation_time__gte=datetime.now(pytz.utc) - timedelta(hours=12)).order_by('-creation_time')
             # filter results to notes CREATED < 12 hours old.
-#             notes_list = notes_list.filter(creation_time__gte=datetime.utcnow() - timedelta(hours=12))
+#             notes_list = notes_list.filter(creation_time__gte=datetime.now(pytz.utc) - timedelta(hours=12))
 
             return render(
                 request,
@@ -430,8 +434,8 @@ def doImportNotes(request, sourceFile, tz, resource):
         
         NOTE_MODEL = Note.get()
         note = NOTE_MODEL(**row)
-        note.creation_time = datetime.utcnow()
-        note.modification_time = datetime.utcnow()
+        note.creation_time = datetime.now(pytz.utc)
+        note.modification_time = datetime.now(pytz.utc)
         
         if resource:
             note.position = getClosestPosition(timestamp=note.event_time, resource=resource)
