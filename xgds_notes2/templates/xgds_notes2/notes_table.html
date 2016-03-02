@@ -1,8 +1,9 @@
-
+{% load tz %}
 <table id="notes_list" class="notes_list display" width="100%">
     <thead>
         <tr>
-            <th style="width:10mm;">Select</th>
+            <!-- <th style="width:10mm;">Select</th>
+             -->
             <th>Time</th>
             <th>Author</th>
             <th>Content</th>
@@ -12,9 +13,9 @@
     <tbody>
         {% for note in notes_list %}
         <tr id="note_{{note.id}}">
-        <td class="actions">
-            <input type="checkbox" class="select" id="{{note.id}}__select" name="{{note.id}}__select">{% if note.draft %}<span class='draftspan'>(draft)</span>{% endif %}
-        </td>
+        <!-- <td class="actions">
+            <input type="checkbox" class="select" id="{{note.id}}__select" name="{{note.id}}__select">
+        </td> -->
         <td>
         	{% timezone note.event_timezone %}{{note.event_time|date:"Y-m-d H:i e"}}{% endtimezone %} 
         </td>

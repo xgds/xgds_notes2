@@ -4,7 +4,7 @@
 {% load tz %}
 
 {% block content %}
-<p text-align="right">You are {{ user.username }} (at {{ user_session.role }}, {{ user_session.location }}) [<a href="{% url 'xgds_notes_edit_user_session' %}" >change role/location</a>]</p>
+<p text-align="right">You are {{ user.username }} ({% for key, value in user_session.items %}{{ value }}, {% endfor %}) [<a href="{% url 'xgds_notes_edit_user_session' %}" >change role/location</a>]</p>
 <form id="create_note" action="{% url 'xgds_notes_record' %}" method="post">
 	<table>
     {{ form.as_table }}
@@ -35,7 +35,18 @@
 <script type="text/javascript" src="{{ EXTERNAL_URL }}bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/note_create_form.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/tags_input.js"></script>
+  	<script type="text/javascript" src="{{ EXTERNAL_URL }}datatables/media/js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}geocamUtil/js/datatable_helpers.js"></script>
+
 <script type="text/javascript">
+clearForm = function(){
+	var tagInput = $("#create_note").find('input#id_tags');
+	tagInput.tagsinput('removeAll');
+	
+	$("#create_note").find('input#id_event_time').val('');
+	$("#create_note").find('textarea#id_content').val('');
+}
+
 $('#save_note').click(function(event) {
 	event.preventDefault();
     var theForm = $("#create_note");
@@ -54,13 +65,42 @@ $('#save_note').click(function(event) {
         data: postData,
         success: function(data)
         {
-        	console.log("yay");
+        	clearForm();
+        	var newdict = [];
+        	var n = data[0];
+        	//newdict['id'] = n.id;
+        	newdict.push(getLocalTimeString(n.event_time, n.event_timezone, 'YYYY-MM-DD HH:mm z'));
+        	newdict.push(n.author);
+        	newdict.push(n.content);
+        	newdict.push(n.tags);
+        	
+        	noteTable.fnAddData(newdict);
         },
         error: function(data)
         {
         	console.log("boo");
         }
     });
+});
+
+$(document).ready( function () {
+	 /* defaultOptions['aoColumnDefs'] = [
+                                       {
+                                           aTargets: ['name'],
+                                           sWidth: '285px',
+                                       },
+                                       {
+                                           aTargets: ['xls','kml', 'detail_doc', ''],
+                                           bSortable: false,
+                                       },
+                                   ];
+     defaultOptions['order'] =  [[ 5, "desc" ]]; */
+     defaultOptions['order'] = [[0, 'desc']];
+
+
+ noteTable = $('#notes_list').dataTable(defaultOptions);
+ $(window).resize(function(){ noteTable.fnAdjustColumnSizing(); });
+ initializeCheckbox();
 });
 </script>
 {% endblock scripts %}

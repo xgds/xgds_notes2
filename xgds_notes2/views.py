@@ -137,6 +137,10 @@ def linkTags(note, tags):
 
 def createNoteFromData(data, delay=True, serverNow=False):
     NOTE_MODEL = Note.get()
+    print data
+    empty_keys = [k for k,v in data.iteritems() if v is None]
+    for k in empty_keys:
+        del data[k]
     note = NOTE_MODEL(**data)
     for (key, value) in data.items():
         setattr(note, key, value)
@@ -170,7 +174,7 @@ def record(request):
     if request.method == 'POST':
         form = NoteForm(request.POST)
         if form.is_valid():
-            data, tags, errors = populateNoteData(request, form)
+            data, tags, errors = getClassByName(settings.XGDS_NOTES_POPULATE_NOTE_DATA)(request, form)
             
             data = {str(k): v
                     for k, v in data.items()}
@@ -178,8 +182,12 @@ def record(request):
             note = createNoteFromData(data)
             linkTags(note, tags)
             jsonNote = broadcastNote(note)
-            return HttpResponse(jsonNote,
-                                content_type='application/json')
+            if not settings.XGDS_SSE:
+                return HttpResponse(jsonNote,
+                                    content_type='application/json')
+            else:
+                return HttpResponse(json.dumps({'success': 'true'}), content_type='application/json')
+
             #return redirect('xgds_notes_record')
         else:
             return HttpResponse(str(form.errors), status=400)  # Bad Request
@@ -222,7 +230,7 @@ def recordSimple(request):
 
     form = NoteForm(request.POST)
     if form.is_valid():
-        data, tags, errors = populateNoteData(request, form)
+        data, tags, errors = getClassByName(settings.XGDS_NOTES_POPULATE_NOTE_DATA)(request, form)
         note = createNoteFromData(data, False, 'serverNow' in request.POST)
         linkTags(note, tags)
         json_data = broadcastNote(note)
