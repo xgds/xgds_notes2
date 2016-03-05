@@ -72,11 +72,14 @@ XGDS_NOTES_NOTES_CHANNEL = 'live/notes'
 
 XGDS_NOTES_TAG_TREE_URL = '/notes/tagsTree/'
 
+# These are the columns that will show by default for all note tables.
+XGDS_NOTES_TABLE_DEFAULT_COLUMNS = ['event_time', 'author', 'content', 'tags']
+
 XGDS_NOTES_BOWER_INSTALLED_APPS = ('moment',
                                    'lodash#3.10.0',
                                    'fancytree=fancytree',
                                    'jquery-ui-contextmenu=https://github.com/mar10/jquery-ui-contextmenu.git',
                                    'bootstrap-tagsinput',
-#                                    'bootstrap3-typeahead',
-                                   'typeahead.js'
+                                   'typeahead.js',
+                                   'datatables-sorting-datetime-moment'
                                    )

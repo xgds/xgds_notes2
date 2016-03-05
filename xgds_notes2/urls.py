@@ -15,6 +15,7 @@
 #__END_LICENSE__
 
 from django.conf.urls import patterns, include, url
+from django.conf import settings
 
 from django.views.generic.base import TemplateView
 
@@ -40,4 +41,22 @@ urlpatterns = [
     url(r'^tagsArray.json$', views.tagsJsonArray, {}, 'xgds_notes_tags_array'),
     url(r'^import/?$', views.importNotes, {}, 'xgds_notes_import'),
     url(r'^notes/(?P<app_label>[\w]+)/(?P<model_type>[\w]+)/(?P<obj_pk>[\d]+)$', views.getObjectNotes, {}, 'xgds_notes_object_notes'),
+    url(r'^mapJson/(?P<extens>([\-]*[\d]+\.[\d]+[\,]*)+)$', views.note_json_extens, {'readOnly': True, 'loginRequired': False, 'securityTags': ['readOnly']}, 'note_json_extens'),
+    url(r'^notesJson/(?P<filter>[\w]+:[\w]+)$', views.getNotesJson, {'isLive':settings.GEOCAM_UTIL_LIVE_MODE}, 'xgds_notes_notesJson'),
+    url(r'^notesJson/(?P<range>[\d]+)$', views.getNotesJson, {'isLive':settings.GEOCAM_UTIL_LIVE_MODE}, 'xgds_notes_notesJson_range'),
+    url(r'^notesJson$', views.getNotesJson, {'range':0, 'isLive':settings.GEOCAM_UTIL_LIVE_MODE}, 'xgds_notes_notesJson_default'),
     ]
+
+if settings.XGDS_NOTES_ENABLE_GEOCAM_TRACK_MAPPING:
+    urlpatterns += [url(r'kml', views.note_map_kml, {'readOnly': True, 'loginRequired': False, 'securityTags': ['readOnly']}, 'note_map_kml')]
+
+if settings.XGDS_SSE:
+    from sse_wrapper.views import EventStreamView
+    urlpatterns += [
+        url(r'^live/notes/(?P<filter>[\w]+:[\w]+)/$', views.getNotesJson, {}, 'xgds_notes_liveNotes'),
+        url(r'^live/notes-stream/(?P<channel_extension>[\w]+:[\w]+)/$', EventStreamView.as_view(channel='live/notes'), {}, 'xgds_notes_liveNotes_stream'),
+
+        url(r'^live/notes/$', views.getNotesJson, {}, 'xgds_notes_liveNotes'),
+        url(r'^live/notes-stream/$', EventStreamView.as_view(channel='live/notes'), {}, 'xgds_notes_liveNotes_stream'),
+        ]
+

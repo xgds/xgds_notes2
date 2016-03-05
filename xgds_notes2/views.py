@@ -13,11 +13,12 @@
 # CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 #__END_LICENSE__
+
+from django.utils import timezone
 from datetime import datetime, timedelta
 import itertools
 import json
 import pytz
-from pytz import timezone
 import csv
 from dateutil.parser import parse as dateparser
 
@@ -25,12 +26,14 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
+from django.db import connection
 from django.views.decorators.cache import never_cache
 from django.http import HttpResponse
 
 from django.shortcuts import render_to_response, redirect, render
 from django.http import HttpResponseRedirect, HttpResponseForbidden, Http404
 from django.template import RequestContext
+from django.template.loader import render_to_string
 from django.utils.translation import ugettext, ugettext_lazy as _
 
 from geocamUtil.datetimeJsonEncoder import DatetimeJsonEncoder
@@ -201,7 +204,7 @@ def record(request):
             user_session = {field.name: field.field.clean(field.data)
                             for field in usersession_form}
 
-            notes_list = Note.get().objects.filter(author=request.user, creation_time__gte=datetime.now(pytz.utc) - timedelta(hours=12)).order_by('-creation_time')
+#             notes_list = Note.get().objects.filter(author=request.user, creation_time__gte=datetime.now(pytz.utc) - timedelta(hours=12)).order_by('-creation_time')
             # filter results to notes CREATED < 12 hours old.
 #             notes_list = notes_list.filter(creation_time__gte=datetime.now(pytz.utc) - timedelta(hours=12))
 
@@ -212,8 +215,8 @@ def record(request):
                     'user': request.user,
                     'user_session': user_session,
                     'form': form,
-                    'notes_list': notes_list,
-                    'empty_note_form': NoteForm(),
+#                     'notes_list': notes_list,
+#                     'empty_note_form': NoteForm(),
                 },
             )
     else:
@@ -482,5 +485,116 @@ def getObjectNotes(request, app_label, model_type, obj_pk):
     json_data = json.dumps(resultList, cls=DatetimeJsonEncoder)
     return HttpResponse(content=json_data,
                         content_type="application/json")
+
+
+@never_cache
+def getNotesJson(request, filter=None, range=0, isLive=1):
+    """ Get the note json information to show in table or map views.
+    """
+    try:
+        isLive = int(isLive)
+        if filter:
+            splits = str(filter).split(":")
+            filterDict = {splits[0]: splits[1]}
+
+        range = int(range)
+        if isLive or range:
+            if range==0:
+                range = 6
+            now = datetime.now(pytz.utc)
+            yesterday = now - timedelta(seconds=3600 * range)
+            if not filter:
+                notes = Note.get().objects.filter(creation_time__lte=now).filter(creation_time__gte=yesterday)
+            else:
+                allNotes = Note.get().objects.filter(**filterDict)
+                notes = allNotes.filter(creation_time__lte=now).filter(creation_time__gte=yesterday)
+        elif filter:
+            notes = Note.get().objects.filter(**filterDict)
+        else:
+            notes = Note.get().objects.all()
+    except:
+        return HttpResponse(json.dumps({'error': {'message': 'I think you passed in an invalid filter.',
+                                                  'filter': filter}
+                                        }),
+                            content_type='application/json')
+
+    if notes:
+        keepers = []
+        for note in notes:
+            resultDict = note.toMapDict()
+            keepers.append(resultDict)
+        json_data = json.dumps(keepers, indent=4, cls=DatetimeJsonEncoder)
+        return HttpResponse(content=json_data,
+                            content_type="application/json")
+    else:
+        return HttpResponse(json.dumps({'error': {'message': 'No notes found.',
+                                                  'filter': filter}
+                                        }),
+                            content_type='application/json')
+
+@never_cache
+def note_json_extens(request, extens, today=False):
+    """ Get the note json information to show in the fancy tree. this gets all notes in the mapped area
+    """
+    splits = str(extens).split(',')
+    minLon = float(splits[0])
+    minLat = float(splits[1])
+    maxLon = float(splits[2])
+    maxLat = float(splits[3])
+
+    queryString = Note.get().getMapBoundedQuery(minLon, minLat, maxLon, maxLat)
+    if queryString:
+        found_notes = Note.get().objects.raw(queryString)
+        if found_notes:
+            keepers = []
+            for note in found_notes:
+                resultDict = note.toMapDict()
+                keepers.append(resultDict)
+            json_data = json.dumps(keepers, indent=4, cls=DatetimeJsonEncoder)
+            return HttpResponse(content=json_data,
+                                content_type="application/json")
+        return ""
+
     
-    
+if settings.XGDS_NOTES_ENABLE_GEOCAM_TRACK_MAPPING:
+    from geocamUtil.KmlUtil import wrapKmlDjango
+
+    @never_cache
+    def note_map_kml(request):
+        queryEnd = " and show_on_map=1"
+        days = []
+
+        cursor = connection.cursor()
+
+        cursor.execute("select distinct DATE(CONVERT_TZ(event_time, 'UTC', event_timezone)) from %s" % (Note.get()._meta.db_table))
+        localdates = cursor.fetchall()
+
+        for date in localdates:
+            query = "select * from %s where DATE(CONVERT_TZ(event_time, 'UTC', event_timezone)) = '%s' %s" % (Note.get()._meta.db_table, date[0], queryEnd)
+            this_days_notes = Note.get().objects.raw(query)
+            keepers = []
+            for note in this_days_notes:
+                try:
+                    if note.getPosition():
+                        keepers.append(note)
+                except AttributeError:
+                    # handle the case where the note is not an abstract tracked asset
+                    foundPosition = getClosestPosition(timestamp=note.event_time)
+                    if foundPosition:
+                        note.position = foundPosition
+                        keepers.append(note)
+
+            if keepers:
+                days.append({
+                            'date': date[0],
+                            'notes': keepers
+                            })
+
+        if days:
+            kml_document = render_to_string(
+                'notes_placemark_document.kml',
+                {'days': days},
+            )
+            return wrapKmlDjango(kml_document)
+        return wrapKmlDjango("")
+

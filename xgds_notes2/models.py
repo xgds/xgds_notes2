@@ -256,6 +256,7 @@ class AbstractNote(models.Model):
             result['role'] = ''
             
         result['event_time'] = self.adjustedEventTime()
+        result['event_timezone'] = self.event_timezone
         
         tags = self.tags.names()
         if tags:
@@ -291,7 +292,7 @@ class Note(AbstractNote):
     '''
     pass
 
-class LocatedNote(AbstractNote):
+class AbstractLocatedNote(AbstractNote):
     """ This is a basic note with a location, pulled from the current settings for geocam track past position model.
     """
     position = models.ForeignKey(settings.GEOCAM_TRACK_PAST_POSITION_MODEL, null=True, blank=True)
@@ -362,7 +363,17 @@ class LocatedNote(AbstractNote):
   
         result = qstring % (settings.XGDS_NOTES_NOTE_MODEL, settings.GEOCAM_TRACK_PAST_POSITION_MODEL, bounds)
         return result
+    
+    class Meta:
+        abstract = True
+        ordering = ['event_time']
+        permissions = (
+            ('edit_all_notes', 'Can edit notes authored by others.'),
+        )
 
+
+class LocatedNote(AbstractLocatedNote):
+    pass
 
 class NoteMixin(object):
 

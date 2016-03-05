@@ -74,3 +74,7 @@ function set_event_time() {
         'text'
     );
 }
+
+function clear_event_time() {
+	time_input.attr('value', '');
+}

@@ -66,7 +66,7 @@ class NoteForm(forms.ModelForm):
         if not etime:
             rightnow = datetime.datetime.now(pytz.utc)
             return rightnow
-        return etime
+        return etime.replace(tzinfo=pytz.utc)
 
     def __unicode__(self):
         return self.as_fieldsets()
