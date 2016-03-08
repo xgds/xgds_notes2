@@ -140,7 +140,6 @@ def linkTags(note, tags):
 
 def createNoteFromData(data, delay=True, serverNow=False):
     NOTE_MODEL = Note.get()
-    print data
     empty_keys = [k for k,v in data.iteritems() if v is None]
     for k in empty_keys:
         del data[k]
@@ -155,7 +154,8 @@ def createNoteFromData(data, delay=True, serverNow=False):
         note.event_time = note.calculateDelayedEventTime(data['event_time'])
     elif serverNow:
         note.event_time = note.creation_time
-    note.event_timezone = getTimeZone(note.event_time)
+    if not note.event_timezone:
+        note.event_timezone = getTimeZone(note.event_time)
     note.save()
     return note
 

@@ -72,11 +72,17 @@ function hookNoteSubmit() {
         dataString = dataString + '&model_type=' + parent.find('#id_model_type').val();
         dataString = dataString + '&position_id=' + parent.find('#id_position_id').val();
         
-        var event_hidden = parent.find('hidden#id_event_time');
+        var event_hidden = parent.find('#id_event_time');
         var event_timestring = event_hidden.val();
         try {
             if (event_timestring !== undefined){
                 dataString = dataString + '&event_time=' + event_timestring;
+                try {
+                	var timezone_hidden = parent.find('#id_event_timezone');
+                	dataString = dataString + "&event_timezone=" + timezone_hidden.val();
+                } catch(err){
+                	// no timezone
+                }
             } else {
                 dataString = dataString + "&serverNow=true";
             }

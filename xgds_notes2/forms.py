@@ -36,7 +36,7 @@ class UserSessionForm(forms.ModelForm):
     class Meta:
         model = UserSession.get()
         fields = UserSession.get().getFormFields()
-    
+
 class NoteForm(forms.ModelForm):
     tags = TagField(required=False,
                     widget=TagWidget(attrs={'class': 'taginput', 
@@ -49,9 +49,11 @@ class NoteForm(forms.ModelForm):
 
     date_formats = list(forms.DateTimeField.input_formats) + [
         '%Y/%m/%d %H:%M:%S',
-        '%Y/%m/%d %H:%M:%S UTC'
+        '%Y/%m/%d %H:%M:%S UTC',
+        '%Y-%m-%d %H:%M:%S UTC'
     ]
     event_time = forms.DateTimeField(input_formats=date_formats, required=False)
+    event_timezone = forms.CharField(widget=forms.HiddenInput(), required=False)
     extras = forms.CharField(widget=forms.HiddenInput(), required=False)
 
     # for generic foreign key use

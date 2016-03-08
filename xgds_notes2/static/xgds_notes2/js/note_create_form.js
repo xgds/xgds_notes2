@@ -16,11 +16,16 @@
 
 var time_input;
 
-function initializeNotesReference(container, app_label, model_type, object_id, event_time){
+function initializeNotesReference(container, app_label, model_type, object_id, event_time, event_timezone){
     container.find('#id_app_label').val(app_label);
     container.find('#id_model_type').val(model_type);
     container.find('#id_object_id').val(object_id);
     container.find('#id_event_time').val(event_time);
+    try {
+        container.find('#id_event_timezone').val(event_timezone);
+    } catch (err) {
+    	// may not have a timezone input
+    }
 }
 
 function initializeNotesForm(addNow) {
