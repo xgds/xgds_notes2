@@ -167,7 +167,7 @@ class AbstractNote(models.Model):
     show_on_map = models.BooleanField(default=False) # broadcast this note on the map by default
 
     event_time = models.DateTimeField(null=True, blank=False)
-    event_timezone = models.CharField(null=True, blank=False, max_length=128)
+    event_timezone = models.CharField(null=True, blank=False, max_length=128, default=settings.TIME_ZONE)
     creation_time = models.DateTimeField(blank=True, default=timezone.now, editable=False)
     modification_time = models.DateTimeField(blank=True, default=timezone.now, editable=False)
 
