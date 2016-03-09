@@ -43,10 +43,6 @@ class NoteForm(forms.ModelForm):
                                             'data-role':'tagsinput',
                                             'placeholder': 'Choose tags'}))
     
-    class Meta:
-        model = Note.get()
-        fields = Note.get().getFormFields()
-
     date_formats = list(forms.DateTimeField.input_formats) + [
         '%Y/%m/%d %H:%M:%S',
         '%Y/%m/%d %H:%M:%S UTC',
@@ -72,6 +68,11 @@ class NoteForm(forms.ModelForm):
 
     def __unicode__(self):
         return self.as_fieldsets()
+    
+    class Meta:
+        model = Note.get()
+        fields = Note.get().getFormFields()
+
 
 
 class TagForm(forms.ModelForm):
