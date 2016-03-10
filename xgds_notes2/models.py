@@ -29,6 +29,7 @@ from geocamUtil.loader import LazyGetModelByName
 from geocamUtil.models import AbstractEnumModel
 from geocamUtil.modelJson import modelToDict
 from geocamUtil.defaultSettings import HOSTNAME
+from geocamUtil.UserUtil import getUserName
 
 from treebeard.mp_tree import MP_Node
 from taggit.models import TagBase, ItemBase
@@ -234,14 +235,6 @@ class AbstractNote(models.Model):
             result = self.content[:12]
         return result
 
-    def getAuthorName(self):
-        authorname = self.author.username
-        if self.author.first_name:
-            authorname = self.author.first_name
-            if self.author.last_name:
-                authorname = authorname + " " + self.author.last_name
-        return authorname
-
     def toMapDict(self):
         """
         Return a reduced dictionary that will be turned to JSON for rendering in a map
@@ -249,7 +242,7 @@ class AbstractNote(models.Model):
         result = modelToDict(self)
 
         result['type'] = self.__class__.__name__
-        result['author'] = self.getAuthorName()
+        result['author'] = getUserName(self.author)
         if self.role:
             result['role'] = self.role.display_name
         else:
