@@ -81,7 +81,7 @@ DEFAULT_TAGGED_NOTE_FIELD = lambda: models.ForeignKey("LocatedNote", related_nam
 
 class AbstractTaggedNote(ItemBase):
     content_object = 'set to DEFAULT_TAGGED_NOTE_FIELD() or similar in derived classes'
-    tag = models.ForeignKey('HierarchichalTag', 
+    tag = models.ForeignKey('xgds_notes2.HierarchichalTag',
                             related_name="%(app_label)s_%(class)s_related",
                             blank=True)
 
