@@ -25,11 +25,13 @@ from django.contrib.contenttypes.models import ContentType
 from django.template.loader import get_template
 from django.template import Context
 
-from geocamUtil.loader import LazyGetModelByName
+from geocamUtil.loader import LazyGetModelByName, getModelByName
 from geocamUtil.models import AbstractEnumModel
 from geocamUtil.modelJson import modelToDict
 from geocamUtil.defaultSettings import HOSTNAME
 from geocamUtil.UserUtil import getUserName
+
+from geocamTrack.models import PastResourcePosition
 
 from treebeard.mp_tree import MP_Node
 from taggit.models import TagBase, ItemBase
@@ -74,12 +76,13 @@ class HierarchichalTag(TagBase, MP_Node):
                 'name': self.name,
                 'abb': self.abbreviation,
                 'slug': self.slug}
-    
 
-class TaggedNote(ItemBase):
-    content_object = models.ForeignKey(settings.XGDS_NOTES_NOTE_MODEL)
+DEFAULT_TAGGED_NOTE_FIELD = lambda: models.ForeignKey("LocatedNote", related_name='%(app_label)s_%(class)s_related')
+
+class AbstractTaggedNote(ItemBase):
+    content_object = 'set to DEFAULT_TAGGED_NOTE_FIELD() or similar in derived classes'
     tag = models.ForeignKey('HierarchichalTag', 
-                            related_name="htags",
+                            related_name="%(app_label)s_%(class)s_related",
                             blank=True)
 
     @classmethod
@@ -94,7 +97,14 @@ class TaggedNote(ItemBase):
             '%s__content_object__isnull' % cls.tag_relname(): False
         })
         return cls.tag_model().objects.filter(**kwargs).distinct()
-    
+
+    class Meta:
+        abstract = True
+
+
+class TaggedNote(AbstractTaggedNote):
+    content_object = DEFAULT_TAGGED_NOTE_FIELD()
+
 
 class MissionDay(models.Model):
     name = models.TextField()
@@ -150,6 +160,8 @@ class UserSession(AbstractUserSession):
                 'location']
     
 
+DEFAULT_TAGGABLE_MANAGER = lambda: TaggableManager(through=TaggedNote, blank=True)
+
 class AbstractNote(models.Model):
     ''' Abstract base class for notes
     '''
@@ -178,7 +190,7 @@ class AbstractNote(models.Model):
 
     content = models.TextField(blank=True, null=True)
     
-    tags = TaggableManager(through=TaggedNote, blank=True)
+    tags = "set to DEFAULT_TAGGABLE_MANAGER() or similar in any dervied classes"
     
     content_type = models.ForeignKey(ContentType, null=True, blank=True)
     object_id = models.CharField(max_length=128, null=True, blank=True)
@@ -283,12 +295,15 @@ class Note(AbstractNote):
     '''
     Non-Abstract note class (with no position)
     '''
-    pass
+    tags = DEFAULT_TAGGABLE_MANAGER()
+
+
+DEFAULT_POSITION_FIELD = lambda: models.ForeignKey(PastResourcePosition, null=True, blank=True)
 
 class AbstractLocatedNote(AbstractNote):
     """ This is a basic note with a location, pulled from the current settings for geocam track past position model.
     """
-    position = models.ForeignKey(settings.GEOCAM_TRACK_PAST_POSITION_MODEL, null=True, blank=True)
+    position = "set to DEFAULT_POSITION_FIELD() or similar in derived classes"
       
     def to_kml(self, animated=False, timestampLabels=False, ignoreLabels=None):
         if ignoreLabels is None:
@@ -366,7 +381,8 @@ class AbstractLocatedNote(AbstractNote):
 
 
 class LocatedNote(AbstractLocatedNote):
-    pass
+    position = DEFAULT_POSITION_FIELD()
+    tags = DEFAULT_TAGGABLE_MANAGER()
 
 class NoteMixin(object):
 
