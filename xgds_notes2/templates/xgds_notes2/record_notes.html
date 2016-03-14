@@ -65,8 +65,6 @@ $('#save_note').click(function(event) {
     var theForm = $("#create_note");
 	var postData = theForm.serializeArray();
 	// update the date to be in utc
-	//moment.tz.setDefault(app.getTimeZone());
-	//var tzified = moment.tz(postData[2].value, 'MM/DD/YYYY HH:mm', serverTimezone);
 	var tzified = getUTCTime(postData[0].value, serverTimezone);
 	var theUtc = tzified.utc().format('YYYY/MM/DD HH:mm:ss') + ' UTC';
 	postData[0].value = theUtc;
@@ -82,15 +80,6 @@ $('#save_note').click(function(event) {
         	{% if not SSE %}
         	noteController._theDataTable.fnAddData(data[0]);
         	{% endif %}
-        	/* var newdict = [];
-        	var n = data[0];
-        	//newdict['id'] = n.id;
-        	newdict.push(getLocalTimeString(n.event_time, n.event_timezone, 'YYYY-MM-DD HH:mm z'));
-        	newdict.push(n.author);
-        	newdict.push(n.content);
-        	newdict.push(n.tags);
-        	
-        	noteTable.fnAddData(newdict); */
         },
         error: function(data)
         {
