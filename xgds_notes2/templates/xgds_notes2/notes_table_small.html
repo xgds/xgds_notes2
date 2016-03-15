@@ -2,7 +2,7 @@
 <table id="notes_list" class="notes_list display" width="100%" hidden>
 	{% for note in notes_list %}
 	<tr>
-		<td>{{note.event_time|date:"Y-m-d H:i e"}}{#note.event_time|utc_to_django|date:"Y-m-d H:i e"#}</td>
+		<td>{{note.event_time|date:"Y-m-d H:i e"}}</td>
 		<td><strong>{{ note.author.get_full_name }}</strong>&nbsp;{{note.content|safe }}</td>
 		<td>{% for t in note.tags.names %}{% if not forloop.first%},&nbsp;{% endif %}{{ t|safe }}{% endfor %}</td>
 	</tr>
