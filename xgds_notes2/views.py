@@ -41,7 +41,7 @@ from geocamUtil.loader import LazyGetModelByName, getClassByName
 from geocamUtil.modelJson import modelToDict
 from geocamUtil import TimeUtil
 
-from geocamTrack.views import getClosestPosition
+from geocamTrack.utils import getClosestPosition
 
 from treebeard.mp_tree import MP_Node
 
@@ -156,6 +156,11 @@ def createNoteFromData(data, delay=True, serverNow=False):
         note.event_time = note.creation_time
     if not note.event_timezone:
         note.event_timezone = getTimeZone(note.event_time)
+        
+    # hook up the position if it can have one
+    if hasattr(note, 'position'):
+        note.getPosition()
+
     note.save()
     return note
 
@@ -557,7 +562,21 @@ def note_json_extens(request, extens, today=False):
 
     
 if settings.XGDS_NOTES_ENABLE_GEOCAM_TRACK_MAPPING:
-    from geocamUtil.KmlUtil import wrapKmlDjango
+    from geocamUtil.KmlUtil import wrapKmlDjango, djangoResponse
+
+    def getKmlNetworkLink(request):
+        url = request.build_absolute_uri(settings.SCRIPT_NAME + 'notes/notes.kml')
+        return djangoResponse('''
+    <NetworkLink>
+      <name>%(name)s</name>
+      <Link>
+        <href>%(url)s</href>
+        <refreshMode>onInterval</refreshMode>
+        <refreshInterval>5</refreshInterval>
+      </Link>
+    </NetworkLink>
+    ''' % dict(name=settings.XGDS_NOTES_MONIKER,
+               url=url))
 
     @never_cache
     def note_map_kml(request):
@@ -592,7 +611,7 @@ if settings.XGDS_NOTES_ENABLE_GEOCAM_TRACK_MAPPING:
 
         if days:
             kml_document = render_to_string(
-                'notes_placemark_document.kml',
+                'xgds_notes2/notes_placemark_document.kml',
                 {'days': days},
             )
             return wrapKmlDjango(kml_document)

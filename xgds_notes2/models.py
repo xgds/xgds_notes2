@@ -32,6 +32,7 @@ from geocamUtil.defaultSettings import HOSTNAME
 from geocamUtil.UserUtil import getUserName
 
 from geocamTrack.models import PastResourcePosition
+# from geocamTrack.utils import getClosestPosition
 
 from treebeard.mp_tree import MP_Node
 from taggit.models import TagBase, ItemBase
@@ -371,6 +372,12 @@ class AbstractLocatedNote(AbstractNote):
   
         result = qstring % (settings.XGDS_NOTES_NOTE_MODEL, settings.GEOCAM_TRACK_PAST_POSITION_MODEL, bounds)
         return result
+    
+    def getPosition(self):
+        # IMPORTANT this should not be used across multitudes of notes, it is designed to be used during construction.
+#         if not self.position:
+#             self.position = getClosestPosition(timestamp=self.event_time)
+        return self.position
     
     class Meta:
         abstract = True

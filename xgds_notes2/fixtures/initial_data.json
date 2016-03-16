@@ -22,6 +22,15 @@
             "value": "REMOTE",
             "display_name": "Remote (not in field)"
         }
-    }
-    
+    },
+    {"pk":"kml3", "model":"xgds_map_server.KmlMap", "fields":
+		{"name":"Mapped Notes", 
+		 "description":"Notes set to 'show in map'", 
+		 "kmlFile":"/notes/notesFeed.kml", 
+		 "openable":1, 
+		 "visible":0, 
+		 "hasNetworkLink":1,
+		 "parent": "mg1"
+		 }
+	}
 ]
