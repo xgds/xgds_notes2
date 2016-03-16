@@ -264,11 +264,10 @@ class AbstractNote(models.Model):
         result['event_time'] = self.adjustedEventTime()
         result['event_timezone'] = self.event_timezone
         
-        tags = self.tags.names()
-        if tags:
+        result['tags'] = ''
+        if self.tags.count():
+            tags = self.tags.names()
             result["tags"] = [t.encode('utf-8') for t in tags]
-        else:
-            result['tags'] = ''
             
         try:
             if self.content_object:
