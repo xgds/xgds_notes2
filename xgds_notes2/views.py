@@ -248,7 +248,7 @@ def recordSimple(request):
     else:
         return HttpResponse(json.dumps({'error': {'code': -32099,
                                                   'message': 'problem submitting note',
-                                                  'data': form._get_errors()}
+                                                  'data': form.errors}
                                         }),
                             content_type='application/json')
 
