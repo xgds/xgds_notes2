@@ -17,7 +17,6 @@
 from django.conf.urls import patterns, include, url
 from django.conf import settings
 
-from django.views.generic.base import TemplateView
 
 import xgds_notes2.views as views
 
@@ -41,10 +40,7 @@ urlpatterns = [
     url(r'^tagsArray.json$', views.tagsJsonArray, {}, 'xgds_notes_tags_array'),
     url(r'^import/?$', views.importNotes, {}, 'xgds_notes_import'),
     url(r'^notes/(?P<app_label>[\w]+)/(?P<model_type>[\w]+)/(?P<obj_pk>[\d]+)$', views.getObjectNotes, {}, 'xgds_notes_object_notes'),
-    url(r'^mapJson/(?P<extens>([\-]*[\d]+\.[\d]+[\,]*)+)$', views.note_json_extens, {'readOnly': True, 'loginRequired': False, 'securityTags': ['readOnly']}, 'note_json_extens'),
-    url(r'^notesJson/(?P<filter>[\w]+:[\w]+)$', views.getNotesJson, {'isLive':settings.GEOCAM_UTIL_LIVE_MODE}, 'xgds_notes_notesJson'),
-    url(r'^notesJson/(?P<range>[\d]+)$', views.getNotesJson, {'isLive':settings.GEOCAM_UTIL_LIVE_MODE}, 'xgds_notes_notesJson_range'),
-    url(r'^notesJson$', views.getNotesJson, {'range':0, 'isLive':settings.GEOCAM_UTIL_LIVE_MODE}, 'xgds_notes_notesJson_default'),
+#     url(r'^mapJson/(?P<extens>([\-]*[\d]+\.[\d]+[\,]*)+)$', views.note_json_extens, {'readOnly': True, 'loginRequired': False, 'securityTags': ['readOnly']}, 'note_json_extens'),
     ]
 
 if settings.XGDS_NOTES_ENABLE_GEOCAM_TRACK_MAPPING:

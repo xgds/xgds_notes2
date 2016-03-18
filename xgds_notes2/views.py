@@ -492,73 +492,73 @@ def getObjectNotes(request, app_label, model_type, obj_pk):
                         content_type="application/json")
 
 
-@never_cache
-def getNotesJson(request, filter=None, range=0, isLive=1):
-    """ Get the note json information to show in table or map views.
-    """
-    try:
-        isLive = int(isLive)
-        if filter:
-            splits = str(filter).split(":")
-            filterDict = {splits[0]: splits[1]}
+# @never_cache
+# def getNotesJson(request, filter=None, range=0, isLive=1):
+#     """ Get the note json information to show in table or map views.
+#     """
+#     try:
+#         isLive = int(isLive)
+#         if filter:
+#             splits = str(filter).split(":")
+#             filterDict = {splits[0]: splits[1]}
+# 
+#         range = int(range)
+#         if isLive or range:
+#             if range==0:
+#                 range = 6
+#             now = datetime.now(pytz.utc)
+#             yesterday = now - timedelta(seconds=3600 * range)
+#             if not filter:
+#                 notes = Note.get().objects.filter(creation_time__lte=now).filter(creation_time__gte=yesterday)
+#             else:
+#                 allNotes = Note.get().objects.filter(**filterDict)
+#                 notes = allNotes.filter(creation_time__lte=now).filter(creation_time__gte=yesterday)
+#         elif filter:
+#             notes = Note.get().objects.filter(**filterDict)
+#         else:
+#             notes = Note.get().objects.all()
+#     except:
+#         return HttpResponse(json.dumps({'error': {'message': 'I think you passed in an invalid filter.',
+#                                                   'filter': filter}
+#                                         }),
+#                             content_type='application/json')
+# 
+#     if notes:
+#         keepers = []
+#         for note in notes:
+#             resultDict = note.toMapDict()
+#             keepers.append(resultDict)
+#         json_data = json.dumps(keepers, indent=4, cls=DatetimeJsonEncoder)
+#         return HttpResponse(content=json_data,
+#                             content_type="application/json")
+#     else:
+#         return HttpResponse(json.dumps({'error': {'message': 'No notes found.',
+#                                                   'filter': filter}
+#                                         }),
+#                             content_type='application/json')
 
-        range = int(range)
-        if isLive or range:
-            if range==0:
-                range = 6
-            now = datetime.now(pytz.utc)
-            yesterday = now - timedelta(seconds=3600 * range)
-            if not filter:
-                notes = Note.get().objects.filter(creation_time__lte=now).filter(creation_time__gte=yesterday)
-            else:
-                allNotes = Note.get().objects.filter(**filterDict)
-                notes = allNotes.filter(creation_time__lte=now).filter(creation_time__gte=yesterday)
-        elif filter:
-            notes = Note.get().objects.filter(**filterDict)
-        else:
-            notes = Note.get().objects.all()
-    except:
-        return HttpResponse(json.dumps({'error': {'message': 'I think you passed in an invalid filter.',
-                                                  'filter': filter}
-                                        }),
-                            content_type='application/json')
-
-    if notes:
-        keepers = []
-        for note in notes:
-            resultDict = note.toMapDict()
-            keepers.append(resultDict)
-        json_data = json.dumps(keepers, indent=4, cls=DatetimeJsonEncoder)
-        return HttpResponse(content=json_data,
-                            content_type="application/json")
-    else:
-        return HttpResponse(json.dumps({'error': {'message': 'No notes found.',
-                                                  'filter': filter}
-                                        }),
-                            content_type='application/json')
-
-@never_cache
-def note_json_extens(request, extens, today=False):
-    """ Get the note json information to show in the fancy tree. this gets all notes in the mapped area
-    """
-    splits = str(extens).split(',')
-    minLon = float(splits[0])
-    minLat = float(splits[1])
-    maxLon = float(splits[2])
-    maxLat = float(splits[3])
-
-    queryString = Note.get().getMapBoundedQuery(minLon, minLat, maxLon, maxLat)
-    if queryString:
-        found_notes = Note.get().objects.raw(queryString)
-        if found_notes:
-            keepers = []
-            for note in found_notes:
-                resultDict = note.toMapDict()
-                keepers.append(resultDict)
-            json_data = json.dumps(keepers, indent=4, cls=DatetimeJsonEncoder)
-            return HttpResponse(content=json_data,
-                                content_type="application/json")
-        return ""
+# @never_cache
+# def note_json_extens(request, extens, today=False):
+#     """ Get the note json information to show in the fancy tree. this gets all notes in the mapped area
+#     """
+#     splits = str(extens).split(',')
+#     minLon = float(splits[0])
+#     minLat = float(splits[1])
+#     maxLon = float(splits[2])
+#     maxLat = float(splits[3])
+# 
+#     queryString = Note.get().getMapBoundedQuery(minLon, minLat, maxLon, maxLat)
+#     if queryString:
+#         found_notes = Note.get().objects.raw(queryString)
+#         if found_notes:
+#             keepers = []
+#             for note in found_notes:
+#                 resultDict = note.toMapDict()
+#                 keepers.append(resultDict)
+#             json_data = json.dumps(keepers, indent=4, cls=DatetimeJsonEncoder)
+#             return HttpResponse(content=json_data,
+#                                 content_type="application/json")
+#         return ""
 
     
 if settings.XGDS_NOTES_ENABLE_GEOCAM_TRACK_MAPPING:
