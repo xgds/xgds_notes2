@@ -14,6 +14,8 @@
 # specific language governing permissions and limitations under the License.
 #__END_LICENSE__
 
+from geocamUtil.SettingsUtil import getOrCreateDict, getOrCreateArray
+
 """
 This app may define some new parameters that can be modified in the
 Django settings module.  Let's say one such parameter is FOO.  The
@@ -75,11 +77,42 @@ XGDS_NOTES_TAG_TREE_URL = '/notes/tagsTree/'
 # These are the columns that will show by default for all note tables.
 XGDS_NOTES_TABLE_DEFAULT_COLUMNS = ['event_time', 'author', 'content', 'tags']
 
-XGDS_NOTES_BOWER_INSTALLED_APPS = ('moment',
-                                   'lodash#3.10.0',
-                                   'fancytree=fancytree',
-                                   'jquery-ui-contextmenu=https://github.com/mar10/jquery-ui-contextmenu.git',
-                                   'bootstrap-tagsinput',
-                                   'typeahead.js',
-                                   'datatables-sorting-datetime-moment'
-                                   )
+BOWER_INSTALLED_APPS = getOrCreateArray('BOWER_INSTALLED_APPS')
+BOWER_INSTALLED_APPS += ['moment',
+                         'lodash#3.10.0',
+                         'fancytree=fancytree',
+                         'jquery-ui-contextmenu=https://github.com/mar10/jquery-ui-contextmenu.git',
+                         'bootstrap-tagsinput',
+                         'typeahead.js',
+                         'datatables-sorting-datetime-moment'
+                         ]
+
+XGDS_MAP_SERVER_JS_MAP = getOrCreateDict('XGDS_MAP_SERVER_JS_MAP')
+XGDS_MAP_SERVER_JS_MAP['Note'] = {'ol': 'xgds_notes2/js/olNoteMap.js',
+                                      'model': XGDS_NOTES_NOTE_MODEL,
+                                      'hiddenColumns': []}
+
+XGDS_DATA_IMPORTS = getOrCreateDict('XGDS_DATA_IMPORTS')
+XGDS_DATA_IMPORTS[XGDS_NOTES_MONIKER] = '/notes/import'
+
+XGDS_DATA_MASKED_FIELDS = getOrCreateDict('XGDS_DATA_MASKED_FIELDS')
+XGDS_DATA_MASKED_FIELDS['xgds_notes'] = {'Note': ['uuid',
+                                                  'draft',
+                                                  'event_time',
+                                                  'creation_time',
+                                                  'modification_time',
+                                                  'console_position',
+                                                  'tagged_items',
+                                                  'asset_position',
+                                                  'new_asset_position',
+                                                  'still_frame',
+                                                  ]
+                                        }
+
+# XGDS_DATA_EXPAND_RELATED = getOrCreateDict('XGDS_DATA_EXPAND_RELATED')
+# XGDS_DATA_EXPAND_RELATED['xgds_notes'] = {  'Note': [('asset_position', 'depth', 'Depth'),
+#                                                      ('new_asset_position', 'depthMeters', 'New Depth'),
+#                                                      ('tags', 'all', 'Tags'),
+#                                                      ],
+#  
+#                                             }
