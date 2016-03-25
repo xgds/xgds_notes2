@@ -84,7 +84,7 @@ BOWER_INSTALLED_APPS += ['moment',
                          'jquery-ui-contextmenu=https://github.com/mar10/jquery-ui-contextmenu.git',
                          'bootstrap-tagsinput',
                          'typeahead.js',
-                         'datatables-sorting-datetime-moment'
+                         'datatables-sorting-datetime-moment=https://cdn.datatables.net/plug-ins/1.10.11/sorting/datetime-moment.js'
                          ]
 
 XGDS_MAP_SERVER_JS_MAP = getOrCreateDict('XGDS_MAP_SERVER_JS_MAP')
