@@ -96,7 +96,8 @@ var recordedNotes = (function(global, $) {
                     }
                     this._setupColumnHeaders();
                     this._theDataTable = this._theTable.dataTable( dataTableObj );
-                    this._theDataTable.columns.adjust().draw();
+                    this._theDataTable._fnAdjustColumnSizing();
+//                    this._theDataTable.columns.adjust().draw();
             }
         },
         _setupColumnHeaders: function() {

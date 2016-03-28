@@ -16,7 +16,7 @@
 </form>
 <p style="font-style: italic;">Entries logged in the past 12 hours are displayed below.</p>
 </div>
-<div id="notesDiv">
+<div id="notesDiv" style="minHeight=150px; height=150px">
 <div id="messageDiv"></div>
 <table id="notesTable" class="display"></table>
 </div>
@@ -40,7 +40,7 @@
 	<script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/note_create_form.js"></script>
 	<script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/tags_input.js"></script>
   	<script type="text/javascript" src="{{ EXTERNAL_URL }}datatables/media/js/jquery.dataTables.min.js"></script>
-  	<script type="text/javascript" src="{{ EXTERNAL_URL }}datatables-sorting-datetime-moment/js/index.js"></script>
+  	<script type="text/javascript" src="{{ EXTERNAL_URL }}datatables-sorting-datetime-moment/index.js"></script>
 	<script type="text/javascript" src="{{ EXTERNAL_URL }}underscore/underscore-min.js"></script>
 	<script type="text/javascript" src="{{ EXTERNAL_URL }}klass/klass.min.js"></script>
 	
@@ -99,11 +99,15 @@ $( document ).ready(function() {
 	       });
 	 {% endwith %}
 	 {% else %}
+	 var minHeight = $( window ).height() - $("#pre_table").height() - 200;
+	 if (minHeight < 125) {
+	 	minHeight = 125;
+	 }
 	 noteController = new recordedNotes.RecordedNotesController({
 		           recordedNotesURL: "{% url 'xgds_map_server_objectsJson_range' 'XGDS_NOTES_NOTE_MODEL' 12 %}",
 		           columns: {{ settings.XGDS_NOTES_TABLE_DEFAULT_COLUMNS|safe }},
 		           ordering: "desc",
-		           divHeight: $( window ).height() - $("#pre_table").height() - 200
+		           divHeight: minHeight
 		       });
 	 {% endif %}
 	});
