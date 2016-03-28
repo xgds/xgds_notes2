@@ -13,7 +13,6 @@
 # CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 #__END_LICENSE__
-
 from django.utils import timezone
 from datetime import datetime, timedelta
 import itertools
@@ -66,7 +65,8 @@ def serverTime(request):
     )
     
 @login_required
-def editUserSession(request):
+def editUserSession(request, ajax=False):
+
     # display a form to edit the content of the UserSession object in request.session['notes_user_session']
     existing_data = request.session.get('notes_user_session', None)
     if request.method == 'POST':
@@ -77,9 +77,15 @@ def editUserSession(request):
             if hasattr(request.user, 'preferences'):
                 for field in form.fields:
                     request.user.preferences['default_' + field] = form.data[field]
-            return redirect('xgds_notes_record')
+            if not ajax:
+                return redirect('xgds_notes_record')
+            else:
+                return HttpResponse(json.dumps({'success':True}),
+                                    content_type='application/json')
+
         else:
-            return HttpResponse("Form Error")
+            return HttpResponse(json.dumps(form.errors()),
+                                content_type='application/json')
     else:
         defaults = {}
         if hasattr(request.user, 'preferences'):
@@ -91,9 +97,10 @@ def editUserSession(request):
         if existing_data:
             defaults.update(existing_data)  # merge anything in the session store with the user preferences
         form = UserSessionForm(initial=defaults)
+        template = 'xgds_notes2/user_session.html'
         return render(
             request,
-            'xgds_notes2/user_session.html',
+            template,
             {
                 'form': form
             },
@@ -176,7 +183,7 @@ def broadcastNote(note):
         for channel in channels:
             send_event('notes', json_data, channel)
     return json_data
-    
+
 @login_required
 def record(request):
     if request.method == 'POST':
