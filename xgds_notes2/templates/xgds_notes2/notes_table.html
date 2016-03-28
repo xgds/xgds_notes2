@@ -8,6 +8,7 @@
             <th>Author</th>
             <th>Content</th>
             <th>Tags</th>
+            <th>Link</th>
         </tr>
     </thead>
     <tbody>
@@ -26,7 +27,9 @@
         	{{ note.content|safe }}
         </td>
         <td>
-    		{% for t in note.tags.names %}{% if not forloop.first %},&nbsp;{% endif %}{{ t|safe }}{% endfor %}   	
+    		<span class="tag label label-info">{% for t in note.tags.names %}{% if not forloop.first %},&nbsp;{% endif %}{{ t|safe }}{% endfor %}</span>   	
+        </td>
+        <td>
         </td>
         </tr>
         {% endfor %}

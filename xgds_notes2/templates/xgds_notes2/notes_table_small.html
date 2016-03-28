@@ -4,7 +4,7 @@
 	<tr>
 		<td>{{note.event_time|date:"Y-m-d H:i e"}}</td>
 		<td><strong>{{ note.author.get_full_name }}</strong>&nbsp;{{note.content|safe }}</td>
-		<td>{% for t in note.tags.names %}{% if not forloop.first%},&nbsp;{% endif %}{{ t|safe }}{% endfor %}</td>
+		<td><span class="tag label label-info">{% for t in note.tags.names %}{% if not forloop.first%},&nbsp;{% endif %}{{ t|safe }}{% endfor %}</span></td>
 	</tr>
 	{% endfor %}
 </table>

@@ -100,7 +100,7 @@ $( document ).ready(function() {
 	 {% endwith %}
 	 {% else %}
 	 noteController = new recordedNotes.RecordedNotesController({
-		           recordedNotesURL: "{% url 'xgds_notes_notesJson_range' 12 %}",
+		           recordedNotesURL: "{% url 'xgds_map_server_objectsJson_range' 'XGDS_NOTES_NOTE_MODEL' 12 %}",
 		           columns: {{ settings.XGDS_NOTES_TABLE_DEFAULT_COLUMNS|safe }},
 		           ordering: "desc",
 		           divHeight: $( window ).height() - $("#pre_table").height() - 200
