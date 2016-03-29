@@ -30,6 +30,7 @@
     		<span class="tag label label-info">{% for t in note.tags.names %}{% if not forloop.first %},&nbsp;{% endif %}{{ t|safe }}{% endfor %}</span>   	
         </td>
         <td>
+        	{% if note.content_url %} <a href="{{ note.content_url }}" target="_blank"> {% if note.content_thumbnail_url %}<img src="{{ note.content_thumbnail_url }}">{% elif note.content_name %} {{ note.content_name }} {% else %} Link {% endif %}</a> {% endif %}
         </td>
         </tr>
         {% endfor %}

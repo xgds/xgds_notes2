@@ -270,12 +270,15 @@ class AbstractNote(models.Model):
             result["tags"] = [t.encode('utf-8') for t in tags]
             
         try:
+            result['content_url'] = ''
+            result['content_name'] = ''
+            result['content_thumbnail_url'] = ''
             if self.content_object:
-                result['thumbnail_url'] = self.content_object.thumbnail_url
-                result['url'] = self.content_object.view_url
+                result['content_url'] = self.content_object.view_url
+                result['content_name'] = self.content_object.name
+                result['content_thumbnail_url'] = self.content_object.thumbnail_url
         except:
-            result['thumbnail_url'] = ''
-            result['url'] = ''
+            pass
         
         return result
 

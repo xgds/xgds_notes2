@@ -33,25 +33,26 @@ function initializeTags() {
 
 function initializeInput(input) {
     if (input == undefined){
-	input = $('.taginput');
+    	input = $('.taginput');
     }
     
-    $(input).tagsinput({
-	  itemValue: 'id',
-	  itemText: 'name',
-//	  confirmKeys: [13, 44],
-	  typeaheadjs: {
-	    name: 'allTags',
-	    displayKey: 'name',
-	    source: allTags.ttAdapter(),
-	    templates: {
-		    empty: [
-		      '<div class="empty-message">',
-		        '&nbsp;Tag not found',
-		      '</div>'
-		    ].join('\n')
+    initializeTags();
+	    $(input).tagsinput({
+		  itemValue: 'id',
+		  itemText: 'name',
+	//	  confirmKeys: [13, 44],
+		  typeaheadjs: {
+		    name: 'allTags',
+		    displayKey: 'name',
+		    source: allTags.ttAdapter(),
+		    templates: {
+			    empty: [
+			      '<div class="empty-message">',
+			        '&nbsp;Tag not found',
+			      '</div>'
+			    ].join('\n')
+			  }
 		  }
-	  }
-	});
+		});
     
 }

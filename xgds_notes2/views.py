@@ -270,14 +270,10 @@ def getSortOrder():
 
 @login_required
 def review(request, **kwargs):
-    notes_list = Note.get().objects.all();
     return render(
            request,
            'xgds_notes2/review_notes.html',
-           {
-               'user': request.user,
-               'notes_list': notes_list
-           },
+           {}
        )   
 
 @login_required

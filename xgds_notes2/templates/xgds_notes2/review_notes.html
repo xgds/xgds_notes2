@@ -1,25 +1,70 @@
 {% extends "xgds_notes2/notes_base.html" %}
-{% load tz_convert %}
+{% load tz %}
+
+{% block content %}
+<div id="pre_table">
+	{% if messages %} 
+	<div id="messages"> {% for message in messages %}
+	    <p>{{message}}</p>
+	{% endfor %}
+	</div>
+	{% endif %}
+</div>
+
+{# include 'xgds_notes2/notes_table.html' with notes_list=notes_list #}
+<div id="notesDiv" style="minHeight=150px; height=150px">
+<div id="messageDiv"></div>
+<table id="notesTable" class="display"></table>
+</div>
+
+
+{% endblock content %}
 
 {% block scripts %}
-{{ block.super }}
-<script type="text/javascript">
+	{{ block.super }}
+	<script type="text/javascript" src="{{ EXTERNAL_URL }}underscore/underscore-min.js"></script>
+	<script type="text/javascript" src="{{ EXTERNAL_URL }}klass/klass.min.js"></script>
+	<script type="text/javascript" src="{{ EXTERNAL_URL }}datatables/media/js/jquery.dataTables.min.js"></script>
+  	<script type="text/javascript" src="{{ EXTERNAL_URL }}datatables-sorting-datetime-moment/index.js"></script>
+	
+	
+	{% if SSE %}
+	<script type="text/javascript" src='{{STATIC_URL}}xgds_notes2/js/liveNotesTable.js'></script>
+	{% else %}
+	<script type="text/javascript" src='{{STATIC_URL}}xgds_notes2/js/recordedNotesTable.js'></script>
+	{% endif %}
+
+{% endblock scripts %}
+
+{% block jsInit %}
 $('#pick_master').change(function() { 
 	var val = $('#pick_master')[0].checked;
 	$('input[id^=pick]').each(function(index, cbox) { 
 	    $(cbox).prop('checked',val);
 	}); 
 });
-</script>
-{% endblock scripts %}
-
-{% block content %}
-
-{% if messages %} <div id="messages"> {% for message in messages %}
-    <p>{{message}}</p>
-{% endfor %}</div>{% endif %}
-
-{% include 'xgds_notes2/notes_table.html' with notes_list=notes_list %}
-
-{% endblock content %}
+$( document ).ready(function() {
+	{% if SSE %}
+	{% with filter="" %}
+	var thefilter = '{{filter}}';
+	noteController = new liveNotes.LiveNotesController({
+	           liveNotesStreamURL: "{% url 'xgds_notes_liveNotes_stream' %}"  + thefilter,
+	           liveNotesURL: " {% url 'xgds_notes_liveNotes'  %}"  + thefilter,
+		       columns: {{ settings.XGDS_NOTES_TABLE_DEFAULT_COLUMNS|safe }}
+	       });
+	 {% endwith %}
+	 {% else %}
+	 var minHeight = $( window ).height() - $("#pre_table").height() - 200;
+	 if (minHeight < 125) {
+	 	minHeight = 125;
+	 }
+	 noteController = new recordedNotes.RecordedNotesController({
+		           recordedNotesURL: "{% url 'xgds_map_server_objectsJson_range' 'XGDS_NOTES_NOTE_MODEL' 12 %}",
+		           columns: {{ settings.XGDS_NOTES_TABLE_DEFAULT_COLUMNS|safe }},
+		           ordering: "desc",
+		           divHeight: minHeight
+		       });
+	 {% endif %}
+	});
+{% endblock jsInit %}
 
