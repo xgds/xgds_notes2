@@ -14,27 +14,28 @@
 // specific language governing permissions and limitations under the License.
 //__END_LICENSE__
 
-var noteColumns = [{ "mRender": function(data, type, full) {
-    					return '<strong><small>' + full['author'] + '</small></strong>&nbsp;' + full['content'];
-	                               }
-		 },
-		 { "mRender": function(data, type, full) {
-		     if (full['tags'].length > 0){
-			 var result = "";
-			 for (var i = 0; i < full['tags'].length; i++) {
-			     result = result + '<span class="tag label label-info">' + full['tags'][i] + '</span>&nbsp;';
-			 }
-			 return result;
-		     }
-		     return null;
-		 	}
-		 }
-	];
+var noteColumns = [{ "width": "80%",
+					 "render": function(data, type, full) {
+										return '<strong><small>' + full['author'] + '</small></strong>&nbsp;' + full['content'];
+								}
+								},
+					{ "render": function(data, type, full) {
+						if (full['tags'].length > 0){
+							var result = "";
+							for (var i = 0; i < full['tags'].length; i++) {
+								result = result + '<span class="tag label label-info">' + full['tags'][i] + '</span>&nbsp;';
+							}
+							return result;
+						}
+						return null;
+					}
+				}
+				];
 
 
 var noteDefaultOptions = {
-	aoColumns: noteColumns,
-        bAutoWidth: true,
+		columns: noteColumns,
+//        bAutoWidth: true,
         stateSave: true,
         bPaginate: true,
         iDisplayLength: -1, 
