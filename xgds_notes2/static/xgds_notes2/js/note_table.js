@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations under the License.
 //__END_LICENSE__
 
-var noteColumns = [{ "width": "80%",
+var smallNoteColumns = [{ "width": "80%",
 					 "render": function(data, type, full) {
 										return '<strong><small>' + full['author'] + '</small></strong>&nbsp;' + full['content'];
 								}
@@ -32,25 +32,38 @@ var noteColumns = [{ "width": "80%",
 				}
 				];
 
+var largeNoteColumns = [{ "width": "80%",
+	 "render": function(data, type, full) {
+						return '<strong><small>' + full['author'] + '</small></strong>&nbsp;' + full['content'];
+				}
+				},
+	{ "render": function(data, type, full) {
+		if (full['tags'].length > 0){
+			var result = "";
+			for (var i = 0; i < full['tags'].length; i++) {
+				result = result + '<span class="tag label label-info">' + full['tags'][i] + '</span>&nbsp;';
+			}
+			return result;
+		}
+		return null;
+	}
+}
+];
+
 
 var noteDefaultOptions = {
-		columns: noteColumns,
-//        bAutoWidth: true,
-        stateSave: true,
-        bPaginate: true,
-        iDisplayLength: -1, 
-        bLengthChange: true,
-        bSort: true,
-        bJQueryUI: false,
+		columns: smallNoteColumns,
+        //iDisplayLength: -1, 
+        lengthChange: true,
+        ordering: false,
         scrollY:  200,
         searching: false,
         paging: false,
-        ordering: false,
         info: false,
         language: {
             emptyTable: "No notes"
           },
-        fnCreatedRow: function(nRow, aData, iDataIndex) { // add image id to row
+        createdRow: function(nRow, aData, iDataIndex) { // add image id to row
     		$(nRow).attr('id', aData['id'])
         }
 };
@@ -62,7 +75,7 @@ var noteDefaultOptions = {
 function setupNotesTable(divID, table, initialData){
 	// initialize the table with json of existing data.
 	if ( ! $.fn.DataTable.isDataTable( table) ) {
-	    noteDefaultOptions["aaData"] = initialData;
+	    noteDefaultOptions["data"] = initialData;
 	    var theNotesTable = $(table).dataTable(noteDefaultOptions);
 	 // handle resizing
 	    var tableResizeTimeout;

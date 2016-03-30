@@ -260,6 +260,11 @@ class AbstractNote(models.Model):
             result['role'] = self.role.display_name
         else:
             result['role'] = ''
+        
+        if self.location:
+            result['location'] = self.location.display_name
+        else:
+            result['location'] = ''
             
         result['event_time'] = self.adjustedEventTime()
         result['event_timezone'] = self.event_timezone

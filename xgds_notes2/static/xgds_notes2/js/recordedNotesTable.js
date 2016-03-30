@@ -60,12 +60,65 @@ var recordedNotes = (function(global, $) {
         _addNotes: function(notes){
             console.log(notes);
         },
+        _getColumnDefs(headers){
+        	result = [];
+        	for (var i=0; i<headers.length; i++){
+        		var heading = headers[i];
+        		if (heading == 'event_time'){
+        			result.push({ render: function ( data, type, row ) {
+                                                   return getLocalTimeString(data, row.event_timezone);
+                                               },
+                                  targets: i
+                                  });
+        		} else if (heading == 'tags'){
+        			result.push({ render: function(data, type, row) {
+												if (row['tags'].length > 0){
+													var result = "";
+													for (var i = 0; i < row['tags'].length; i++) {
+														result = result + '<span class="tag label label-info">' + row['tags'][i] + '</span>&nbsp;';
+													}
+													return result;
+												}
+												return null;
+											},
+									targets: i
+									});
+        		} else if (heading == 'content'){
+        			result.push({ width: '60%', targets: heading});
+        		} else if (heading == 'link') {
+        			result.push({render: function(data, type, row){
+        								if (row['content_url'] != '') {
+        									result = '<a href="' + row['content_url'] + '" target="_blank">';
+        									if (row['content_thumbnail_url'] != '') {
+        										result += '<img src="' + row['content_thumbnail_url'] + '"';
+        										if (row['content_name'] != '') {
+        											result += 'alt="' + row['content_name'] +'"';
+        										}
+        										result += '">';
+        									} else if (row['content_name'] != ''){
+        										result += row['content_name'];
+        									} else {
+        										result += "Link";
+        									}
+        									result += '</a>';
+        									return result;
+        								}
+        								return null;
+        								},
+        						targets: i
+        						 })
+        		}
+        	}
+        	
+        	return result;
+        },
         _updateContents: function(data) {
                 if (!_.isUndefined(this._theDataTable)) {
                     this._theDataTable.fnAddData(data[0]);
                 } else {
                     var columnHeaders = this.columns.map(function(col){
-                        return { data: col}
+                        return { data: col,
+                        		 title: col}
                     });
                     $.fn.dataTable.moment( DEFAULT_TIME_FORMAT);
                     var dataTableObj = {
@@ -78,21 +131,13 @@ var recordedNotes = (function(global, $) {
                             lengthChange: true,
                             ordering: true,
                             order: [[ 0, this._ordering ]],
-                            jQueryUI: false,
                             scrollX: "100%",
                             scrollY:  this._calcDataTableHeight(),
                             lengthMenu: [[10, 20, 40, -1], [10, 20, 40, "All"]],
                             language: {
                                 lengthMenu: "Display _MENU_"
                             },
-                            columnDefs: [
-                                           {
-                                               render: function ( data, type, row ) {
-                                                   return getLocalTimeString(data, row.event_timezone);
-                                               },
-                                               targets: 0
-                                           }
-                                       ]
+                            columnDefs: this._getColumnDefs(this.columns)
                     }
                     this._setupColumnHeaders();
                     this._theDataTable = this._theTable.dataTable( dataTableObj );

@@ -75,7 +75,7 @@ XGDS_NOTES_NOTES_CHANNEL = 'live/notes'
 XGDS_NOTES_TAG_TREE_URL = '/notes/tagsTree/'
 
 # These are the columns that will show by default for all note tables.
-XGDS_NOTES_TABLE_DEFAULT_COLUMNS = ['event_time', 'author', 'content', 'tags']
+XGDS_NOTES_TABLE_DEFAULT_COLUMNS = ['event_time', 'author', 'content', 'tags', 'link']
 
 BOWER_INSTALLED_APPS = getOrCreateArray('BOWER_INSTALLED_APPS')
 BOWER_INSTALLED_APPS += ['moment',
