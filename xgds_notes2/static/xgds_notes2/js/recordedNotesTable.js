@@ -64,9 +64,15 @@ var recordedNotes = (function(global, $) {
         	result = [];
         	for (var i=0; i<headers.length; i++){
         		var heading = headers[i];
-        		if (heading == 'event_time'){
+        		if (heading == 'zone'){
         			result.push({ render: function ( data, type, row ) {
-                                                   return getLocalTimeString(data, row.event_timezone);
+                                                   return getLocalTimeString(data, row.event_timezone, "z");
+                                               },
+                                  targets: i
+                                  });
+        		} else if  (heading == 'event_time'){
+        			result.push({ render: function ( data, type, row ) {
+                                                   return getLocalTimeString(data, row.event_timezone, "MM/DD/YY HH:mm:ss");
                                                },
                                   targets: i
                                   });
@@ -121,6 +127,7 @@ var recordedNotes = (function(global, $) {
                         		 title: col}
                     });
                     $.fn.dataTable.moment( DEFAULT_TIME_FORMAT);
+                    $.fn.dataTable.moment( "MM/DD/YY HH:mm:ss");
                     var dataTableObj = {
                             data: data,
                             columns: columnHeaders,
@@ -142,7 +149,6 @@ var recordedNotes = (function(global, $) {
                     this._setupColumnHeaders();
                     this._theDataTable = this._theTable.dataTable( dataTableObj );
                     this._theDataTable._fnAdjustColumnSizing();
-//                    this._theDataTable.columns.adjust().draw();
             }
         },
         _setupColumnHeaders: function() {
