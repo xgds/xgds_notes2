@@ -65,7 +65,8 @@ $( document ).ready(function() {
 		           recordedNotesURL: "{% url 'xgds_map_server_objectsJson_default' 'XGDS_NOTES_NOTE_MODEL' %}",
 		           columns: {{ settings.XGDS_NOTES_TABLE_DEFAULT_COLUMNS|safe }},
 		           ordering: "desc",
-		           divHeight: minHeight
+		           divHeight: minHeight,
+		           editable: {% if settings.GEOCAM_UTIL_DATATABLES_EDITOR %}true{% else %} false {% endif %}
 		       });
 	 {% endif %}
 	});

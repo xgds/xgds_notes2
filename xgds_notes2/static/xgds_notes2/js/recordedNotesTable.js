@@ -5,6 +5,7 @@ var recordedNotes = (function(global, $) {
         this.columns = params.columns;
         this._ordering = params.ordering;
         this._divHeight = params.divHeight;
+        this._editable = params.editable;
         this._setup();
         this._loadCurrentNotes();
         
@@ -156,34 +157,36 @@ var recordedNotes = (function(global, $) {
                     this._setupColumnHeaders();
                     this._theDataTable = this._theTable.dataTable( dataTableObj );
                     this._theDataTable._fnAdjustColumnSizing();
-                    var editorFields = this.columns.map(function(col){
-                        return { label: col,
-                   		 		 name: col}
-                    });
-                    this._editor = new $.fn.dataTable.Editor( {
-//                    	ajax: function ( method, url, data, success, error ) {
-//                            $.ajax( {
-//                                type: 'POST',
-//                                url:  '/notes/editNote/',
-//                                data: data,
-//                                dataType: "json",
-//                                success: function (json) {
-//                                    console.log(json);
-//                                },
-//                                error: function (xhr, error, thrown) {
-//                                    console.log('error');
-//                                }
-//                            } );
-//                        },
-                    	ajax: '/notes/editNote/_id_',
-                        table: '#notesTable',
-                        idSrc:  'pk',
-                        fields: editorFields
-                    });
-                    var _this = this;
-                    $('#notesTable').on( 'click', 'tbody td.editable', function (e) {
-                        _this._editor.inline( this );
-                    } );
+                    if (this._editable){
+	                    var editorFields = this.columns.map(function(col){
+	                        return { label: col,
+	                   		 		 name: col}
+	                    });
+	                    this._editor = new $.fn.dataTable.Editor( {
+	//                    	ajax: function ( method, url, data, success, error ) {
+	//                            $.ajax( {
+	//                                type: 'POST',
+	//                                url:  '/notes/editNote/',
+	//                                data: data,
+	//                                dataType: "json",
+	//                                success: function (json) {
+	//                                    console.log(json);
+	//                                },
+	//                                error: function (xhr, error, thrown) {
+	//                                    console.log('error');
+	//                                }
+	//                            } );
+	//                        },
+	                    	ajax: '/notes/editNote/_id_',
+	                        table: '#notesTable',
+	                        idSrc:  'pk',
+	                        fields: editorFields
+	                    });
+	                    var _this = this;
+	                    $('#notesTable').on( 'click', 'tbody td.editable', function (e) {
+	                        _this._editor.inline( this );
+	                    } );
+                    }
             }
         },
         _setupColumnHeaders: function() {
