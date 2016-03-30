@@ -90,7 +90,8 @@ var recordedNotes = (function(global, $) {
 									targets: i
 									});
         		} else if (heading == 'content'){
-        			result.push({ width: '60%', targets: heading});
+        			result.push({ width: '60%', 
+        						  targets: heading});
         		} else if (heading == 'link') {
         			result.push({render: function(data, type, row){
         								if (row['content_url'] != '') {
@@ -123,8 +124,13 @@ var recordedNotes = (function(global, $) {
                     this._theDataTable.fnAddData(data[0]);
                 } else {
                     var columnHeaders = this.columns.map(function(col){
+                    	if (col == 'content' || col == 'tags'){
+                    		return { data: col,
+                    		 	   title: col,
+                    		 	   className: 'editable'}
+                    	}
                         return { data: col,
-                        		 title: col}
+                		 	   title: col};
                     });
                     $.fn.dataTable.moment( DEFAULT_TIME_FORMAT);
                     $.fn.dataTable.moment( "MM/DD/YY HH:mm:ss");
@@ -133,6 +139,7 @@ var recordedNotes = (function(global, $) {
                             columns: columnHeaders,
                             autoWidth: true,
                             stateSave: false,
+                            select: true,
                             paging: true,
                             pageLength: 10, 
                             lengthChange: true,
@@ -149,17 +156,33 @@ var recordedNotes = (function(global, $) {
                     this._setupColumnHeaders();
                     this._theDataTable = this._theTable.dataTable( dataTableObj );
                     this._theDataTable._fnAdjustColumnSizing();
-                    this._editor = new $.fn.dataTable.Editor( {
-                        ajax: "#",
-                        table: this._theTable,
-                        fields: [ {
-                                	label: "Contents:",
-                                	name: "contents"
-                            	  }
-                        		]
+                    var editorFields = this.columns.map(function(col){
+                        return { label: col,
+                   		 		 name: col}
                     });
-                    this._theTable.on( 'click', 'tbody td:not(:first-child)', function (e) {
-                        editor.inline( this );
+                    this._editor = new $.fn.dataTable.Editor( {
+//                    	ajax: function ( method, url, data, success, error ) {
+//                            $.ajax( {
+//                                type: 'POST',
+//                                url:  '/notes/editNote/',
+//                                data: data,
+//                                dataType: "json",
+//                                success: function (json) {
+//                                    console.log(json);
+//                                },
+//                                error: function (xhr, error, thrown) {
+//                                    console.log('error');
+//                                }
+//                            } );
+//                        },
+                    	ajax: '/notes/editNote/_id_',
+                        table: '#notesTable',
+                        idSrc:  'pk',
+                        fields: editorFields
+                    });
+                    var _this = this;
+                    $('#notesTable').on( 'click', 'tbody td.editable', function (e) {
+                        _this._editor.inline( this );
                     } );
             }
         },

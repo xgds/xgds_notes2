@@ -3,6 +3,12 @@
 
 {% load tz %}
 
+{% block cssExtras %}
+{{ block.super }}
+{% include "xgds_notes2/NoteTableCSS.html" %}
+{% endblock cssExtras %}
+
+
 {% block content %}
 <div id="pre_table">
 <p text-align="right">You are {{ user.username }} ({% for key, value in user_session.items %}{{ value }}, {% endfor %}) [<a href="{% url 'xgds_notes_edit_user_session' %}" >change role/location</a>]</p>

@@ -13,7 +13,8 @@
 # CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 #__END_LICENSE__
-from django.utils import timezone
+import traceback
+import re
 from datetime import datetime, timedelta
 import itertools
 import json
@@ -21,6 +22,7 @@ import pytz
 import csv
 from dateutil.parser import parse as dateparser
 
+from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -258,6 +260,33 @@ def recordSimple(request):
                                                   'data': form.errors}
                                         }),
                             content_type='application/json')
+
+@login_required
+def editNote(request, note_pk=None):
+    try:
+        for key, value in request.POST.iteritems():
+            strkey = str(key)
+            if strkey.startswith('data'):
+                p = re.compile(r'^data\[(?P<pk>\d+)\]\[(?P<attr>\w*)\]')
+                m = p.match(strkey)
+                if m:
+                    if not note_pk:
+                        note_pk = m.group('pk')
+                    note = Note.get().objects.get(pk=int(note_pk))
+                    attr = m.group('attr')
+                    setattr(note, attr, str(value))
+                    note.modification_time = datetime.now(pytz.utc)
+                    note.save()
+                    return HttpResponse(json.dumps({'data': [note.toMapDict()]}, cls=DatetimeJsonEncoder),
+                                        content_type='application/json')
+    except:
+        traceback.print_exc()
+        return HttpResponse(json.dumps({'error': {'code': -32099,
+                                                  'message': 'problem submitting note'
+                                                  }
+                                        }),
+                            content_type='application/json')
+
 
 
 def getSortOrder():

@@ -253,7 +253,9 @@ class AbstractNote(models.Model):
         Return a reduced dictionary that will be turned to JSON for rendering in a map
         """
         result = modelToDict(self)
-
+        
+        result['pk'] = int(self.pk)
+        del(result['id'])
         result['type'] = self.__class__.__name__
         result['author'] = getUserName(self.author)
         if self.role:

@@ -1,6 +1,11 @@
 {% extends "xgds_notes2/notes_base.html" %}
 {% load tz %}
 
+{% block cssExtras %}
+{{ block.super }}
+{% include "xgds_notes2/NoteTableCSS.html" %}
+{% endblock cssExtras %}
+
 {% block content %}
 <div id="pre_table">
 	{% if messages %} 
