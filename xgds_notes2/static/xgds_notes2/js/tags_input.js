@@ -37,22 +37,22 @@ function initializeInput(input) {
     }
     
     initializeTags();
-	    $(input).tagsinput({
-		  itemValue: 'id',
-		  itemText: 'name',
-	//	  confirmKeys: [13, 44],
-		  typeaheadjs: {
-		    name: 'allTags',
-		    displayKey: 'name',
-		    source: allTags.ttAdapter(),
-		    templates: {
-			    empty: [
-			      '<div class="empty-message">',
-			        '&nbsp;Tag not found',
-			      '</div>'
-			    ].join('\n')
-			  }
+    $(input).tagsinput({
+	  itemValue: 'id',
+	  itemText: 'name',
+//	  confirmKeys: [13, 44],
+	  typeaheadjs: {
+	    name: 'allTags',
+	    displayKey: 'name',
+	    source: allTags.ttAdapter(),
+	    templates: {
+		    empty: [
+		      '<div class="empty-message">',
+		        '&nbsp;Tag not found',
+		      '</div>'
+		    ].join('\n')
 		  }
-		});
+	  }
+	});
     
 }

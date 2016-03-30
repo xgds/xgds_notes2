@@ -264,6 +264,8 @@ def recordSimple(request):
 @login_required
 def editNote(request, note_pk=None):
     try:
+        tags_list = []
+        tags_changed = False
         for key, value in request.POST.iteritems():
             strkey = str(key)
             if strkey.startswith('data'):
@@ -274,11 +276,24 @@ def editNote(request, note_pk=None):
                         note_pk = m.group('pk')
                     note = Note.get().objects.get(pk=int(note_pk))
                     attr = m.group('attr')
-                    setattr(note, attr, str(value))
-                    note.modification_time = datetime.now(pytz.utc)
-                    note.save()
-                    return HttpResponse(json.dumps({'data': [note.toMapDict()]}, cls=DatetimeJsonEncoder),
-                                        content_type='application/json')
+                    if attr != 'tags':
+                        setattr(note, attr, str(value))
+                    else:
+                        tags_changed = True
+                        tag_regex = re.compile(r'^data\[(?P<pk>\d+)\]\[(?P<attr>\w*)\]\[(?P<index>\d+)\]\[(?P<tag_attr>\w*)\]')
+                        tag_match = tag_regex.match(strkey)
+                        if tag_match:
+                            tag_attr = tag_match.group('tag_attr')
+                            if tag_attr == 'id':
+                                tags_list.append(int(value))
+
+        note.modification_time = datetime.now(pytz.utc)
+        if tags_changed:
+            linkTags(note, tags_list)
+        else:
+            note.save()
+        return HttpResponse(json.dumps({'data': [note.toMapDict()]}, cls=DatetimeJsonEncoder),
+                            content_type='application/json')
     except:
         traceback.print_exc()
         return HttpResponse(json.dumps({'error': {'code': -32099,

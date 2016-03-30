@@ -125,13 +125,13 @@ var recordedNotes = (function(global, $) {
                     this._theDataTable.fnAddData(data[0]);
                 } else {
                     var columnHeaders = this.columns.map(function(col){
-                    	if (col == 'content' || col == 'tags'){
-                    		return { data: col,
-                    		 	   title: col,
-                    		 	   className: 'editable'}
+                    	result = { data: col,
+                 		 	   	   title: col};
+                    	
+                    	if (col == 'content' || col == 'tags') {
+                    		result['className'] = 'editable';
                     	}
-                        return { data: col,
-                		 	   title: col};
+                        return result;
                     });
                     $.fn.dataTable.moment( DEFAULT_TIME_FORMAT);
                     $.fn.dataTable.moment( "MM/DD/YY HH:mm:ss");
@@ -159,8 +159,13 @@ var recordedNotes = (function(global, $) {
                     this._theDataTable._fnAdjustColumnSizing();
                     if (this._editable){
 	                    var editorFields = this.columns.map(function(col){
-	                        return { label: col,
-	                   		 		 name: col}
+	                        result = { label: col,
+	                   		 		 	name: col}
+	                        if (col == 'tags'){
+	                        	result['type'] = 'tagsinput';
+	                        }
+	                        return result;
+
 	                    });
 	                    this._editor = new $.fn.dataTable.Editor( {
 	//                    	ajax: function ( method, url, data, success, error ) {
