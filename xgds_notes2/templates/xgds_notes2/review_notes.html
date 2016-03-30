@@ -23,8 +23,7 @@
 	{{ block.super }}
 	<script type="text/javascript" src="{{ EXTERNAL_URL }}underscore/underscore-min.js"></script>
 	<script type="text/javascript" src="{{ EXTERNAL_URL }}klass/klass.min.js"></script>
-	<script type="text/javascript" src="{{ EXTERNAL_URL }}datatables/media/js/jquery.dataTables.min.js"></script>
-  	<script type="text/javascript" src="{{ EXTERNAL_URL }}datatables-sorting-datetime-moment/index.js"></script>
+	{% include "xgds_notes2/NoteTableJS.html" %}
 	
 	
 	{% if SSE %}
@@ -58,7 +57,7 @@ $( document ).ready(function() {
 	 	minHeight = 125;
 	 }
 	 noteController = new recordedNotes.RecordedNotesController({
-		           recordedNotesURL: "{% url 'xgds_map_server_objectsJson_range' 'XGDS_NOTES_NOTE_MODEL' 12 %}",
+		           recordedNotesURL: "{% url 'xgds_map_server_objectsJson_default' 'XGDS_NOTES_NOTE_MODEL' %}",
 		           columns: {{ settings.XGDS_NOTES_TABLE_DEFAULT_COLUMNS|safe }},
 		           ordering: "desc",
 		           divHeight: minHeight

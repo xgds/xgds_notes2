@@ -149,6 +149,18 @@ var recordedNotes = (function(global, $) {
                     this._setupColumnHeaders();
                     this._theDataTable = this._theTable.dataTable( dataTableObj );
                     this._theDataTable._fnAdjustColumnSizing();
+                    this._editor = new $.fn.dataTable.Editor( {
+                        ajax: "#",
+                        table: this._theTable,
+                        fields: [ {
+                                	label: "Contents:",
+                                	name: "contents"
+                            	  }
+                        		]
+                    });
+                    this._theTable.on( 'click', 'tbody td:not(:first-child)', function (e) {
+                        editor.inline( this );
+                    } );
             }
         },
         _setupColumnHeaders: function() {
