@@ -29,7 +29,6 @@ var recordedNotes = (function(global, $) {
          */
         _setupUIListeners: function() {
             var _self = this;
-           
         },
 
         /**
@@ -131,9 +130,6 @@ var recordedNotes = (function(global, $) {
                     	if (col == 'content' || col == 'tags') {
                     		result['className'] = 'editable';
                     	} 
-//                    	else if (col == 'tags') {
-//                    		result['className'] = 'edittags';
-//                    	}
                         return result;
                     });
                     $.fn.dataTable.moment( DEFAULT_TIME_FORMAT);
@@ -182,9 +178,6 @@ var recordedNotes = (function(global, $) {
 	                    $('#notesTable').on( 'click', 'tbody td.editable', function (e) {
 	                        _this._editor.inline( this );
 	                    } );
-//	                    $('#notesTable').on( 'click', 'tbody td.edittags', function (e) {
-//	                        _this._editor.inline( this, 'tags' );
-//	                    } );
                     }
             }
         },
