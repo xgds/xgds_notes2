@@ -3,7 +3,6 @@
 
 {% block cssExtras %}
 {{ block.super }}
-{% include "xgds_notes2/NoteTableCSS.html" %}
 {% endblock cssExtras %}
 
 {% block content %}
@@ -29,7 +28,6 @@
 	{{ block.super }}
 	<script type="text/javascript" src="{{ EXTERNAL_URL }}underscore/underscore-min.js"></script>
 	<script type="text/javascript" src="{{ EXTERNAL_URL }}klass/klass.min.js"></script>
-	{% include "xgds_notes2/NoteTableJS.html" %}
 	
 	
 	{% if SSE %}
