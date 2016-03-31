@@ -29,14 +29,6 @@ _fieldTypes.tagsinput = {
         // hook the input to our tags input
         initializeInput(field._taginput);
 
-        $('button.inputButton', field._input).click( function () {
-            if ( field._enabled ) {
-                _this.set( field.name, $(this).attr('value') );
-            }
-     
-            return false;
-        } );
-        
         _this.on('postSubmit', function( e, data, action ){
         	_this.closeable = true;
         });
