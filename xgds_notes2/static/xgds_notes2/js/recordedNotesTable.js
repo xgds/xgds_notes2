@@ -163,29 +163,22 @@ var recordedNotes = (function(global, $) {
 	                   		 		 	name: col}
 	                        if (col == 'tags'){
 	                        	result['type'] = 'tagsinput';
+	                        } else if (col == 'content'){
+	                        	result['type'] = 'text';
 	                        }
 	                        return result;
 
 	                    });
 	                    this._editor = new $.fn.dataTable.Editor( {
-	//                    	ajax: function ( method, url, data, success, error ) {
-	//                            $.ajax( {
-	//                                type: 'POST',
-	//                                url:  '/notes/editNote/',
-	//                                data: data,
-	//                                dataType: "json",
-	//                                success: function (json) {
-	//                                    console.log(json);
-	//                                },
-	//                                error: function (xhr, error, thrown) {
-	//                                    console.log('error');
-	//                                }
-	//                            } );
-	//                        },
 	                    	ajax: '/notes/editNote/_id_',
 	                        table: '#notesTable',
 	                        idSrc:  'pk',
-	                        fields: editorFields
+	                        fields: editorFields//,
+//	                        formOptions: {
+//	                            inline: {
+//	                            	onEsc:  'close'
+//	                            }
+//	                        }
 	                    });
 	                    var _this = this;
 	                    $('#notesTable').on( 'click', 'tbody td.editable', function (e) {

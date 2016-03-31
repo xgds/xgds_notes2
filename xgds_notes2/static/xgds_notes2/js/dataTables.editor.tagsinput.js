@@ -17,7 +17,7 @@ var _fieldTypes = DataTable.ext.editorFields;
 _fieldTypes.tagsinput = {
     create: function ( field ) {
     	var _this = this;
-    	_this.closeable = false;
+    	_this.closeable = true;
     	 
         field._enabled = true;
         field._input = $(
@@ -41,9 +41,9 @@ _fieldTypes.tagsinput = {
         	_this.closeable = true;
         });
         
-        _this.on('preClose', function( e ){
-        	return _this.closeable;
-        });
+//        _this.on('preClose', function( e ){
+//        	return _this.closeable;
+//        });
      
         return field._input;
     },
@@ -55,6 +55,9 @@ _fieldTypes.tagsinput = {
  
     set: function ( field, val ) {
     	this.closeable = false;
+    	this.one('preClose', function( e ){
+        	return this.closeable;
+        });
     	field._taginput.tagsinput('removeAll');
     	var existing_tags = val;
     	if (existing_tags != undefined){
