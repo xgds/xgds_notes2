@@ -26,7 +26,6 @@ urlpatterns = [
     url(r'^record/?$', views.record, {}, 'xgds_notes_record'),
     url(r'^recordSimple/?$', views.recordSimple, {}, 'record_simple'),
     url(r'^editNote/(?P<note_pk>[\d]+)$', views.editNote, {}, 'xgds_notes_edit_note'),
-    url(r'^editNote/$', views.editNote, {}, 'xgds_notes_edit_note'),
     url(r'^record/session/?$', views.editUserSession, {}, 'xgds_notes_edit_user_session'),
     url(r'^record/session/ajax/?$', views.editUserSession, {'ajax':True}, 'xgds_notes_edit_user_session_ajax'),
     url(r'time.txt', views.serverTime, {}, 'server_time'),

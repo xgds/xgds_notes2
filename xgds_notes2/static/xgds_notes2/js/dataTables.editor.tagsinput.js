@@ -35,6 +35,23 @@ _fieldTypes.tagsinput = {
      
             return false;
         } );
+        
+        _this.on('preSubmit', function( e, data, action ){
+        	console.log(data);
+        });
+        
+        _this.on('preClose', function( e ){
+        	return false;
+        });
+        field._taginput.on('itemRemoved', function(event) {
+        	_this.set( field.name, field._taginput.tagsinput('items'));
+//        	_this.submit();
+        });
+        
+//        field._taginput.on('itemAdded', function(event) {
+//        	_this.set( field.name, field._taginput.tagsinput('items'));
+//        	_this.submit();
+//        });
      
         return field._input;
     },
