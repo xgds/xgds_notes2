@@ -29,20 +29,23 @@ _fieldTypes.tagsinput = {
         initializeInput(field._taginput);
 
         _this.on('postSubmit', function( e, data, action ){
-        	_this.closeable = true;
+        	if (_this.displayed()[0] === 'tags'){
+        		_this.closeable = true;
+        	}
         });
         
-        _this.on('preOpen', function( e, node, data ){
-        	var theField = e.currentTarget.s.includeFields[0]
-        	if (theField == 'tags'){
-            	_this.closeable = false;
-        	} else {
-            	_this.closeable = true;
+        _this.on('open', function( e, node, data ){
+        	if (_this.displayed()[0] === 'tags'){
+        		_this.closeable = false;
         	}
         });
         
         _this.on('preClose', function( e ){
-        	return _this.closeable;
+        	if (_this.displayed()[0] === 'tags'){
+            	return _this.closeable;
+        	} else {
+        		return true;
+        	}
         });
      
         return field._input;
