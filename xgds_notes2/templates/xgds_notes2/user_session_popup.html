@@ -1,11 +1,12 @@
 
-<div id="edit_user_session_div">
+<div id="edit_user_session_div" style="display:none">
 <form action="#" method="post" id="edit_user_session_form">
     {{ form.as_p }}
 </form>
 </div>
 
 <script language="javascript">
+function editUserSession(nextFunction, context) {
 $('#edit_user_session_div').dialog({
 	        dialogClass: 'no-close',
 	        modal: false,
@@ -30,7 +31,9 @@ $('#edit_user_session_div').dialog({
 		                context: $(this),
 		                success: function(data)
 		                {
+		                    user_session_exists=true;
 		                    $( this ).dialog( "close" );
+		                    window[nextFunction](context);
 		                },
 		                error: function(data)
 		                {	
@@ -40,5 +43,5 @@ $('#edit_user_session_div').dialog({
 	            }
 	        }
 	    });
-
+}
 </script>

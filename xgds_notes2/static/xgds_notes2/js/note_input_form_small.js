@@ -45,83 +45,91 @@ function hideError(parent) {
  * Form submission
  *
  */
-function hookNoteSubmit() {
-    $('.noteSubmit').on('click', function(e) {
-        e.preventDefault();
-        var parent = $(this).closest('form');
-        var containerDiv = parent.parent().parent();
-        
-        // validate and process form here
-        var content_text = parent.find('textarea#id_content');
-        var content = content_text.serialize(); 
-        var contentVal = content_text.val();
+function finishNoteSubmit(context) {
+    var parent = $(context).closest('form');
+    var containerDiv = parent.parent().parent();
+    
+    // validate and process form here
+    var content_text = parent.find('textarea#id_content');
+    var content = content_text.serialize(); 
+    var contentVal = content_text.val();
 
-        hideError(containerDiv);
-        var tagInput = parent.find('input#id_tags');
-        var tags = tagInput.val();
+    hideError(containerDiv);
+    var tagInput = parent.find('input#id_tags');
+    var tags = tagInput.val();
 
-        if ((content == '') && (tags == '')) {
-            content_text.focus();
-            showError('Note must not be empty.');
-            return false;
-        }
-        var extras = parent.find('input#id_extras').val();
-        var dataString = content + '&tags=' + tags + '&extras=' + extras;
-        dataString = dataString + '&object_id=' + parent.find('#id_object_id').val();
-        dataString = dataString + '&app_label=' + parent.find('#id_app_label').val();
-        dataString = dataString + '&model_type=' + parent.find('#id_model_type').val();
-        dataString = dataString + '&position_id=' + parent.find('#id_position_id').val();
-        
-        var event_hidden = parent.find('#id_event_time');
-        var event_timestring = event_hidden.val();
-        try {
-            if (event_timestring !== undefined){
-                dataString = dataString + '&event_time=' + event_timestring;
-                try {
-                	var timezone_hidden = parent.find('#id_event_timezone');
-                	dataString = dataString + "&event_timezone=" + timezone_hidden.val();
-                } catch(err){
-                	// no timezone
-                }
-            } else {
-                dataString = dataString + "&serverNow=true";
+    if ((content == '') && (tags == '')) {
+        content_text.focus();
+        showError('Note must not be empty.');
+        return false;
+    }
+    var extras = parent.find('input#id_extras').val();
+    var dataString = content + '&tags=' + tags + '&extras=' + extras;
+    dataString = dataString + '&object_id=' + parent.find('#id_object_id').val();
+    dataString = dataString + '&app_label=' + parent.find('#id_app_label').val();
+    dataString = dataString + '&model_type=' + parent.find('#id_model_type').val();
+    dataString = dataString + '&position_id=' + parent.find('#id_position_id').val();
+    
+    var event_hidden = parent.find('#id_event_time');
+    var event_timestring = event_hidden.val();
+    try {
+        if (event_timestring !== undefined){
+            dataString = dataString + '&event_time=' + event_timestring;
+            try {
+            	var timezone_hidden = parent.find('#id_event_timezone');
+            	dataString = dataString + "&event_timezone=" + timezone_hidden.val();
+            } catch(err){
+            	// no timezone
             }
-        }
-        catch(err) {
+        } else {
             dataString = dataString + "&serverNow=true";
         }
-        
-        $.ajax({
-            type: 'POST',
-            url: note_submit_url,
-            data: dataString,
-            success: function(data) {
-        	var content = data[0].content;
-        	if (content.length > 30){
-        	    content = content.substring(0, 30);
-        	}
-                showSuccess('Saved ' + content, containerDiv);
-                content_text.val('');
-                tagInput.tagsinput('removeAll');
-                var theNotesTable = containerDiv.find('table#notes_list');
-                if (theNotesTable.length > 0){
-                    if ( !$.fn.DataTable.isDataTable( theNotesTable) ) {
-                	setupNotesTable(containerDiv.id, theNotesTable, data[0]);
-                    } else {
-                	theNotesTable.dataTable().fnAddData(data[0]);
-                    }
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                if (errorThrown == '' && textStatus == 'error') {
-                    showError('Lost server connection', containerDiv);
+    }
+    catch(err) {
+        dataString = dataString + "&serverNow=true";
+    }
+    
+    $.ajax({
+        type: 'POST',
+        url: note_submit_url,
+        data: dataString,
+        success: function(data) {
+    	var content = data[0].content;
+    	if (content.length > 30){
+    	    content = content.substring(0, 30);
+    	}
+            showSuccess('Saved ' + content, containerDiv);
+            content_text.val('');
+            tagInput.tagsinput('removeAll');
+            var theNotesTable = containerDiv.find('table#notes_list');
+            if (theNotesTable.length > 0){
+                if ( !$.fn.DataTable.isDataTable( theNotesTable) ) {
+            	setupNotesTable(containerDiv.id, theNotesTable, data[0]);
                 } else {
-                    showError(textStatus + ' ' + errorThrown, containerDiv);
+            	theNotesTable.dataTable().fnAddData(data[0]);
                 }
-                console.log(jqXHR.getAllResponseHeaders());
             }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            if (errorThrown == '' && textStatus == 'error') {
+                showError('Lost server connection', containerDiv);
+            } else {
+                showError(textStatus + ' ' + errorThrown, containerDiv);
+            }
+            console.log(jqXHR.getAllResponseHeaders());
+        }
 
-        });
+    });
+}
+
+function hookNoteSubmit() {
+    $('.noteSubmit').on('click', function(e) {
+    	e.preventDefault();
+    	if (!user_session_exists){
+    		editUserSession('finishNoteSubmit', this);
+    	} else {
+    		finishNoteSubmit(this);
+    	}
     });
 }
 

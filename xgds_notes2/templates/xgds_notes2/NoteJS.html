@@ -1,16 +1,26 @@
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 	    server_time_url = "{% url 'server_time' %}";
 	    note_submit_url = "{% url 'record_simple' %}";
+	    user_session_exists = true;
 </script>
 {% include "xgds_core/timeJS.html" %}
 <!--  TODO remove the below 2 lines once we switch to bootstrap -->
 <script src="{{ EXTERNAL_URL }}tether/dist/js/tether.min.js"></script>
-<script language="javascript" type="text/javascript" src="{{ EXTERNAL_URL }}bootstrap/dist/js/bootstrap.min.js"></script>
-<script language="javascript" type="text/javascript" src="{{ EXTERNAL_URL }}typeahead.js/dist/typeahead.bundle.min.js"></script> 
-<script language="javascript" type="text/javascript" src="{{ EXTERNAL_URL }}bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js"></script>
+<script type="text/javascript" src="{{ EXTERNAL_URL }}bootstrap/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="{{ EXTERNAL_URL }}typeahead.js/dist/typeahead.bundle.min.js"></script> 
+<script type="text/javascript" src="{{ EXTERNAL_URL }}bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js"></script>
 {% include "xgds_notes2/NoteTableJS.html" %}
 <script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/note_create_form.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/note_input_form_small.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/note_table.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/tags_input.js"></script>
 
+{% if user.is_authenticated %}
+ {% if not request.session.notes_user_session %}
+ 	{% load user_session_popup %}
+ 	{% show_user_session_popup %}
+ 	<script type="text/javascript">
+ 		user_session_exists = false;
+ 	</script>
+ {% endif %}
+{% endif %}
