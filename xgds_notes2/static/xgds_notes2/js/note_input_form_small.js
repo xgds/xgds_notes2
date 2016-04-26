@@ -140,15 +140,26 @@ function setupNotesUI(){
     var $tagsElems = $(".tagsinput");
     $tagsElems.resizable();
     
+    initializeInput();
     hookNoteSubmit();
     
-    if (!_.isUndefined(xgds_video.displaySegments)){
-        for (var source in xgds_video.displaySegments) {
-            toggleNoteInput(source);
-        }
-    } 
+    try {
+	    if (!_.isUndefined(xgds_video.displaySegments)){
+	        for (var source in xgds_video.displaySegments) {
+	            toggleNoteInput(source);
+	        }
+	    }
+    } catch (err){
+    	//gulp
+    }
     
+	$("#add_note_button").click(function(event) {
+		    event.preventDefault();
+		    $("#notes_input").show();
+		});
 }
+
+
 
 function toggleNoteInput(sourceName){
     var sectionName = "#" + sourceName + "_noteInput";

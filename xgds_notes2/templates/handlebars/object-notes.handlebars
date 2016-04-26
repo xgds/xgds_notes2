@@ -1,0 +1,27 @@
+<div id="object_notes"> 
+	<button id="add_note_button" class="small float_button">Add Note</button>
+	<strong>Notes</strong>
+	<div id="notes_content" class="tab-content active">
+		<div class="notediv" id="notes_input" hidden>
+			<form id="create_note" class="create_note_form" action="" method="POST">
+				<input type="hidden" id="id_event_time" >
+				<input type="hidden" id="id_event_timezone" >
+				<input type="hidden" id="id_app_label" >
+				<input type="hidden" id="id_model_type" >
+				<input type="hidden" id="id_object_id" >
+				<input type="hidden" id="id_position_id" >
+				<div id="error_div" class="noteerrordiv">
+					<span id="error_icon">&nbsp;</span>
+					<span id="error_content"></span>
+				</div>
+				<div class="notecontainer" >
+					<textarea class="noteinput"  id="id_content" type="text" name="content" maxlength="500" style="height:50px;" placeholder="Enter notes here"></textarea>
+	        		<input class="taginput"  id="id_tags" placeholder="Choose tags" type="text" />
+	        		<input id="save_note" type="submit" value="Save" class="mybutton noteSubmit small">
+        		</div>
+  			</form>
+		</div>
+		<table id="notes_list" class="notes_list display" width="100%" hidden>
+		</table>
+	</div>
+</div>

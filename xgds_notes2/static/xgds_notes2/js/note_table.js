@@ -70,7 +70,7 @@ function setupNotesTable(divID, table, initialData){
 	if ( ! $.fn.DataTable.isDataTable( table) ) {
 	    noteDefaultOptions['data'] = initialData;
 	    var theNotesTable = $(table).dataTable(noteDefaultOptions);
-	    theNotesTable._fnAdjustColumnSizing();
+	    //theNotesTable._fnAdjustColumnSizing();
 	    if (HAS_DATATABLES_EDITOR){
 	    	var editorFields = smallNoteColumns.map(function(col){
                 result = { name: col.data}
