@@ -104,9 +104,9 @@ function finishNoteSubmit(context) {
             var theNotesTable = containerDiv.find('table#notes_list');
             if (theNotesTable.length > 0){
                 if ( !$.fn.DataTable.isDataTable( theNotesTable) ) {
-            	setupNotesTable(containerDiv.id, theNotesTable, data[0]);
+                	setupNotesTable(containerDiv.id, theNotesTable, data[0]);
                 } else {
-            	theNotesTable.dataTable().fnAddData(data[0]);
+                	theNotesTable.dataTable().fnAddData(data[0]);
                 }
             }
         },

@@ -116,6 +116,11 @@ function setupNotesTable(divID, table, initialData){
 }
 
 function getNotesForObject(app_label, model_type, object_id, divID, table){
+	// always clears table first.
+	if ( $.fn.DataTable.isDataTable( table) ) {
+		var dt = $(tbl).dataTable()
+		dt.fnClearTable();
+	}
     url = '/notes/notes/' + app_label + '/' + model_type + '/' + object_id;
     $.ajax({url: url,
 	    type: 'POST',
