@@ -41,6 +41,14 @@ function hideError(parent) {
     parent.find('#error_div').hide();
 }
 
+function getErrorString(jqXHR){
+	var result = jqXHR.responseJSON.error.message;
+	for (var key in jqXHR.responseJSON.error.data) {
+		result = result + " " + key + ": " + jqXHR.responseJSON.error.data[key];
+	}
+	return result;
+}
+
 /*
  * Form submission
  *
@@ -114,7 +122,7 @@ function finishNoteSubmit(context) {
             if (errorThrown == '' && textStatus == 'error') {
                 showError('Lost server connection', containerDiv);
             } else {
-                showError(textStatus + ' ' + errorThrown, containerDiv);
+            	showError(getErrorString(jqXHR), containerDiv);
             }
             console.log(jqXHR.getAllResponseHeaders());
         }
@@ -142,7 +150,12 @@ function setupNotesUI(){
     
     initializeInput();
     hookNoteSubmit();
-    
+
+	$("#add_note_button").click(function(event) {
+	    event.preventDefault();
+	    $("#notes_input").show();
+	});
+
     try {
 	    if (!_.isUndefined(xgds_video.displaySegments)){
 	        for (var source in xgds_video.displaySegments) {
@@ -153,10 +166,6 @@ function setupNotesUI(){
     	//gulp
     }
     
-	$("#add_note_button").click(function(event) {
-		    event.preventDefault();
-		    $("#notes_input").show();
-		});
 }
 
 

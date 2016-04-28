@@ -259,7 +259,8 @@ def recordSimple(request):
                                                   'message': 'problem submitting note',
                                                   'data': form.errors}
                                         }),
-                            content_type='application/json')
+                            content_type='application/json',
+                            status=406)
 
 
 @login_required
