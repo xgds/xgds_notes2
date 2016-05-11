@@ -143,10 +143,7 @@ function hookNoteSubmit() {
 
 function setupNotesUI(){
     var $noteElems = $(".noteinput");
-    $noteElems.resizable();
-    
     var $tagsElems = $(".tagsinput");
-    $tagsElems.resizable();
     
     initializeInput();
     hookNoteSubmit();
