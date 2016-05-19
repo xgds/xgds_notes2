@@ -14,45 +14,45 @@
 // specific language governing permissions and limitations under the License.
 //__END_LICENSE__
 
-var allTags = undefined;
-
-function initializeTags() {
-    if (allTags == undefined){
-        allTags = new Bloodhound({
-    	  datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
-    	  queryTokenizer: Bloodhound.tokenizers.whitespace,
-    	  prefetch: {
-    	      cache: false, // for now while we build up tag library
-    	      ttl: 1,
-    	      url: '/notes/tagsArray.json'
-    	  }
-    	});
-        allTags.initialize();
-    }
-}
-
-function initializeInput(input) {
-    if (input == undefined){
-    	input = $('.taginput');
-    }
-    
-    initializeTags();
-    $(input).tagsinput({
-	  itemValue: 'id',
-	  itemText: 'name',
-//	  confirmKeys: [13, 44],
-	  typeaheadjs: {
-	    name: 'allTags',
-	    displayKey: 'name',
-	    source: allTags.ttAdapter(),
-	    templates: {
-		    empty: [
-		      '<div class="empty-message">',
-		        '&nbsp;Tag not found',
-		      '</div>'
-		    ].join('\n')
+var xgds_notes = xgds_notes || {};
+$.extend(xgds_notes,{
+	allTags:undefined,
+	initializeTags: function() {
+	    if (xgds_notes.allTags == undefined){
+	        xgds_notes.allTags = new Bloodhound({
+	    	  datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+	    	  queryTokenizer: Bloodhound.tokenizers.whitespace,
+	    	  prefetch: {
+	    	      cache: false, // for now while we build up tag library
+	    	      ttl: 1,
+	    	      url: '/notes/tagsArray.json'
+	    	  }
+	    	});
+	        xgds_notes.allTags.initialize();
+	    }
+	},
+	initializeInput: function(input) {
+	    if (input == undefined){
+	    	input = $('.taginput');
+	    }
+	    
+	    xgds_notes.initializeTags();
+	    $(input).tagsinput({
+		  itemValue: 'id',
+		  itemText: 'name',
+	//	  confirmKeys: [13, 44],
+		  typeaheadjs: {
+		    name: 'allTags',
+		    displayKey: 'name',
+		    source: xgds_notes.allTags.ttAdapter(),
+		    templates: {
+			    empty: [
+			      '<div class="empty-message">',
+			        '&nbsp;Tag not found',
+			      '</div>'
+			    ].join('\n')
+			  }
 		  }
-	  }
-	});
-    
-}
+		});
+	}
+});

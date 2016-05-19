@@ -26,7 +26,7 @@ _fieldTypes.tagsinput = {
         field._taginput = field._input.find(".taginput");
 
         // hook the input to our tags input
-        initializeInput(field._taginput);
+        xgds_notes.initializeInput(field._taginput);
 
         _this.on('postSubmit', function( e, data, action ){
         	if (_this.displayed()[0] === 'tags'){

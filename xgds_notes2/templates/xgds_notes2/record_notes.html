@@ -30,7 +30,9 @@
 {% endblock content %}
 
 {% block jsInit %}
-{% include "xgds_notes2/NoteJSInit.html" %}
+	var tagInput = $("#create_note").find('input#id_tags');
+	xgds_notes.initializeInput(tagInput);
+	xgds_notes.initializeNotesForm(true);
 {% endblock jsInit %}
 
 {% block scripts %}
@@ -57,7 +59,7 @@ clearForm = function(){
 	var tagInput = $("#create_note").find('input#id_tags');
 	tagInput.tagsinput('removeAll');
 	
-	clear_event_time();
+	xgds_notes.clear_event_time();
 	$("#create_note").find('textarea#id_content').val('');
 }
 

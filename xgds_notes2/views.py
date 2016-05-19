@@ -20,6 +20,8 @@ import itertools
 import json
 import pytz
 import csv
+import ast
+
 from dateutil.parser import parse as dateparser
 
 from django.utils import timezone
@@ -133,9 +135,15 @@ def populateNoteData(request, form):
     data.pop('model_type')
     tags = data.pop('tags')
     
-    #TODO deal with extras
-    data.pop('extras')
-
+    # handle extras
+    try:
+        extras = data.pop('extras')
+        if str(extras) != 'undefined':
+            extrasDict = ast.literal_eval(extras)
+            data.update(extrasDict)
+    except:
+        pass
+    
     return data, tags, errors
 
 
@@ -205,7 +213,6 @@ def record(request):
             else:
                 return HttpResponse(json.dumps({'success': 'true'}), content_type='application/json')
 
-            #return redirect('xgds_notes_record')
         else:
             return HttpResponse(str(form.errors), status=400)  # Bad Request
     elif request.method == 'GET':
@@ -218,10 +225,6 @@ def record(request):
             user_session = {field.name: field.field.clean(field.data)
                             for field in usersession_form}
 
-#             notes_list = Note.get().objects.filter(author=request.user, creation_time__gte=datetime.now(pytz.utc) - timedelta(hours=12)).order_by('-creation_time')
-            # filter results to notes CREATED < 12 hours old.
-#             notes_list = notes_list.filter(creation_time__gte=datetime.now(pytz.utc) - timedelta(hours=12))
-
             return render(
                 request,
                 'xgds_notes2/record_notes.html',
@@ -229,8 +232,6 @@ def record(request):
                     'user': request.user,
                     'user_session': user_session,
                     'form': form,
-#                     'notes_list': notes_list,
-#                     'empty_note_form': NoteForm(),
                 },
             )
     else:

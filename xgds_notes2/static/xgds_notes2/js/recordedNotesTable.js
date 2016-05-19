@@ -48,7 +48,7 @@ var recordedNotes = (function(global, $) {
                     }
                 }, this),
                 error: $.proxy(function(data){
-                    this._setMessage("Search failed.")
+                    this._setMessage("No notes.")
                 }, this)
               });
         },

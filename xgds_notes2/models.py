@@ -281,9 +281,9 @@ class AbstractNote(models.Model):
             result['content_name'] = ''
             result['content_thumbnail_url'] = ''
             if self.content_object:
-                result['content_url'] = self.content_object.view_url
+                result['content_url'] = self.content_object.view_time_url(self.adjustedEventTime())
                 result['content_name'] = self.content_object.name
-                result['content_thumbnail_url'] = self.content_object.thumbnail_url
+                result['content_thumbnail_url'] = self.content_object.thumbnail_time_url(self.adjustedEventTime())
         except:
             pass
         

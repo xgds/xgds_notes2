@@ -14,161 +14,138 @@
 // specific language governing permissions and limitations under the License.
 //__END_LICENSE__
 
-var options = {
+var xgds_notes = xgds_notes || {};
+$.extend(xgds_notes,{
+	options: {
         url: note_submit_url, // override for form's 'action' attribute
         type: 'post',       // 'get' or 'post', override for form's 'method' attribute
         dataType: 'json',   // 'xml', 'script', or 'json' (expected server response type)
         timeout: 3000
-};
-
-function showSuccess(errorMessage, parent) {
-    parent.find('#error_content').text(errorMessage);
-    parent.find('#error_icon').removeClass();
-    parent.find('#error_icon').addClass('ui-icon');
-    parent.find('#error_icon').addClass('ui-icon-circle-check');
-    parent.find('#error_div').show();
-}
-
-function showError(errorMessage, parent) {
-    parent.find('#error_content').text(errorMessage);
-    parent.find('#error_icon').removeClass();
-    parent.find('#error_icon').addClass('ui-icon');
-    parent.find('#error_icon').addClass('ui-icon-circle-close');
-    parent.find('#error_div').show();
-}
-
-function hideError(parent) {
-    parent.find('#error_div').hide();
-}
-
-function getErrorString(jqXHR){
-	var result = jqXHR.responseJSON.error.message;
-	for (var key in jqXHR.responseJSON.error.data) {
-		result = result + " " + key + ": " + jqXHR.responseJSON.error.data[key];
-	}
-	return result;
-}
-
-/*
- * Form submission
- *
- */
-function finishNoteSubmit(context) {
-    var parent = $(context).closest('form');
-    var containerDiv = parent.parent().parent();
-    
-    // validate and process form here
-    var content_text = parent.find('textarea#id_content');
-    var content = content_text.serialize(); 
-    var contentVal = content_text.val();
-
-    hideError(containerDiv);
-    var tagInput = parent.find('input#id_tags');
-    var tags = tagInput.val();
-
-    if ((content == '') && (tags == '')) {
-        content_text.focus();
-        showError('Note must not be empty.');
-        return false;
-    }
-    var extras = parent.find('input#id_extras').val();
-    var dataString = content + '&tags=' + tags + '&extras=' + extras;
-    dataString = dataString + '&object_id=' + parent.find('#id_object_id').val();
-    dataString = dataString + '&app_label=' + parent.find('#id_app_label').val();
-    dataString = dataString + '&model_type=' + parent.find('#id_model_type').val();
-    dataString = dataString + '&position_id=' + parent.find('#id_position_id').val();
-    
-    var event_hidden = parent.find('#id_event_time');
-    var event_timestring = event_hidden.val();
-    try {
-        if (event_timestring !== undefined){
-            dataString = dataString + '&event_time=' + event_timestring;
-            try {
-            	var timezone_hidden = parent.find('#id_event_timezone');
-            	dataString = dataString + "&event_timezone=" + timezone_hidden.val();
-            } catch(err){
-            	// no timezone
-            }
-        } else {
-            dataString = dataString + "&serverNow=true";
-        }
-    }
-    catch(err) {
-        dataString = dataString + "&serverNow=true";
-    }
-    
-    $.ajax({
-        type: 'POST',
-        url: note_submit_url,
-        data: dataString,
-        success: function(data) {
-    	var content = data[0].content;
-    	if (content.length > 30){
-    	    content = content.substring(0, 30);
-    	}
-            showSuccess('Saved ' + content, containerDiv);
-            content_text.val('');
-            tagInput.tagsinput('removeAll');
-            var theNotesTable = containerDiv.find('table#notes_list');
-            if (theNotesTable.length > 0){
-                if ( !$.fn.DataTable.isDataTable( theNotesTable) ) {
-                	setupNotesTable(containerDiv.id, theNotesTable, data[0]);
-                } else {
-                	theNotesTable.dataTable().fnAddData(data[0]);
-                }
-            }
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            if (errorThrown == '' && textStatus == 'error') {
-                showError('Lost server connection', containerDiv);
-            } else {
-            	showError(getErrorString(jqXHR), containerDiv);
-            }
-            console.log(jqXHR.getAllResponseHeaders());
-        }
-
-    });
-}
-
-function hookNoteSubmit() {
-    $('.noteSubmit').on('click', function(e) {
-    	e.preventDefault();
-    	if (!user_session_exists){
-    		editUserSession('finishNoteSubmit', this);
-    	} else {
-    		finishNoteSubmit(this);
-    	}
-    });
-}
-
-function setupNotesUI(){
-    var $noteElems = $(".noteinput");
-    var $tagsElems = $(".tagsinput");
-    
-    initializeInput();
-    hookNoteSubmit();
-
-	$("#add_note_button").click(function(event) {
-	    event.preventDefault();
-	    $("#notes_input").show();
-	});
-
-    try {
-	    if (!_.isUndefined(xgds_video.displaySegments)){
-	        for (var source in xgds_video.displaySegments) {
-	            toggleNoteInput(source);
+	},
+	showSuccess: function(errorMessage, parent) {
+	    parent.find('#error_content').text(errorMessage);
+	    parent.find('#error_icon').removeClass();
+	    parent.find('#error_icon').addClass('ui-icon');
+	    parent.find('#error_icon').addClass('ui-icon-circle-check');
+	    parent.find('#error_div').show();
+	},
+	showError: function(errorMessage, parent) {
+	    parent.find('#error_content').text(errorMessage);
+	    parent.find('#error_icon').removeClass();
+	    parent.find('#error_icon').addClass('ui-icon');
+	    parent.find('#error_icon').addClass('ui-icon-circle-close');
+	    parent.find('#error_div').show();
+	},
+	hideError: function(parent) {
+		parent.find('#error_div').hide();
+	},
+	getErrorString: function(jqXHR){
+		var result = jqXHR.responseJSON.error.message;
+		for (var key in jqXHR.responseJSON.error.data) {
+			result = result + " " + key + ": " + jqXHR.responseJSON.error.data[key];
+		}
+		return result;
+	},
+	finishNoteSubmit: function(context) {
+			/*
+			 * Form submission
+			 */
+	
+	    var parent = $(context).closest('form');
+	    var containerDiv = parent.parent().parent();
+	    
+	    // validate and process form here
+	    var content_text = parent.find('textarea#id_content');
+	    var content = content_text.serialize(); 
+	    var contentVal = content_text.val();
+	
+	    xgds_notes.hideError(containerDiv);
+	    var tagInput = parent.find('input#id_tags');
+	    var tags = tagInput.val();
+	
+	    if ((content == '') && (tags == '')) {
+	        content_text.focus();
+	        xgds_notes.showError('Note must not be empty.');
+	        return false;
+	    }
+	    var extras = parent.find('input#id_extras').val();
+	    var dataString = content + '&tags=' + tags + '&extras=' + extras;
+	    dataString = dataString + '&object_id=' + parent.find('#id_object_id').val();
+	    dataString = dataString + '&app_label=' + parent.find('#id_app_label').val();
+	    dataString = dataString + '&model_type=' + parent.find('#id_model_type').val();
+	    dataString = dataString + '&position_id=' + parent.find('#id_position_id').val();
+	    
+	    var event_hidden = parent.find('#id_event_time');
+	    var event_timestring = event_hidden.val();
+	    try {
+	        if (event_timestring !== undefined){
+	            dataString = dataString + '&event_time=' + event_timestring;
+	            try {
+	            	var timezone_hidden = parent.find('#id_event_timezone');
+	            	dataString = dataString + "&event_timezone=" + timezone_hidden.val();
+	            } catch(err){
+	            	// no timezone
+	            }
+	        } else {
+	            dataString = dataString + "&serverNow=true";
 	        }
 	    }
-    } catch (err){
-    	//gulp
-    }
-    
-}
-
-
-
-function toggleNoteInput(sourceName){
-    var sectionName = "#" + sourceName + "_noteInput";
-    $(sectionName).toggle();
-    
-}
+	    catch(err) {
+	        dataString = dataString + "&serverNow=true";
+	    }
+	    
+	    $.ajax({
+	        type: 'POST',
+	        url: note_submit_url,
+	        data: dataString,
+	        success: function(data) {
+	    	var content = data[0].content;
+	    	if (content.length > 30){
+	    	    content = content.substring(0, 30);
+	    	}
+	            xgds_notes.showSuccess('Saved ' + content, containerDiv);
+	            content_text.val('');
+	            tagInput.tagsinput('removeAll');
+	            var theNotesTable = containerDiv.find('table#notes_list');
+	            if (theNotesTable.length > 0){
+	                if ( !$.fn.DataTable.isDataTable( theNotesTable) ) {
+	                	xgds_notes.setupNotesTable(containerDiv.id, theNotesTable, data[0]);
+	                } else {
+	                	theNotesTable.dataTable().fnAddData(data[0]);
+	                }
+	            }
+	        },
+	        error: function(jqXHR, textStatus, errorThrown) {
+	            if (errorThrown == '' && textStatus == 'error') {
+	                xgds_notes.showError('Lost server connection', containerDiv);
+	            } else {
+	            	xgds_notes.showError(xgds_notes.getErrorString(jqXHR), containerDiv);
+	            }
+//	            console.log(jqXHR.getAllResponseHeaders());
+	        }
+	
+	    });
+	},
+	hookNoteSubmit: function() {
+	    $('.noteSubmit').on('click', function(e) {
+	    	e.preventDefault();
+	    	if (!user_session_exists){
+	    		xgds_notes.editUserSession('xgds_notes.finishNoteSubmit', this);
+	    	} else {
+	    		xgds_notes.finishNoteSubmit(this);
+	    	}
+	    });
+	},
+	setupNotesUI: function(){
+	    xgds_notes.initializeInput();
+	    xgds_notes.hookNoteSubmit();
+	
+		$("#add_note_button").click(function(event) {
+		    event.preventDefault();
+		    var tar = $(event.target);
+		    var notes_content_div = $(tar.siblings(".notes_content")[0]);
+		    notes_content_div.show();
+		    $(notes_content_div.children('.notediv')[0]).show()
+		});
+	}
+});
