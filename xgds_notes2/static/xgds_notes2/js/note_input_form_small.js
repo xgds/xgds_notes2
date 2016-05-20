@@ -46,6 +46,28 @@ $.extend(xgds_notes,{
 		}
 		return result;
 	},
+	getEventTime: function(context) {
+		var dataString = "";
+		var event_hidden = parent.find('#id_event_time');
+	    var event_timestring = event_hidden.val();
+	    try {
+	        if (event_timestring !== undefined && event_timestring !== ""){
+	            dataString = dataString + '&event_time=' + event_timestring;
+	            try {
+	            	var timezone_hidden = parent.find('#id_event_timezone');
+	            	dataString = dataString + "&event_timezone=" + timezone_hidden.val();
+	            } catch(err){
+	            	// no timezone
+	            }
+	        } else {
+	            dataString = dataString + "&serverNow=true";
+	        }
+	    }
+	    catch(err) {
+	        dataString = dataString + "&serverNow=true";
+	    }
+	    return dataString;
+	},
 	finishNoteSubmit: function(context) {
 			/*
 			 * Form submission
@@ -74,25 +96,7 @@ $.extend(xgds_notes,{
 	    dataString = dataString + '&app_label=' + parent.find('#id_app_label').val();
 	    dataString = dataString + '&model_type=' + parent.find('#id_model_type').val();
 	    dataString = dataString + '&position_id=' + parent.find('#id_position_id').val();
-	    
-	    var event_hidden = parent.find('#id_event_time');
-	    var event_timestring = event_hidden.val();
-	    try {
-	        if (event_timestring !== undefined){
-	            dataString = dataString + '&event_time=' + event_timestring;
-	            try {
-	            	var timezone_hidden = parent.find('#id_event_timezone');
-	            	dataString = dataString + "&event_timezone=" + timezone_hidden.val();
-	            } catch(err){
-	            	// no timezone
-	            }
-	        } else {
-	            dataString = dataString + "&serverNow=true";
-	        }
-	    }
-	    catch(err) {
-	        dataString = dataString + "&serverNow=true";
-	    }
+	    dataString = dataString + xgds_notes.getEventTime(context);
 	    
 	    $.ajax({
 	        type: 'POST',
@@ -145,7 +149,7 @@ $.extend(xgds_notes,{
 		    var tar = $(event.target);
 		    var notes_content_div = $(tar.siblings(".notes_content")[0]);
 		    notes_content_div.show();
-		    $(notes_content_div.children('.notediv')[0]).show()
+		    $(notes_content_div.children('.notediv')[0]).toggle()
 		});
 	}
 });
