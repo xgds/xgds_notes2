@@ -13,6 +13,7 @@
 # CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 #__END_LICENSE__
+import traceback
 from django.utils import timezone
 
 from django.db import models
@@ -267,8 +268,9 @@ class AbstractNote(models.Model):
             result['location'] = self.location.display_name
         else:
             result['location'] = ''
-            
-        result['event_time'] = self.adjustedEventTime()
+        
+        event_time = self.adjustedEventTime()
+        result['event_time'] = event_time
         result['event_timezone'] = self.event_timezone
         
         result['tags'] = ''
@@ -281,10 +283,12 @@ class AbstractNote(models.Model):
             result['content_name'] = ''
             result['content_thumbnail_url'] = ''
             if self.content_object:
-                result['content_url'] = self.content_object.view_time_url(self.adjustedEventTime())
-                result['content_name'] = self.content_object.name
-                result['content_thumbnail_url'] = self.content_object.thumbnail_time_url(self.adjustedEventTime())
+                content_object = self.content_object
+                result['content_url'] = content_object.view_time_url(event_time)
+                result['content_name'] = content_object.name
+                result['content_thumbnail_url'] = content_object.thumbnail_time_url(event_time)
         except:
+            traceback.print_exc()
             pass
         
         return result

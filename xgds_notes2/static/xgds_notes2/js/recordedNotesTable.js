@@ -93,8 +93,8 @@ var recordedNotes = (function(global, $) {
 									targets: i
 									});
         		} else if (heading == 'content'){
-        			result.push({ width: '60%', 
-        						  targets: heading});
+        			result.push({ width: '60%'
+        						});
         		} else if (heading == 'link') {
         			result.push({render: function(data, type, row){
         								if (row['content_url'] != '') {
