@@ -48,6 +48,7 @@ $.extend(xgds_notes,{
 	},
 	getEventTime: function(context) {
 		var dataString = "";
+		var parent = $(context.parentElement.parentElement);
 		var event_hidden = parent.find('#id_event_time');
 	    var event_timestring = event_hidden.val();
 	    try {

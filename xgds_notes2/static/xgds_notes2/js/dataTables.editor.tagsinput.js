@@ -61,7 +61,7 @@ _fieldTypes.tagsinput = {
     	var existing_tags = val;
     	if (existing_tags != undefined){
     		for (var i = 0; i < existing_tags.length; i++){
-    			var result = allTags.index.search(existing_tags[i]);
+    			var result = xgds_notes.allTags.index.search(existing_tags[i]);
     			field._taginput.tagsinput('add', result[0]);
     		}
     	}

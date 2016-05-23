@@ -2,6 +2,7 @@
 var recordedNotes = (function(global, $) {
     var RecordedNotesController = klass(function(params) {
         this._recordedNotesURL = params.recordedNotesURL;
+        this._theDataTable = undefined;
         this.columns = params.columns;
         this._ordering = params.ordering;
         this._divHeight = params.divHeight;
@@ -20,7 +21,9 @@ var recordedNotes = (function(global, $) {
             $("#notesDiv").resize(function() {
                 var newHeight = _this._calcDataTableHeight();
                 $('div.dataTables_scrollBody').css('height',newHeight);
-                _this._theDataTable.fnAdjustColumnSizing();
+                if (_this._theDataTable != undefined){
+                	_this._theDataTable.fnAdjustColumnSizing();
+                }
             });
         },
 
