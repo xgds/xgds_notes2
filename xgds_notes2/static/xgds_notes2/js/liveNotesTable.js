@@ -13,7 +13,7 @@ var liveNotes = (function(global, $) {
             this._setupSSE();
             this._setupUIListeners();
             this._messageDiv = $("#messageDiv");
-            this._theTable = $("#notesTable");
+            this._theTable = $("#notes_list");
             var _this = this;
             $("#notesDiv").height("250px");
             $("#notesDiv").resize(function() {

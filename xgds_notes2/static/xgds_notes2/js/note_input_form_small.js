@@ -112,13 +112,16 @@ $.extend(xgds_notes,{
 	            content_text.val('');
 	            tagInput.tagsinput('removeAll');
 	            var theNotesTable = containerDiv.find('table#notes_list');
+	            if (theNotesTable.length == 0){
+	            	var theNotesTable = $.find('table#notes_list');
+	            }
 	            if (theNotesTable.length > 0){
 	                if ( !$.fn.DataTable.isDataTable( theNotesTable) ) {
 	                	xgds_notes.setupNotesTable(containerDiv.id, theNotesTable, data[0]);
 	                } else {
-	                	theNotesTable.dataTable().fnAddData(data[0]);
+	                	$(theNotesTable).dataTable().fnAddData(data[0]);
 	                }
-	            }
+	            } 
 	        },
 	        error: function(jqXHR, textStatus, errorThrown) {
 	            if (errorThrown == '' && textStatus == 'error') {
