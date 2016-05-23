@@ -40,10 +40,10 @@ $.extend(xgds_notes,{
 		parent.find('#error_div').hide();
 	},
 	getErrorString: function(jqXHR){
-		var result = jqXHR.responseJSON.error.message;
-		for (var key in jqXHR.responseJSON.error.data) {
-			result = result + " " + key + ": " + jqXHR.responseJSON.error.data[key];
-		}
+		var result = "Save Failed: " + jqXHR.statusText;
+//		for (var key in jqXHR.responseJSON.error.data) {
+//			result = result + " " + key + ": " + jqXHR.responseJSON.error.data[key];
+//		}
 		return result;
 	},
 	getEventTime: function(context) {
