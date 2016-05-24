@@ -88,7 +88,7 @@ def editUserSession(request, ajax=False):
                                     content_type='application/json')
 
         else:
-            return HttpResponse(json.dumps(form.errors,
+            return HttpResponse(json.dumps(form.errors),
                                 content_type='application/json')
     else:
         defaults = {}
