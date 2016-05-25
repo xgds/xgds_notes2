@@ -6,8 +6,17 @@
 </div>
 
 <script language="javascript">
-function editUserSession(nextFunction, context) {
-$('#edit_user_session_div').dialog({
+
+
+var xgds_notes = xgds_notes || {};
+$.extend(xgds_notes,{
+	genericFunction: function(path) {
+	    return [window].concat(path.split('.')).reduce(function(prev, curr) {
+	        return prev[curr];
+	    });
+	},
+	editUserSession: function(nextFunction, context) {
+		$('#edit_user_session_div').dialog({
 	        dialogClass: 'no-close',
 	        modal: false,
 	        resizable: true,
@@ -33,7 +42,7 @@ $('#edit_user_session_div').dialog({
 		                {
 		                    user_session_exists=true;
 		                    $( this ).dialog( "close" );
-		                    window[nextFunction](context);
+		                    xgds_notes.genericFunction(nextFunction)(context);
 		                },
 		                error: function(data)
 		                {	
@@ -43,5 +52,6 @@ $('#edit_user_session_div').dialog({
 	            }
 	        }
 	    });
-}
+	}
+});
 </script>

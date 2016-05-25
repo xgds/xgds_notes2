@@ -148,7 +148,7 @@ $.extend(xgds_notes,{
 	    xgds_notes.initializeInput();
 	    xgds_notes.hookNoteSubmit();
 	
-		$("#add_note_button").click(function(event) {
+		$(".add_note_button").click(function(event) {
 		    event.preventDefault();
 		    var tar = $(event.target);
 		    var notes_content_div = $(tar.siblings(".notes_content")[0]);
