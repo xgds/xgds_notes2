@@ -1,6 +1,8 @@
 
 var recordedNotes = (function(global, $) {
     var RecordedNotesController = klass(function(params) {
+    	this._SSE = params.SSE;
+    	this._liveNotesStreamURL = params.liveNotesStreamURL;
         this._recordedNotesURL = params.recordedNotesURL;
         this._theDataTable = undefined;
         this.columns = params.columns;
@@ -13,6 +15,9 @@ var recordedNotes = (function(global, $) {
     }).methods({
         _setup: function() {
          // set everything up.
+        	if (this._SSE){
+        		this._setupSSE();
+        	}
             this._setupUIListeners();
             this._messageDiv = $("#messageDiv");
             this._theTable = $("#notes_list");
@@ -26,7 +31,32 @@ var recordedNotes = (function(global, $) {
                 }
             });
         },
+        
+        /**
+         * Setup the event stream for live notes.
+         * If EventSource unavailable, fallback to xHR pooling.
+         */
+        _setupSSE: function() {
+            // check if this browser has SSE capability.
+            if (global.EventSource) {
+                var eventSource = new EventSource(this._liveNotesStreamURL);
+                var _this = this;
+                eventSource.addEventListener("notes", function(e) {
+                    jsonNotes = JSON.parse(e.data);
+                    _this._updateContents(jsonNotes);
+                });
+            }
+            else {
+                this._setupSSEFallback();
+            }
+        },
 
+        /**
+         * Setup a simple fallback for the SSE capability using a xHR pooling.
+         */
+        _setupSSEFallback: function() {
+            setTimeout(_loadCurrentNotes, 2000);
+        },
         /**
          * Setup UI listeners
          */
@@ -58,10 +88,7 @@ var recordedNotes = (function(global, $) {
         _setMessage: function(message) {
             this._messageDiv.empty();
             this._messageDiv.html(message);
-            console.log(message);
-        },
-        _addNotes: function(notes){
-            console.log(notes);
+//            console.log(message);
         },
         _getColumnDefs(headers){
         	result = [];
