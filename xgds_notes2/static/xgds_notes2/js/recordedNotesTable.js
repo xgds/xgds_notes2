@@ -200,7 +200,7 @@ var recordedNotes = (function(global, $) {
 	                    });
 	                    this._editor = new $.fn.dataTable.Editor( {
 	                    	ajax: '/notes/editNote/_id_',
-	                        table: '#' + theDataTable.attr('id'), //notes_list',
+	                        table: '#' + this._theDataTable.attr('id'), //notes_list',
 	                        idSrc:  'pk',
 	                        fields: editorFields
 	                    });

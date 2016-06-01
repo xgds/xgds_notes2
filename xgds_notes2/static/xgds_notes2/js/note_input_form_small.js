@@ -108,9 +108,14 @@ $.extend(xgds_notes,{
 	            xgds_notes.showSuccess('Saved ' + content, containerDiv);
 	            content_text.val('');
 	            tagInput.tagsinput('removeAll');
-	            var theNotesTable = containerDiv.find('table.notes_list').last();
-	            if (theNotesTable.length == 0){
-	            	var theNotesTable = $.find('table.notes_list').last();
+	            var theNotesTable = containerDiv.find('table.notes_list');
+	            if (theNotesTable.length > 1){
+	            	theNotesTable = $(theNotesTable.pop());
+	            } else if (theNotesTable.length == 0){
+	            	var theNotesTable = $.find('table.notes_list');
+	            	if (theNotesTable.length > 1){
+	            		theNotesTable = $(theNotesTable.pop())
+	            	}
 	            }
 	            if (theNotesTable.length > 0){
 	            	var table_id = theNotesTable.attr('id');

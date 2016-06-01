@@ -125,7 +125,7 @@ $.extend(xgds_notes,{
 		getNotesForObject: function (app_label, model_type, object_id, divID, table){
 			// always clears table first.
 			if (table.length > 1){
-				table = table.last()
+				table = $(table.pop());
 			}
 			var table_id = table.attr('id');
 			if ( $.fn.DataTable.isDataTable( '#' + table_id) ) {
