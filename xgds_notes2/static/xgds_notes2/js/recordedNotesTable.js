@@ -20,7 +20,7 @@ var recordedNotes = (function(global, $) {
         	}
             this._setupUIListeners();
             this._messageDiv = $("#messageDiv");
-            this._theTable = $("#notes_list");
+            this._theTable = $(".notes_list");
             var _this = this;
             $("#notesDiv").height(this._divHeight);
             $("#notesDiv").resize(function() {
@@ -200,12 +200,12 @@ var recordedNotes = (function(global, $) {
 	                    });
 	                    this._editor = new $.fn.dataTable.Editor( {
 	                    	ajax: '/notes/editNote/_id_',
-	                        table: '#notes_list',
+	                        table: '#' + theDataTable.attr('id'), //notes_list',
 	                        idSrc:  'pk',
 	                        fields: editorFields
 	                    });
 	                    var _this = this;
-	                    $('#notes_list').on( 'click', 'tbody td.editable', function (e) {
+	                    $('.notes_list').on( 'click', 'tbody td.editable', function (e) {
 	                        _this._editor.inline( this );
 	                    } );
                     }

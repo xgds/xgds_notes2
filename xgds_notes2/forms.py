@@ -46,7 +46,8 @@ class NoteForm(forms.ModelForm):
     date_formats = list(forms.DateTimeField.input_formats) + [
         '%Y/%m/%d %H:%M:%S',
         '%Y/%m/%d %H:%M:%S UTC',
-        '%Y-%m-%d %H:%M:%S UTC'
+        '%Y-%m-%d %H:%M:%S UTC',
+        '%Y-%m-%dT%H:%M:%S+00:00'
     ]
     event_time = forms.DateTimeField(input_formats=date_formats, required=False)
     event_timezone = forms.CharField(widget=forms.HiddenInput(), required=False)

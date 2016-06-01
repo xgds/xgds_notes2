@@ -41,9 +41,6 @@ $.extend(xgds_notes,{
 	},
 	getErrorString: function(jqXHR){
 		var result = "Save Failed: " + jqXHR.statusText;
-//		for (var key in jqXHR.responseJSON.error.data) {
-//			result = result + " " + key + ": " + jqXHR.responseJSON.error.data[key];
-//		}
 		return result;
 	},
 	getEventTime: function(context) {
@@ -111,12 +108,13 @@ $.extend(xgds_notes,{
 	            xgds_notes.showSuccess('Saved ' + content, containerDiv);
 	            content_text.val('');
 	            tagInput.tagsinput('removeAll');
-	            var theNotesTable = containerDiv.find('table#notes_list');
+	            var theNotesTable = containerDiv.find('table.notes_list').last();
 	            if (theNotesTable.length == 0){
-	            	var theNotesTable = $.find('table#notes_list');
+	            	var theNotesTable = $.find('table.notes_list').last();
 	            }
 	            if (theNotesTable.length > 0){
-	                if ( !$.fn.DataTable.isDataTable( theNotesTable) ) {
+	            	var table_id = theNotesTable.attr('id');
+	                if ( !$.fn.DataTable.isDataTable( '#'+table_id) ) {
 	                	xgds_notes.setupNotesTable(containerDiv.id, theNotesTable, data[0]);
 	                } else {
 	                	$(theNotesTable).dataTable().fnAddData(data[0]);
@@ -129,12 +127,12 @@ $.extend(xgds_notes,{
 	            } else {
 	            	xgds_notes.showError(xgds_notes.getErrorString(jqXHR), containerDiv);
 	            }
-//	            console.log(jqXHR.getAllResponseHeaders());
 	        }
 	
 	    });
 	},
 	hookNoteSubmit: function() {
+		$(".noteSubmit").off('click');
 	    $('.noteSubmit').on('click', function(e) {
 	    	e.preventDefault();
 	    	if (!user_session_exists){
@@ -144,16 +142,19 @@ $.extend(xgds_notes,{
 	    	}
 	    });
 	},
-	setupNotesUI: function(){
-	    xgds_notes.initializeInput();
-	    xgds_notes.hookNoteSubmit();
-	
-		$(".add_note_button").click(function(event) {
+	hookAddNoteButton: function() {
+		$(".add_note_button").off('click');
+		$(".add_note_button").on('click',function(event) {
 		    event.preventDefault();
 		    var tar = $(event.target);
 		    var notes_content_div = $(tar.siblings(".notes_content")[0]);
 		    notes_content_div.show();
 		    $(notes_content_div.children('.notediv')[0]).toggle()
 		});
+	},
+	setupNotesUI: function(){
+	    xgds_notes.initializeInput();
+	    xgds_notes.hookNoteSubmit();
+	    xgds_notes.hookAddNoteButton();
 	}
 });

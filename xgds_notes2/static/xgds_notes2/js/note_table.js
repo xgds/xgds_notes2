@@ -73,7 +73,9 @@ $.extend(xgds_notes,{
 			 * Table View
 			 */
 			// initialize the table with json of existing data.
-			if ( ! $.fn.DataTable.isDataTable( table) ) {
+			var table_id = table.attr('id');
+			if ( ! $.fn.DataTable.isDataTable('#'+table_id) ) {
+				noteDefaultOptions['aaData'] = initialData;
 				noteDefaultOptions['data'] = initialData;
 				var theNotesTable = $(table).dataTable(noteDefaultOptions);
 				//theNotesTable._fnAdjustColumnSizing();
@@ -122,7 +124,11 @@ $.extend(xgds_notes,{
 
 		getNotesForObject: function (app_label, model_type, object_id, divID, table){
 			// always clears table first.
-			if ( $.fn.DataTable.isDataTable( table) ) {
+			if (table.length > 1){
+				table = table.last()
+			}
+			var table_id = table.attr('id');
+			if ( $.fn.DataTable.isDataTable( '#' + table_id) ) {
 				var dt = $(table).dataTable()
 				dt.fnClearTable();
 			}
