@@ -110,11 +110,11 @@ $.extend(xgds_notes,{
 	            tagInput.tagsinput('removeAll');
 	            var theNotesTable = containerDiv.find('table.notes_list');
 	            if (theNotesTable.length > 1){
-	            	theNotesTable = $(theNotesTable.pop());
+	            	theNotesTable = $(theNotesTable.last());
 	            } else if (theNotesTable.length == 0){
 	            	var theNotesTable = $.find('table.notes_list');
 	            	if (theNotesTable.length > 1){
-	            		theNotesTable = $(theNotesTable.pop())
+	            		theNotesTable = $(theNotesTable.last())
 	            	}
 	            }
 	            if (theNotesTable.length > 0){
