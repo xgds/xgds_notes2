@@ -39,6 +39,8 @@ from treebeard.mp_tree import MP_Node
 from taggit.models import TagBase, ItemBase
 from taggit.managers import TaggableManager
 
+from xgds_core.models import SearchableModel
+
 
 class HierarchichalTag(TagBase, MP_Node):
     node_order_by = ['name']
@@ -86,6 +88,11 @@ class AbstractTaggedNote(ItemBase):
     tag = models.ForeignKey('xgds_notes2.HierarchichalTag',
                             related_name="%(app_label)s_%(class)s_related",
                             blank=True)
+
+    @property
+    def tag_ids(self):
+        #TODO implement
+        return ''
 
     @classmethod
     def tags_for(cls, model, instance=None, **extra_filters):
@@ -164,7 +171,7 @@ class UserSession(AbstractUserSession):
 
 DEFAULT_TAGGABLE_MANAGER = lambda: TaggableManager(through=TaggedNote, blank=True)
 
-class AbstractNote(models.Model):
+class AbstractNote(models.Model, SearchableModel):
     ''' Abstract base class for notes
     '''
 #     # custom id field for uniqueness
@@ -197,6 +204,22 @@ class AbstractNote(models.Model):
     content_type = models.ForeignKey(ContentType, null=True, blank=True)
     object_id = models.CharField(max_length=128, null=True, blank=True)
     content_object = GenericForeignKey('content_type', 'object_id')
+
+    @property
+    def role_name(self):
+        if self.role:
+            return self.role.display_name
+        return None
+    
+    @property
+    def location_name(self):
+        if self.location:
+            return self.location.display_name
+        return None
+    
+    @property
+    def author_name(self):
+        return getUserName(self.author)
 
     class Meta:
         abstract = True
@@ -248,6 +271,25 @@ class AbstractNote(models.Model):
         if result == "":
             result = self.content[:12]
         return result
+
+    
+    @property
+    def content_url(self):
+        if self.content_object:
+            return self.content_object.view_time_url(self.event_time)
+        return None
+
+    @property
+    def content_name(self):
+        if self.content_object:
+            return self.content_object.name
+        return None
+    
+    @property
+    def content_thumbnail_url(self):
+        if self.content_object:
+                return self.content_object.thumbnail_time_url(self.event_time)
+        return None
 
     def toMapDict(self):
         """
@@ -404,8 +446,25 @@ class LocatedNote(AbstractLocatedNote):
     position = DEFAULT_POSITION_FIELD()
     tags = DEFAULT_TAGGABLE_MANAGER()
 
-class NoteMixin(object):
+class NoteLinksMixin():
+    """ extend NoteLinksMixin to properly show up in the notes list table.
+    Object should also be extending SearchableModel.
+    """
+    @property
+    def thumbnail_image_url(self):
+        return None
+    
+    @property
+    def thumbnail_time_url(self, event_time):
+        return self.thumbnail_image_url
 
+    @property
+    def view_time_url(self, event_time):
+        return self.view_url
+    
+class NoteMixin():
+    """ If your model has notes on it, it should extend NoteMixin.
+    """
     @property
     def notes(self):
         ctype = ContentType.objects.get_for_model(self.__class__)
