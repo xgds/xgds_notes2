@@ -446,7 +446,7 @@ class LocatedNote(AbstractLocatedNote):
     position = DEFAULT_POSITION_FIELD()
     tags = DEFAULT_TAGGABLE_MANAGER()
 
-class NoteLinksMixin():
+class NoteLinksMixin(object):
     """ extend NoteLinksMixin to properly show up in the notes list table.
     Object should also be extending SearchableModel.
     """
@@ -462,7 +462,7 @@ class NoteLinksMixin():
     def view_time_url(self, event_time):
         return self.view_url
     
-class NoteMixin():
+class NoteMixin(object):
     """ If your model has notes on it, it should extend NoteMixin.
     """
     @property
