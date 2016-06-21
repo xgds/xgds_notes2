@@ -286,9 +286,13 @@ class AbstractNote(models.Model, SearchableModel):
         return None
     
     @property
+    def thumbnail_time_url(self, event_time):
+        return self.content_thumbnail_url
+    
+    @property
     def content_thumbnail_url(self):
         if self.content_object:
-                return self.content_object.thumbnail_time_url(self.event_time)
+            return self.content_object.thumbnail_time_url(self.event_time)
         return None
 
     def toMapDict(self):
@@ -346,7 +350,10 @@ class AbstractNote(models.Model, SearchableModel):
         """ for sse, return a list of channels """
         return [settings.XGDS_NOTES2_NOTES_CHANNEL]
 
-
+    @classmethod
+    def getSearchableFields(self):
+        return ['content', 'author__first_name', 'author__last_name']
+    
 class Note(AbstractNote):
     '''
     Non-Abstract note class (with no position)
@@ -454,11 +461,9 @@ class NoteLinksMixin(object):
     def thumbnail_image_url(self):
         return None
     
-    @property
     def thumbnail_time_url(self, event_time):
         return self.thumbnail_image_url
 
-    @property
     def view_time_url(self, event_time):
         return self.view_url
     
