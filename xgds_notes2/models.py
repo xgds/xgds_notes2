@@ -89,10 +89,6 @@ class AbstractTaggedNote(ItemBase):
                             related_name="%(app_label)s_%(class)s_related",
                             blank=True)
 
-    @property
-    def tag_ids(self):
-        #TODO implement
-        return ''
 
     @classmethod
     def tags_for(cls, model, instance=None, **extra_filters):
@@ -181,17 +177,18 @@ class AbstractNote(models.Model, SearchableModel):
 
     # Override this to specify a list of related fields
     # to be join-query loaded when notes are listed, as an optimization
-    prefetch_related_fields = []
+    # prefetch for reverse or for many to many.
+    prefetch_related_fields = ['tags']
 
-    # select related for forward releationships.  prefetch for reverse or for many to many.
-    select_related_fields = ['author', 'role']
+    # select related for forward releationships.  
+    select_related_fields = ['author', 'role', 'location']
 
     show_on_map = models.BooleanField(default=False) # broadcast this note on the map by default
 
-    event_time = models.DateTimeField(null=True, blank=False)
-    event_timezone = models.CharField(null=True, blank=False, max_length=128, default=settings.TIME_ZONE)
-    creation_time = models.DateTimeField(blank=True, default=timezone.now, editable=False)
-    modification_time = models.DateTimeField(blank=True, default=timezone.now, editable=False)
+    event_time = models.DateTimeField(null=True, blank=False, db_index=True)
+    event_timezone = models.CharField(null=True, blank=False, max_length=128, default=settings.TIME_ZONE, db_index=True)
+    creation_time = models.DateTimeField(blank=True, default=timezone.now, editable=False, db_index=True)
+    modification_time = models.DateTimeField(blank=True, default=timezone.now, editable=False, db_index=True)
 
     author = models.ForeignKey(User)
     role = models.ForeignKey(Role, null=True)
@@ -199,12 +196,29 @@ class AbstractNote(models.Model, SearchableModel):
 
     content = models.TextField(blank=True, null=True)
     
-    tags = "set to DEFAULT_TAGGABLE_MANAGER() or similar in any dervied classes"
+    tags = "set to DEFAULT_TAGGABLE_MANAGER() or similar in any derived classes"
     
     content_type = models.ForeignKey(ContentType, null=True, blank=True)
     object_id = models.CharField(max_length=128, null=True, blank=True)
     content_object = GenericForeignKey('content_type', 'object_id')
 
+    @property
+    def type(self):
+        return 'Note'
+
+    @property
+    def tag_ids(self):
+        return None
+
+    @property
+    def tag_names(self):
+        result = []
+        for tag in self.tags.get_query_set():
+            result.append(tag.name)
+        return result
+#             return [t.encode('utf-8') for t in self.tags.names()]
+#         return None
+    
     @property
     def role_name(self):
         if self.role:

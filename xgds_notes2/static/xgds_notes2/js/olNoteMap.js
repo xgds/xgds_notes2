@@ -59,7 +59,7 @@ var Note = {
             var styles = [this.styles['iconStyle']];
             if (noteJson.tags != '') {
                 var theText = new ol.style.Text(this.styles['text']);
-                noteJson.flattenedTags = noteJson.tags.reduce(function(a, b) {
+                noteJson.flattenedTags = noteJson.tag_slugs.reduce(function(a, b) {
                     return a.concat(b + " ");
                   });
                 theText.setText(noteJson.flattenedTags);
@@ -82,7 +82,7 @@ var Note = {
 //                        "Altitude:", noteJson.altitude + " m",
 //                        "Time:", noteJson.event_time,
 //                        "Flight:", noteJson.flight,
-                        "Author:", noteJson.author];
+                        "Author:", noteJson.author_name];
             var popupContents = vsprintf(formattedString, data);
             feature['popup'] = popupContents;
         		
