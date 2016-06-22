@@ -44,7 +44,7 @@ from xgds_core.models import SearchableModel
 
 class HierarchichalTag(TagBase, MP_Node):
     node_order_by = ['name']
-    abbreviation = models.CharField(max_length=8, blank=True)
+    abbreviation = models.CharField(max_length=8, blank=True, db_index=True)
     description = models.TextField(blank=True, null=True)
     
     def preSave(self):
