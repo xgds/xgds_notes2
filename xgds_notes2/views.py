@@ -631,8 +631,8 @@ if settings.XGDS_NOTES_ENABLE_GEOCAM_TRACK_MAPPING:
 
     @never_cache
     def note_map_kml(request, range=12):
-        now = datetime.datetime.now(pytz.utc)
-        yesterday = now - datetime.timedelta(seconds=3600 * range)
+        now = datetime.now(pytz.utc)
+        yesterday = now - timedelta(seconds=3600 * range)
         objects = Note.get().objects.filter(show_on_map=True).filter(creation_time__lte=now).filter(creation_time__gte=yesterday)
         days = []
         if objects:
