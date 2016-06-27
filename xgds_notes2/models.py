@@ -203,7 +203,13 @@ class AbstractNote(models.Model, SearchableModel):
     content_object = GenericForeignKey('content_type', 'object_id')
 
     @property
-    def type(self):
+    def object_type(self):
+        if self.content_type:
+            return self.content_type.model_class().cls_type()
+        return None
+
+    @classmethod
+    def cls_type(cls):
         return 'Note'
 
     @property
