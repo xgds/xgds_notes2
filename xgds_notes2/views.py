@@ -630,35 +630,15 @@ if settings.XGDS_NOTES_ENABLE_GEOCAM_TRACK_MAPPING:
                url=url))
 
     @never_cache
-    def note_map_kml(request):
-        queryEnd = " and show_on_map=1"
+    def note_map_kml(request, range=12):
+        now = datetime.datetime.now(pytz.utc)
+        yesterday = now - datetime.timedelta(seconds=3600 * range)
+        objects = Note.get().objects.filter(show_on_map=True).filter(creation_time__lte=now).filter(creation_time__gte=yesterday)
         days = []
-
-        cursor = connection.cursor()
-
-        cursor.execute("select distinct DATE(CONVERT_TZ(event_time, 'UTC', event_timezone)) from %s" % (Note.get()._meta.db_table))
-        localdates = cursor.fetchall()
-
-        for date in localdates:
-            query = "select * from %s where DATE(CONVERT_TZ(event_time, 'UTC', event_timezone)) = '%s' %s" % (Note.get()._meta.db_table, date[0], queryEnd)
-            this_days_notes = Note.get().objects.raw(query)
-            keepers = []
-            for note in this_days_notes:
-                try:
-                    if note.getPosition():
-                        keepers.append(note)
-                except AttributeError:
-                    # handle the case where the note is not an abstract tracked asset
-                    foundPosition = getClosestPosition(timestamp=note.event_time)
-                    if foundPosition:
-                        note.position = foundPosition
-                        keepers.append(note)
-
-            if keepers:
-                days.append({
-                            'date': date[0],
-                            'notes': keepers
-                            })
+        if objects:
+            days.append({'date': now,
+                        'notes': objects
+                        })
 
         if days:
             kml_document = render_to_string(
