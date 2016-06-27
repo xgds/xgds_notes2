@@ -170,7 +170,7 @@ def createNoteFromData(data, delay=True, serverNow=False):
         # this is to handle delay state shifting of event time by default it does not change event time
         note.event_time = note.calculateDelayedEventTime(data['event_time'])
     elif serverNow:
-        note.event_time = note.creation_time
+        note.event_time = note.calculateDelayedEventTime(note.creation_time)
     if not note.event_timezone:
         note.event_timezone = getTimeZone(note.event_time)
         
