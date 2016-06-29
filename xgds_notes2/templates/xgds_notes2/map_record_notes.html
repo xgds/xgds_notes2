@@ -15,11 +15,11 @@
 {% endblock scripts %}
 
 {% block preDashboard %}
-<div id="full_notesDiv">
+<!-- <div id="full_notesDiv">
 	<div id="notes_content" class="tab-content active notes_content">
-	{% include 'xgds_notes2/notes_input_include_full.html' %}
+	{# include 'xgds_notes2/notes_input_include_full.html' #}
 	</div>
-</div>
+</div> -->
 {% endblock preDashboard %}
 
 {% block searchResultsDiv %}
@@ -28,7 +28,7 @@
         data-gs-width="3" data-gs-height="3" >
         <div class="grid-stack-item-content" id="search-results-gridstack-item-content" >
         <input type="checkbox" id="today" value="today" checked>Today
-        <i class="icon-lock-open pinDiv warning"></i>
+        <i class="icon-lock pinDiv warning"></i>
 		<i class="icon-cancel-circled"></i>
 		<i class="icon-arrows-ccw right" title="Reload Latest" id="reloadSearchResults"></i>
 			<div id="searchResultsDiv" class="notes_list"></div>
