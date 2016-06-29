@@ -48,7 +48,7 @@ class NoteForm(forms.ModelForm):
         '%Y/%m/%d %H:%M:%S UTC',
         '%Y-%m-%d %H:%M:%S UTC',
         '%Y-%m-%dT%H:%M:%S+00:00',
-        '%Y-%m-%dT%H:%M:%SZ'
+        '%Y-%m-%dT%H:%M:%SZ',
     ]
     event_time = forms.DateTimeField(input_formats=date_formats, required=False)
     event_timezone = forms.CharField(widget=forms.HiddenInput(), required=False)

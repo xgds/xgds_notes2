@@ -16,7 +16,7 @@
 <script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/note_table.js"></script>
 
 {% if user.is_authenticated %}
- {% if not request.session.notes_user_session %}
+ {% if forceUserSession or not request.session.notes_user_session %}
  	{% load user_session_popup %}
  	{% show_user_session_popup %}
  	<script type="text/javascript">

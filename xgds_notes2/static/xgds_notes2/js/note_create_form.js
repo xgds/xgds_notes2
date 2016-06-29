@@ -30,7 +30,7 @@ $.extend(xgds_notes,{
 	},
 	initializeNotesForm: function(addNow) {
 	    xgds_notes.time_input = $('form#create_note #id_event_time');
-	    xgds_notes.time_input.width(200);
+	    //xgds_notes.time_input.width(200);
 	    xgds_notes.time_input.css("margin-right", "10px");
 	    xgds_notes.time_input.wrap($('<div id="event_time_controls">')).css({display: 'inline-block'});
 	    
@@ -50,10 +50,15 @@ $.extend(xgds_notes,{
 	    });
 	    
 	    if (addNow){
-		xgds_notes.time_input.after($('<button name="Now" class="small">Now</button>').click(function(e) {
+		xgds_notes.time_input.after($('<button name="Now" id="nowButton" class="small">Now</button>').click(function(e) {
 		    e.preventDefault();
 		    xgds_notes.set_event_time();
 		}));
+	    } else {
+	    	$("#nowButton").click(function(e) {
+			    e.preventDefault();
+			    xgds_notes.set_event_time();
+			});
 	    }
 	},
 	set_event_time: function() {

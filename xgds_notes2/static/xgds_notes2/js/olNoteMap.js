@@ -77,7 +77,7 @@ var Note = {
                 formattedString = formattedString + trString;
             }
             formattedString = formattedString + "</table>";
-            var data = ["Tags:", noteJson.flattenedTags,
+            var data = ["Tags:", noteJson.tag_names,
                         "Note:", noteJson.content,
 //                        "Altitude:", noteJson.altitude + " m",
 //                        "Time:", noteJson.event_time,

@@ -1,0 +1,32 @@
+{% if user.is_authenticated %}
+<button id="add_note_button" class="small float_button add_note_button">Add Note</button>
+<div id="notes_content" class="tab-content active notes_content">
+	<div class="notediv" id="notes_input" hidden>
+	<p text-align="right">You are {{ user.first_name }} (<span id="roleLocationResource"></span>) [<a href="#" id="changeRole" >change role/location</a>]</p>
+		<form id="create_note" class="create_note_form" action="" method="POST">
+			<input type="hidden" id="id_event_timezone" >
+			<input type="hidden" id="id_app_label" >
+			<input type="hidden" id="id_model_type" >
+			<input type="hidden" id="id_object_id" >
+			<input type="hidden" id="id_position_id" >
+			<div id="error_div" class="noteerrordiv">
+				<span id="error_icon">&nbsp;</span>
+				<span id="error_content"></span>
+			</div>
+			<div class="notecontainer" >
+				<div id="event_time_controls2">
+					<input id="id_event_time" name="event_time" type="text" style="margin-right: 10px; display: inline-block;">
+					<button name="Now" id="nowButton" class="small">Now</button>
+				</div>
+				<textarea class="noteinput"  id="id_content" type="text" name="content" maxlength="500" style="height:50px;" placeholder="Enter notes here"></textarea>
+		        <input class="taginput"  id="id_tags" placeholder="Choose tags" type="text" />
+		        <div >
+		        <div style="display: inline-block;"><input id="id_show_on_map" name="show_on_map" type="checkbox" >Show on map</input></div><br/>
+		        <input id="save_note" type="submit" value="Save" class="mybutton noteSubmit small">
+		        </div>
+		        
+	        </div>
+	  </form>
+	</div>
+</div>
+{% endif %}

@@ -7,7 +7,6 @@
 import itertools
 
 from django import template
-from django.core.urlresolvers import reverse
 from django.conf import settings
 from xgds_notes2.forms import UserSessionForm
 register = template.Library()

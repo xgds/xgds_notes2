@@ -66,6 +66,30 @@ $.extend(xgds_notes,{
 	    }
 	    return dataString;
 	},
+	findNotesTable: function(containerDiv){
+		var theNotesTable = containerDiv.find('table.notes_list');
+        if (theNotesTable.length > 1){
+        	theNotesTable = $($(theNotesTable).last());
+        } else if (theNotesTable.length == 0){
+        	theNotesTable = $.find('table.notes_list');
+        	if (theNotesTable.length > 1){
+        		theNotesTable = $($(theNotesTable).last())
+        	} else if (theNotesTable.length == 0){
+        		var foundTable = $.find('table#searchResultsTable');
+        		if (foundTable.length > 0){
+        			theNotesTable = $(foundTable[0]);
+        		}
+        	}
+        }
+        return theNotesTable;
+	},
+	postSubmit: function(data) {
+		// override if you need to do something else after.
+	},
+	cleanData: function(data){
+		// override if you need to change the data;
+		return data;
+	},
 	finishNoteSubmit: function(context) {
 			/*
 			 * Form submission
@@ -94,36 +118,37 @@ $.extend(xgds_notes,{
 	    dataString = dataString + '&app_label=' + parent.find('#id_app_label').val();
 	    dataString = dataString + '&model_type=' + parent.find('#id_model_type').val();
 	    dataString = dataString + '&position_id=' + parent.find('#id_position_id').val();
+	    var showonmap = parent.find("#id_show_on_map")
+	    if (showonmap.length > 0){
+	    	if (showonmap[0].checked) {
+	    		dataString = dataString + '&show_on_map=1';
+	    	}
+	    }
 	    dataString = dataString + xgds_notes.getEventTime(context);
 	    
+	    var context = this;
 	    $.ajax({
 	        type: 'POST',
 	        url: note_submit_url,
 	        data: dataString,
 	        success: function(data) {
-	    	var content = data[0].content;
-	    	if (content.length > 30){
-	    	    content = content.substring(0, 30);
-	    	}
+		    	var content = data[0].content;
+		    	if (content.length > 30){
+		    	    content = content.substring(0, 30);
+		    	}
 	            xgds_notes.showSuccess('Saved ' + content, containerDiv);
 	            content_text.val('');
 	            tagInput.tagsinput('removeAll');
-	            var theNotesTable = containerDiv.find('table.notes_list');
-	            if (theNotesTable.length > 1){
-	            	theNotesTable = $($(theNotesTable).last());
-	            } else if (theNotesTable.length == 0){
-	            	var theNotesTable = $.find('table.notes_list');
-	            	if (theNotesTable.length > 1){
-	            		theNotesTable = $($(theNotesTable).last())
-	            	}
-	            }
+	            var theNotesTable = context.findNotesTable(containerDiv);
 	            if (theNotesTable.length > 0){
+	            	var cleanData = xgds_notes.cleanData(data[0]);
 	            	var table_id = theNotesTable.attr('id');
 	                if ( !$.fn.DataTable.isDataTable( '#'+table_id) ) {
-	                	xgds_notes.setupNotesTable(containerDiv.id, theNotesTable, data[0]);
+	                	xgds_notes.setupNotesTable(containerDiv.id, theNotesTable, cleanData);
 	                } else {
-	                	$(theNotesTable).dataTable().fnAddData(data[0]);
+	                	$(theNotesTable).dataTable().fnAddData(cleanData);
 	                }
+	                xgds_notes.postSubmit(data);
 	            } 
 	        },
 	        error: function(jqXHR, textStatus, errorThrown) {

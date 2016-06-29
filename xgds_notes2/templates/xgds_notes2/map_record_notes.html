@@ -1,0 +1,114 @@
+{% extends 'xgds_map_server/mapSearch.html' %}
+
+{% block scripts %}
+{{block.super}}
+	{% include "xgds_notes2/NoteJS.html" with forceUserSession=True%}
+	<script type="text/javascript" src="{{ EXTERNAL_URL }}jqueryui-timepicker-addon/dist/jquery-ui-timepicker-addon.min.js"></script>
+	<script type="text/javascript" src='{{ STATIC_URL }}xgds_core/js/datetimepickerUtils.js'></script>
+    {% for template_name, template in templates.items %}
+	<script type="text/handlebars" id="template-{{template_name}}">
+		{{template|safe}}
+	</script>
+    {% endfor %}
+    {#include "xgds_map_server/SearchForms.html" with searchForms=searchForms #}
+    <script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/note_create_form.js"></script>
+{% endblock scripts %}
+
+{% block preDashboard %}
+
+<div id="notesDiv">
+	<div id="notes_content" class="tab-content active notes_content">
+	{% include 'xgds_notes2/notes_input_include_full.html' %}
+	</div>
+</div>
+{% endblock preDashboard %}
+
+{% block searchResultsDiv %}
+<div id="search-results-gridstack-item" class="grid-stack-item" 
+		data-gs-x="0" data-gs-y="0"
+        data-gs-width="3" data-gs-height="3" >
+        <div class="grid-stack-item-content" id="search-results-gridstack-item-content" >
+        <input type="checkbox" id="today" value="today" checked>Today
+        <i class="icon-lock-open pinDiv warning"></i>
+		<i class="icon-cancel-circled"></i>
+		<i class="icon-arrows-ccw right" title="Reload Latest" id="reloadSearchResults"></i>
+			<div id="searchResultsDiv" class="notes_list"></div>
+		</div>
+</div>
+{% endblock searchResultsDiv %}
+
+	
+{% block otherJSInit %}
+server_time_url = "{% url 'server_time' %}";
+serverTimezone = "{{TIME_ZONE}}";
+xgds_notes.setupNotesUI();
+xgds_notes.initializeNotesForm(false);
+xgds_notes.getEventTime = function(context) {
+		var dataString = "";
+		var event_hidden = $('#id_event_time');
+	    var event_timestring = event_hidden.val();
+	    try {
+	        if (event_timestring !== undefined && event_timestring !== ""){
+	        	var tzified = getUTCTime(event_timestring, serverTimezone);
+				var theUtc = tzified.utc().format('YYYY/MM/DD HH:mm:ss') + ' UTC';
+	            dataString = dataString + '&event_time=' + theUtc;
+	            try {
+	            	dataString = dataString + "&event_timezone=" + serverTimezone;
+	            } catch(err){
+	            	// no timezone
+	            }
+	        } else {
+	            dataString = dataString + "&serverNow=true";
+	        }
+	    }
+	    catch(err) {
+	        dataString = dataString + "&serverNow=true";
+	    }
+	    return dataString;
+	
+	};
+xgds_notes.postSubmit = function(data) {
+   xgds_notes.clear_event_time();
+};
+xgds_notes.cleanData = function(data){
+	var columns = app.options.searchModels.Note.columns;
+	result = [];
+	for (var i=0; i < columns.length; i++) {
+		result.push(data[columns[i]]);
+	}
+	return result;
+}
+xgds_notes.updateRole = function(stuff) {
+	var content = $("#id_location option:selected").text();
+	if (content == '---------'){
+		$("#id_location option[value='{{request.session.notes_user_session.location}}']").attr('selected', 'selected');
+		$("#id_resource option[value='{{request.session.notes_user_session.resource}}']").attr('selected', 'selected');
+		$("#id_role option[value='{{request.session.notes_user_session.role}}']").attr('selected', 'selected');
+		var content = $("#id_location option:selected").text();
+	} 
+	user_session_exists = true;
+	content += ', ' + $("#id_resource option:selected").text()
+	content += ', ' + $("#id_role option:selected").text()
+	$("#roleLocationResource").text(content);
+}
+$("#changeRole").click(function(e){
+	xgds_notes.editUserSession('xgds_notes.updateRole');
+	});
+xgds_notes.setupEditingTable = function() {
+        var _editor = new $.fn.dataTable.Editor( {
+        	ajax: '/notes/editNote/_id_',
+            table: '#searchResultsTable', 
+            idSrc:  20,
+            fields: app.searchResultsView.editableColumns
+        });
+        var _this = this;
+        var mmap = app.searchResultsView.lookupModelMap('Note');
+        $('#searchResultsTable').on( 'dblclick', 'tbody td.editable', function (e) {
+        	var col = e.currentTarget._DT_CellIndex.column;
+        	var col_name = mmap.columns[col];
+            _editor.inline( this, col_name );
+        } );
+        };
+        xgds_notes.updateRole();
+        xgds_notes.setupEditingTable();
+{% endblock otherJSInit %}

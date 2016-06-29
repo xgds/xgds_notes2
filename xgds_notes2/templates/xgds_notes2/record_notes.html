@@ -82,7 +82,6 @@ $('#save_note').click(function(event) {
         	clearForm();
         	{% if not SSE %}
         	noteController._updateContents(data);
-        	//noteController._theDataTable.fnAddData(data[0]);
         	{% endif %}
         },
         error: function(data)

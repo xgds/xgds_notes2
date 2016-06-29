@@ -106,12 +106,12 @@ var recordedNotes = (function(global, $) {
                                                },
                                   targets: i
                                   });
-        		} else if (heading == 'tags'){
+        		} else if (heading == 'tag_names'){
         			result.push({ render: function(data, type, row) {
-												if (row['tags'].length > 0){
+												if (row['tag_names'].length > 0){
 													var result = "";
-													for (var i = 0; i < row['tags'].length; i++) {
-														result = result + '<span class="tag label label-info">' + row['tags'][i] + '</span>&nbsp;';
+													for (var i = 0; i < row['tag_names'].length; i++) {
+														result = result + '<span class="tag label label-info">' + row['tag_names'][i] + '</span>&nbsp;';
 													}
 													return result;
 												}
@@ -157,7 +157,7 @@ var recordedNotes = (function(global, $) {
                     	result = { data: col,
                  		 	   	   title: col};
                     	
-                    	if (col == 'content' || col == 'tags') {
+                    	if (col == 'content' || col == 'tag_names') {
                     		result['className'] = 'editable';
                     	} 
                         return result;
@@ -190,7 +190,7 @@ var recordedNotes = (function(global, $) {
 	                    var editorFields = this.columns.map(function(col){
 	                        result = { label: col,
 	                   		 		 	name: col}
-	                        if (col == 'tags'){
+	                        if (col == 'tag_names'){
 	                        	result['type'] = 'tagsinput';
 	                        } else if (col == 'content'){
 	                        	result['type'] = 'text';

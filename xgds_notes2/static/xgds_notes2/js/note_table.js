@@ -15,9 +15,9 @@
 //__END_LICENSE__
 
 //TODO if the following are placed within xgds_notes namespace then the datatables break.
-var smallNoteColumns = [{'data': 'author',
+var smallNoteColumns = [{'data': 'author_name',
 						 'render': function(data, type, full) {
-							var splits = full['author'].split(' ');
+							var splits = full['author_name'].split(' ');
 							var initials = '';
 							for (var i=0; i < splits.length; i++){
 								initials += splits[i].charAt(0);
@@ -31,13 +31,13 @@ var smallNoteColumns = [{'data': 'author',
 										return full['content'];
 								}
 					  },
-					  {   'data': 'tags',
+					  {   'data': 'tag_names',
 						  'className': 'editable',
 						  'render': function(data, type, full) {
-						if (full['tags'].length > 0){
+						if (full['tag_names'].length > 0){
 							var result = '';
-							for (var i = 0; i < full['tags'].length; i++) {
-								result = result + "<span class='tag label label-info'>" + full['tags'][i] + '</span>&nbsp;';
+							for (var i = 0; i < full['tag_names'].length; i++) {
+								result = result + "<span class='tag label label-info'>" + full['tag_names'][i] + '</span>&nbsp;';
 							}
 							return result;
 						}
@@ -82,7 +82,7 @@ $.extend(xgds_notes,{
 				if (HAS_DATATABLES_EDITOR){
 					var editorFields = smallNoteColumns.map(function(col){
 						result = { name: col.data}
-						if (col.data == 'tags'){
+						if (col.data == 'tag_names'){
 							result['type'] = 'tagsinput';
 						} else if (col.data == 'content'){
 							result['type'] = 'text';

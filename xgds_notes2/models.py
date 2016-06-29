@@ -315,49 +315,15 @@ class AbstractNote(models.Model, SearchableModel):
             return self.content_object.thumbnail_time_url(self.event_time)
         return None
 
-    def toMapDict(self):
-        """
-        Return a reduced dictionary that will be turned to JSON for rendering in a map
-        """
-        result = modelToDict(self)
-        
-        result['pk'] = int(self.pk)
-        del(result['id'])
-        result['type'] = self.__class__.__name__
-        result['author'] = getUserName(self.author)
-        if self.role:
-            result['role'] = self.role.display_name
-        else:
-            result['role'] = ''
-        
-        if self.location:
-            result['location'] = self.location.display_name
-        else:
-            result['location'] = ''
-        
-        event_time = self.adjustedEventTime()
-        result['event_time'] = event_time
-        result['event_timezone'] = self.event_timezone
-        
-        result['tags'] = ''
-        if self.tags.count():
-            tags = self.tags.names()
-            result["tags"] = [t.encode('utf-8') for t in tags]
-            
-        try:
-            result['content_url'] = ''
-            result['content_name'] = ''
-            result['content_thumbnail_url'] = ''
-            if self.content_object:
-                content_object = self.content_object
-                result['content_url'] = content_object.view_time_url(event_time)
-                result['content_name'] = content_object.name
-                result['content_thumbnail_url'] = content_object.thumbnail_time_url(event_time)
-        except:
-            traceback.print_exc()
-            pass
-        
-        return result
+#     def toMapDict(self):
+#         """
+#         Return a reduced dictionary that will be turned to JSON for rendering in a map
+#         """
+#         columns = settings.XGDS_MAP_SERVER_JS_MAP[self.cls_type()]['columns']
+#         values =  self.toMapList(columns)
+#         result = dict(zip(columns, values))
+#         return result
+#         
 
     @staticmethod
     def getMapBoundedQuery(minLon, minLat, maxLon, maxLat, today=False):
@@ -413,31 +379,31 @@ class AbstractLocatedNote(AbstractNote):
             'notelabel': notelabel,
         }))
           
-    def toMapDict(self):
-        """
-        Return a reduced dictionary that will be turned to JSON for rendering in a map
-        """
-        result = AbstractNote.toMapDict(self)
-        if result['position']:
-            result['lon'] = self.position.longitude
-            result['lat'] = self.position.latitude
-            try:
-                result['heading'] = self.position.heading
-            except:
-                result['heading'] = ''
-            try:
-                result['altitude'] = self.position.altitude
-            except:
-                result['altitude'] = ''
-              
-        else:
-            result['lat'] = ''
-            result['lon'] = ''
-            result['heading'] = ''
-            result['altitude'] = ''
-  
-        del(result['position'])
-        return result
+#     def toMapDict(self):
+#         """
+#         Return a reduced dictionary that will be turned to JSON for rendering in a map
+#         """
+#         result = AbstractNote.toMapDict(self)
+#         if result['position']:
+#             result['lon'] = self.position.longitude
+#             result['lat'] = self.position.latitude
+#             try:
+#                 result['heading'] = self.position.heading
+#             except:
+#                 result['heading'] = ''
+#             try:
+#                 result['altitude'] = self.position.altitude
+#             except:
+#                 result['altitude'] = ''
+#               
+#         else:
+#             result['lat'] = ''
+#             result['lon'] = ''
+#             result['heading'] = ''
+#             result['altitude'] = ''
+#   
+#         del(result['position'])
+#         return result
       
     @staticmethod
     def getMapBoundedQuery(minLon, minLat, maxLon, maxLat, today=False):
