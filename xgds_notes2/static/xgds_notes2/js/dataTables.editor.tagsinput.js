@@ -21,7 +21,7 @@ _fieldTypes.tagsinput = {
         field._enabled = true;
         field._input = $(
             '<div id="'+Editor.safeId( field.id )+'">'+
-            	'<input class="taginput"  id="id_tags" placeholder="Choose tags" type="text" />' +
+            	'<input class="taginput"  id="id_tag_names" placeholder="Choose tags" type="text" />' +
             '</div>');
         field._taginput = field._input.find(".taginput");
 
@@ -29,19 +29,19 @@ _fieldTypes.tagsinput = {
         xgds_notes.initializeInput(field._taginput);
 
         _this.on('postSubmit', function( e, data, action ){
-        	if (_this.displayed()[0] === 'tags'){
+        	if (_this.displayed()[0] === 'tag_names'){
         		_this.closeable = true;
         	}
         });
         
         _this.on('open', function( e, node, data ){
-        	if (_this.displayed()[0] === 'tags'){
+        	if (_this.displayed()[0] === 'tag_names'){
         		_this.closeable = false;
         	}
         });
         
         _this.on('preClose', function( e ){
-        	if (_this.displayed()[0] === 'tags'){
+        	if (_this.displayed()[0] === 'tag_names'){
             	return _this.closeable;
         	} else {
         		return true;

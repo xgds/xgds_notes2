@@ -42,7 +42,7 @@ urlpatterns = [
     url(r'^tagsArray.json$', views.tagsJsonArray, {}, 'xgds_notes_tags_array'),
     url(r'^import/?$', views.importNotes, {}, 'xgds_notes_import'),
     url(r'^notes/(?P<app_label>[\w]+)/(?P<model_type>[\w]+)/(?P<obj_pk>[\d]+)$', views.getObjectNotes, {}, 'xgds_notes_object_notes'),
-    url(r'^searchMap$', views.notesSearchMap, {}, 'xgds_notes_search_map'),
+    url(r'^searchMap$', views.notesSearchMap, {}, 'search_xgds_notes_map'),
 #     url(r'^mapJson/(?P<extens>([\-]*[\d]+\.[\d]+[\,]*)+)$', views.note_json_extens, {'readOnly': True, 'loginRequired': False, 'securityTags': ['readOnly']}, 'note_json_extens'),
     ]
 
