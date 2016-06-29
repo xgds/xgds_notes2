@@ -86,7 +86,7 @@ $.extend(xgds_notes,{
 	postSubmit: function(data) {
 		// override if you need to do something else after.
 	},
-	cleanData: function(data){
+	cleanData: function(data, containerDiv){
 		// override if you need to change the data;
 		return data;
 	},
@@ -134,14 +134,14 @@ $.extend(xgds_notes,{
 	        success: function(data) {
 		    	var content = data[0].content;
 		    	if (content.length > 30){
-		    	    content = content.substring(0, 30);
+		    	    content = content.substring(0, 30) + "...";
 		    	}
 	            xgds_notes.showSuccess('Saved ' + content, containerDiv);
 	            content_text.val('');
 	            tagInput.tagsinput('removeAll');
 	            var theNotesTable = context.findNotesTable(containerDiv);
 	            if (theNotesTable.length > 0){
-	            	var cleanData = xgds_notes.cleanData(data[0]);
+	            	var cleanData = xgds_notes.cleanData(data[0], containerDiv);
 	            	var table_id = theNotesTable.attr('id');
 	                if ( !$.fn.DataTable.isDataTable( '#'+table_id) ) {
 	                	xgds_notes.setupNotesTable(containerDiv.id, theNotesTable, cleanData);
@@ -161,9 +161,13 @@ $.extend(xgds_notes,{
 	
 	    });
 	},
-	hookNoteSubmit: function() {
-		$(".noteSubmit").off('click');
-	    $('.noteSubmit').on('click', function(e) {
+	hookNoteSubmit: function(container) {
+		if (container == undefined){
+			container = $(document);
+		}
+		var noteSubmitButton = container.find(".noteSubmit");
+		noteSubmitButton.off('click');
+		noteSubmitButton.on('click', function(e) {
 	    	e.preventDefault();
 	    	if (!user_session_exists){
 	    		xgds_notes.editUserSession('xgds_notes.finishNoteSubmit', this);
@@ -172,9 +176,13 @@ $.extend(xgds_notes,{
 	    	}
 	    });
 	},
-	hookAddNoteButton: function() {
-		$(".add_note_button").off('click');
-		$(".add_note_button").on('click',function(event) {
+	hookAddNoteButton: function(container) {
+		if (container == undefined){
+			container = $(document);
+		}
+		var addNoteButton = container.find(".add_note_button");
+		addNoteButton.off('click');
+		addNoteButton.on('click',function(event) {
 		    event.preventDefault();
 		    var tar = $(event.target);
 		    var notes_content_div = $(tar.siblings(".notes_content")[0]);
@@ -182,9 +190,12 @@ $.extend(xgds_notes,{
 		    $(notes_content_div.children('.notediv')[0]).toggle()
 		});
 	},
-	setupNotesUI: function(){
+	setupNotesUI: function(container){
+		if (container == undefined){
+			container = $(window);
+		}
 	    xgds_notes.initializeInput();
 	    xgds_notes.hookNoteSubmit();
-	    xgds_notes.hookAddNoteButton();
+	    xgds_notes.hookAddNoteButton(container);
 	}
 });

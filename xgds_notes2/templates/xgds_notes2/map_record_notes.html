@@ -15,8 +15,7 @@
 {% endblock scripts %}
 
 {% block preDashboard %}
-
-<div id="notesDiv">
+<div id="full_notesDiv">
 	<div id="notes_content" class="tab-content active notes_content">
 	{% include 'xgds_notes2/notes_input_include_full.html' %}
 	</div>
@@ -41,7 +40,8 @@
 {% block otherJSInit %}
 server_time_url = "{% url 'server_time' %}";
 serverTimezone = "{{TIME_ZONE}}";
-xgds_notes.setupNotesUI();
+var container = $("#full_notes_input");
+xgds_notes.setupNotesUI(container);
 xgds_notes.initializeNotesForm(false);
 xgds_notes.getEventTime = function(context) {
 		var dataString = "";
@@ -70,13 +70,17 @@ xgds_notes.getEventTime = function(context) {
 xgds_notes.postSubmit = function(data) {
    xgds_notes.clear_event_time();
 };
-xgds_notes.cleanData = function(data){
-	var columns = app.options.searchModels.Note.columns;
-	result = [];
-	for (var i=0; i < columns.length; i++) {
-		result.push(data[columns[i]]);
+xgds_notes.cleanData = function(data, containerDiv){
+	if (containerDiv.attr('id') == 'full_notes_content'){
+		var columns = app.options.searchModels.Note.columns;
+		result = [];
+		for (var i=0; i < columns.length; i++) {
+			result.push(data[columns[i]]);
+		}
+		return result;
 	}
-	return result;
+	return data;
+		
 }
 xgds_notes.updateRole = function(stuff) {
 	var content = $("#id_location option:selected").text();

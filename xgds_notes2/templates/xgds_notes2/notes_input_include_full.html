@@ -1,6 +1,7 @@
 {% if user.is_authenticated %}
+<div id="full_notes_input">
 <button id="add_note_button" class="small float_button add_note_button">Add Note</button>
-<div id="notes_content" class="tab-content active notes_content">
+<div id="full_notes_content" class="tab-content active notes_content">
 	<div class="notediv" id="notes_input" hidden>
 	<p text-align="right">You are {{ user.first_name }} (<span id="roleLocationResource"></span>) [<a href="#" id="changeRole" >change role/location</a>]</p>
 		<form id="create_note" class="create_note_form" action="" method="POST">
@@ -28,5 +29,6 @@
 	        </div>
 	  </form>
 	</div>
+</div>
 </div>
 {% endif %}

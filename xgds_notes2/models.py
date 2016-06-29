@@ -167,7 +167,34 @@ class UserSession(AbstractUserSession):
 
 DEFAULT_TAGGABLE_MANAGER = lambda: TaggableManager(through=TaggedNote, blank=True)
 
-class AbstractNote(models.Model, SearchableModel):
+class NoteLinksMixin(object):
+    """ extend NoteLinksMixin to properly show up in the notes list table.
+    Object should also be extending SearchableModel.
+    """
+    @property
+    def thumbnail_image_url(self):
+        return None
+    
+    def thumbnail_time_url(self, event_time):
+        return self.thumbnail_image_url
+
+    def view_time_url(self, event_time):
+        return self.view_url
+
+class NoteMixin(object):
+    """ If your model has notes on it, it should extend NoteMixin.
+    """
+    @property
+    def notes(self):
+        ctype = ContentType.objects.get_for_model(self.__class__)
+        Note = LazyGetModelByName(getattr(settings, 'XGDS_NOTES_NOTE_MODEL'))
+
+        try:
+            return Note.get().objects.filter(content_type__pk = ctype.id, object_id=self.pk)
+        except:
+            return None
+
+class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin):
     ''' Abstract base class for notes
     '''
 #     # custom id field for uniqueness
@@ -215,6 +242,10 @@ class AbstractNote(models.Model, SearchableModel):
     @property
     def tag_ids(self):
         return None
+
+    @property
+    def name(self):
+        return self.getLabel()
 
     @property
     def tag_names(self):
@@ -305,7 +336,6 @@ class AbstractNote(models.Model, SearchableModel):
             return self.content_object.name
         return None
     
-    @property
     def thumbnail_time_url(self, event_time):
         return self.content_thumbnail_url
     
@@ -439,29 +469,3 @@ class LocatedNote(AbstractLocatedNote):
     position = DEFAULT_POSITION_FIELD()
     tags = DEFAULT_TAGGABLE_MANAGER()
 
-class NoteLinksMixin(object):
-    """ extend NoteLinksMixin to properly show up in the notes list table.
-    Object should also be extending SearchableModel.
-    """
-    @property
-    def thumbnail_image_url(self):
-        return None
-    
-    def thumbnail_time_url(self, event_time):
-        return self.thumbnail_image_url
-
-    def view_time_url(self, event_time):
-        return self.view_url
-    
-class NoteMixin(object):
-    """ If your model has notes on it, it should extend NoteMixin.
-    """
-    @property
-    def notes(self):
-        ctype = ContentType.objects.get_for_model(self.__class__)
-        Note = LazyGetModelByName(getattr(settings, 'XGDS_NOTES_NOTE_MODEL'))
-
-        try:
-            return Note.get().objects.filter(content_type__pk = ctype.id, object_id=self.pk)
-        except:
-            return None
