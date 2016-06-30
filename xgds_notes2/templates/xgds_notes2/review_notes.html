@@ -60,7 +60,11 @@ $( document ).ready(function() {
 	 	minHeight = 125;
 	 }
 	 noteController = new recordedNotes.RecordedNotesController({
+	 			   {% if settings.GEOCAM_UTIL_LIVE_MODE %}
+		           recordedNotesURL: "{% url 'xgds_map_server_objectsJson_range' 'XGDS_NOTES_NOTE_MODEL' 720 %}",
+		           {% else %}
 		           recordedNotesURL: "{% url 'xgds_map_server_objectsJson_default' 'XGDS_NOTES_NOTE_MODEL' %}",
+		           {% endif %}
 		           columns: {{ settings.XGDS_NOTES_TABLE_DEFAULT_COLUMNS|safe }},
 		           ordering: "desc",
 		           divHeight: minHeight,
