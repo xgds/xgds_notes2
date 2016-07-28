@@ -152,8 +152,12 @@ def linkTags(note, tags):
     if tags:
         note.tags.clear()
         for t in tags:
-            tag = HierarchichalTag.objects.get(pk=int(t))
-            note.tags.add(tag)
+            try:
+                tag = HierarchichalTag.objects.get(pk=int(t))
+                note.tags.add(tag)
+            except:
+                tag = HierarchichalTag.objects.get(slug=t)
+                note.tags.add(tag)
         note.save()
 
 def createNoteFromData(data, delay=True, serverNow=False):
@@ -281,7 +285,7 @@ def editNote(request, note_pk=None):
                     m = p.match(strkey)
                     if m:
                         attr = m.group('attr')
-                        if attr != 'tags':
+                        if attr != 'tag_names':
                             setattr(note, attr, str(value))
                         else:
                             tags_changed = True
