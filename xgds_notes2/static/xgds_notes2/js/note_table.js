@@ -58,17 +58,15 @@ var noteDefaultOptions = {
         language: {
             emptyTable: 'No notes'
           },
-        createdRow: function(nRow, aData, iDataIndex) { // add image id to row
-    		$(nRow).attr('id', aData['id'])
+        createdRow: function(row, data, iDataIndex) { // add image id to row
+        	//$(row).attr('id', data[data.length - 1]);
+    		$(row).attr('id', data['pk']);
         }
 };
 
 var xgds_notes = xgds_notes || {};
 $.extend(xgds_notes,{
 		setupNotesTable: function(divID, table, initialData){
-			if (initialData == undefined || initialData.length == 0){
-				return;
-			}
 			/* 
 			 * Table View
 			 */
