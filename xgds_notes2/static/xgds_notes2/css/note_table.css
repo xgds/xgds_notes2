@@ -3,3 +3,8 @@
 	height: auto !important;
 }
 
+div.DTE_Inline div.DTE_Inline_Field div.DTE_Field input, div.DTE_Inline div.DTE_Inline_Buttons div.DTE_Field input {
+    width: 300%;
+    height: 60px;
+}
+
