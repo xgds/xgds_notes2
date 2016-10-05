@@ -14,6 +14,7 @@
 # specific language governing permissions and limitations under the License.
 #__END_LICENSE__
 import traceback
+import cgi
 import re
 from datetime import datetime, timedelta
 import itertools
@@ -31,10 +32,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.db import connection
 from django.views.decorators.cache import never_cache
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 
 from django.shortcuts import render_to_response, redirect, render
-from django.http import HttpResponseRedirect, HttpResponseForbidden, Http404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext, ugettext_lazy as _
@@ -258,14 +258,15 @@ def recordSimple(request):
         linkTags(note, tags)
         json_data = broadcastNote(note)
 
+        #return JsonResponse(json_data,
+        #                    status=200)
         return HttpResponse(json_data,
                             content_type='application/json')
     else:
-        return HttpResponse(json.dumps({'error': {'code': -32099,
+        return JsonResponse(json.dumps({'error': {'code': -32099,
                                                   'message': 'problem submitting note',
                                                   'data': form.errors}
                                         }),
-                            content_type='application/json',
                             status=406)
 
 
@@ -285,9 +286,9 @@ def editNote(request, note_pk=None):
                     m = p.match(strkey)
                     if m:
                         attr = m.group('attr')
-                        if attr != 'tag_names':
-                            setattr(note, attr, str(value))
-                        else:
+                        if attr == 'content':
+                            setattr(note, attr, cgi.escape(str(value)))
+                        elif attr == 'tag_names':
                             tags_changed = True
                             tag_regex = re.compile(r'^data\[(?P<pk>\d+)\]\[(?P<attr>\w*)\]\[(?P<index>\d+)\]\[(?P<tag_attr>\w*)\]')
                             tag_match = tag_regex.match(strkey)
@@ -295,6 +296,8 @@ def editNote(request, note_pk=None):
                                 tag_attr = tag_match.group('tag_attr')
                                 if tag_attr == 'id':
                                     tags_list.append(int(value))
+                        else:
+                            setattr(note, attr, str(value))
 
         note.modification_time = datetime.now(pytz.utc)
         if tags_changed:

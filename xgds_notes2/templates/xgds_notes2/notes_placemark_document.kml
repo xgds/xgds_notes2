@@ -31,7 +31,7 @@
           </tr>
           <tr>
             <td valign=top>Content:</td>
-            <td>{{note.content}}</td>
+            <td>{{note.content|safe}}</td>
           </tr>
           {% if note.tags.all %}
           <tr>

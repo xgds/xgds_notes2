@@ -23,14 +23,14 @@ $.extend(xgds_notes,{
         timeout: 3000
 	},
 	showSuccess: function(errorMessage, parent) {
-	    parent.find('#error_content').text(errorMessage);
+	    parent.find('#error_content').html(errorMessage);
 	    parent.find('#error_icon').removeClass();
 	    parent.find('#error_icon').addClass('ui-icon');
 	    parent.find('#error_icon').addClass('ui-icon-circle-check');
 	    parent.find('#error_div').show();
 	},
 	showError: function(errorMessage, parent) {
-	    parent.find('#error_content').text(errorMessage);
+	    parent.find('#error_content').html(errorMessage);
 	    parent.find('#error_icon').removeClass();
 	    parent.find('#error_icon').addClass('ui-icon');
 	    parent.find('#error_icon').addClass('ui-icon-circle-close');
@@ -101,7 +101,7 @@ $.extend(xgds_notes,{
 	    // validate and process form here
 	    var content_text = parent.find('textarea#id_content');
 	    var content = content_text.serialize(); 
-	    var contentVal = content_text.val();
+	    var contentVal = encodeURIComponent(content_text.val());
 	
 	    xgds_notes.hideError(containerDiv);
 	    var tagInput = parent.find('input#id_tags');
@@ -194,7 +194,8 @@ $.extend(xgds_notes,{
 		if (container == undefined){
 			container = $(window);
 		}
-	    xgds_notes.initializeInput();
+		var input = container.find('.taginput');
+	    xgds_notes.initializeInput(input);
 	    xgds_notes.hookNoteSubmit();
 	    xgds_notes.hookAddNoteButton(container);
 	}

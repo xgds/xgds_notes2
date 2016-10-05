@@ -14,6 +14,7 @@
 # specific language governing permissions and limitations under the License.
 #__END_LICENSE__
 
+import cgi
 import datetime
 import pytz
 
@@ -68,6 +69,10 @@ class NoteForm(forms.ModelForm):
             rightnow = datetime.datetime.now(pytz.utc)
             return rightnow
         return etime.replace(tzinfo=pytz.utc)
+    
+    def clean_content(self):
+        text = self.cleaned_data['content']
+        return cgi.escape(text)
 
     def __unicode__(self):
         return self.as_fieldsets()
