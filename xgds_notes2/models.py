@@ -220,7 +220,10 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin):
     author = models.ForeignKey(User)
     role = models.ForeignKey(Role, null=True)
     location = models.ForeignKey(Location, null=True)
-
+    # True if we have searched for the location and found one, False if we searched and did not find one.
+    # null if we this field was created after this note existed or we have not tried looking.  
+    location_found = models.NullBooleanField(default = None) 
+    
     content = models.TextField(blank=True, null=True)
     
     tags = "set to DEFAULT_TAGGABLE_MANAGER() or similar in any derived classes"
@@ -288,6 +291,16 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin):
                 'content',
                 'tags',
                 'show_on_map',
+                ]
+    
+    @classmethod
+    def getSearchFormFields(cls):
+        return ['content',
+                'tags',
+                'event_timezone',
+                'author',
+                'role',
+                'location'
                 ]
     
 # For sphinx to work right - these next 2 lines *MUST* be in the inherited concrete

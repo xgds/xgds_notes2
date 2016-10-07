@@ -17,11 +17,12 @@
 import cgi
 import datetime
 import pytz
-
+from django.utils.functional import lazy
 from django import forms
 from django.conf import settings
 from geocamUtil.loader import LazyGetModelByName
 from geocamUtil.extFileField import ExtFileField
+from geocamUtil.forms.AbstractImportForm import getTimezoneChoices
 
 from xgds_notes2.models import HierarchichalTag
 from geocamTrack.forms import AbstractImportTrackedForm
@@ -88,6 +89,43 @@ class TagForm(forms.ModelForm):
         model = Tag.get()
         fields = Tag.get().getFormFields()
 
+
 class ImportNotesForm(AbstractImportTrackedForm):
     sourceFile = ExtFileField(ext_whitelist=(".csv", ), required=True)
 
+
+class SearchNoteForm(forms.ModelForm):
+    hierarchy = forms.BooleanField(required=False, label='Include tag descendants')
+    tags = TagField(required=False,
+                    widget=TagWidget(attrs={'class': 'taginput', 
+                                            'data-role':'tagsinput',
+                                            'placeholder': 'Choose tags'}))
+    
+    date_formats = list(forms.DateTimeField.input_formats) + [
+        '%Y/%m/%d %H:%M:%S',
+        '%Y/%m/%d %H:%M:%S UTC',
+        '%Y-%m-%d %H:%M:%S UTC',
+        '%Y-%m-%dT%H:%M:%S+00:00',
+        '%Y-%m-%dT%H:%M:%S 00:00',
+        '%Y-%m-%dT%H:%M:%SZ',
+    ]
+    min_event_time = forms.DateTimeField(input_formats=date_formats, required=False, label='Min Time')
+    max_event_time = forms.DateTimeField(input_formats=date_formats, required=False, label = 'Max Time')
+    
+    event_timezone = forms.ChoiceField(required=False, choices=lazy(getTimezoneChoices, list)(empty=True))
+
+    def clean_event_timezone(self):
+        if self.cleaned_data['timezone'] == 'utc':
+            return 'Etc/UTC'
+        else:
+            return self.cleaned_data['timezone']
+        return None
+
+    def clean_content(self):
+        text = self.cleaned_data['content']
+        return cgi.escape(text)
+
+
+    class Meta:
+        model = Note.get()
+        fields = Note.get().getSearchFormFields()

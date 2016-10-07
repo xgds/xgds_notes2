@@ -14,12 +14,13 @@
     <script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/note_create_form.js"></script>
     <script type="text/javascript">
 	    note_submit_url = "{% url 'xgds_notes_record' %}";
-</script>
+	</script>
 {% endblock scripts %}
 
 {% block preDashboard %}
  <div id="full_notesDiv">
 	<div id="notes_content" class="tab-content active notes_content">
+	<button id="advanced_search_button" class="small pull_right">Advanced Search</button>
 	{% include 'xgds_notes2/notes_input_include_full.html' %}
 	</div>
 </div>
