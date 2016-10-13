@@ -118,4 +118,15 @@ xgds_notes.setupEditingTable = function() {
         };
         xgds_notes.updateRole();
         xgds_notes.setupEditingTable();
+ var input_initialized = false;
+ app.vent.on('searchDiv:visible', function(){
+ 	if (!input_initialized){
+ 		setTimeout(function(){
+        		xgds_notes.initializeInput();
+        		input_initialized = true;
+        	}, 105);
+        
+ 		
+ 	} 
+ });
 {% endblock otherJSInit %}

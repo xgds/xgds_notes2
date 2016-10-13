@@ -40,7 +40,9 @@ $.extend(xgds_notes,{
 	    $(input).tagsinput({
 		  itemValue: 'id',
 		  itemText: 'name',
-	//	  confirmKeys: [13, 44],
+//		  tagClass: function(item) {
+//	    	return 'tag label label-info'; 
+//		  },
 		  typeaheadjs: {
 		    name: 'allTags',
 		    displayKey: 'name',

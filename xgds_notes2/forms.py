@@ -13,7 +13,7 @@
 # CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 #__END_LICENSE__
-
+import pydevd
 import cgi
 import datetime
 import pytz
@@ -22,6 +22,7 @@ from django import forms
 from django.conf import settings
 from django.utils.functional import lazy
 from django.contrib.auth.models import User
+from django.db.models import Q
 
 from geocamTrack.forms import AbstractImportTrackedForm
 from geocamUtil.extFileField import ExtFileField
@@ -29,7 +30,7 @@ from geocamUtil.forms.AbstractImportForm import getTimezoneChoices
 from geocamUtil.loader import LazyGetModelByName
 from taggit.forms import *
 from xgds_core.forms import SearchForm
-from xgds_notes2.models import Role, Location
+from xgds_notes2.models import Role, Location, HierarchichalTag
 
 Note = LazyGetModelByName(settings.XGDS_NOTES_NOTE_MODEL)
 UserSession = LazyGetModelByName(settings.XGDS_NOTES_USER_SESSION_MODEL)
@@ -131,13 +132,35 @@ class SearchNoteForm(SearchForm):
         text = self.cleaned_data['content']
         return cgi.escape(text)
 
+    def buildQueryForTags(self, fieldname, field, value, hierarchy):
+        pydevd.settrace('192.168.1.65')
+        listval = [int(x) for x in value]
+        if not hierarchy:
+            return Q(**{fieldname+'__id__in': listval})
+        else:
+            result = None
+            tags = []
+            for pk in listval:
+                tag = HierarchichalTag.objects.get(pk=pk)
+                tags.append(tag)
+            for tag in tags:
+                tagqs = tag.get_tree(tag)
+                qs = Q(**{fieldname+'__in':tagqs})
+                if not result:
+                    result = qs
+                else:
+                    result |= qs
+            return result
+                
+        #tags__id__in=[21]
+        
     def buildQueryForField(self, fieldname, field, value, minimum=False, maximum=False):
         # for hierarchichal search or tags, do custom
         # otherwise fall back to base method
         # if fieldname is content, then call sphinx
         if fieldname == 'tags':
             hierarchy = self.cleaned_data['hierarchy']
-            return self.buildQueryForTags(fieldname, value, hierarchy)
+            return self.buildQueryForTags(fieldname, field, value, hierarchy)
         elif fieldname == 'hierarchy':
             return None
         return super(SearchNoteForm, self).buildQueryForField(fieldname, field, value, minimum, maximum)
