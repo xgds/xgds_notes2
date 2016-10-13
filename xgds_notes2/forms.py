@@ -17,17 +17,19 @@
 import cgi
 import datetime
 import pytz
-from django.utils.functional import lazy
+
 from django import forms
 from django.conf import settings
-from geocamUtil.loader import LazyGetModelByName
+from django.utils.functional import lazy
+from django.contrib.auth.models import User
+
+from geocamTrack.forms import AbstractImportTrackedForm
 from geocamUtil.extFileField import ExtFileField
 from geocamUtil.forms.AbstractImportForm import getTimezoneChoices
-
-from xgds_notes2.models import HierarchichalTag
-from geocamTrack.forms import AbstractImportTrackedForm
-
+from geocamUtil.loader import LazyGetModelByName
 from taggit.forms import *
+from xgds_core.forms import SearchForm
+from xgds_notes2.models import Role, Location
 
 Note = LazyGetModelByName(settings.XGDS_NOTES_NOTE_MODEL)
 UserSession = LazyGetModelByName(settings.XGDS_NOTES_USER_SESSION_MODEL)
@@ -94,7 +96,7 @@ class ImportNotesForm(AbstractImportTrackedForm):
     sourceFile = ExtFileField(ext_whitelist=(".csv", ), required=True)
 
 
-class SearchNoteForm(forms.ModelForm):
+class SearchNoteForm(SearchForm):
     hierarchy = forms.BooleanField(required=False, label='Include tag descendants')
     tags = TagField(required=False,
                     widget=TagWidget(attrs={'class': 'taginput', 
@@ -114,17 +116,32 @@ class SearchNoteForm(forms.ModelForm):
     
     event_timezone = forms.ChoiceField(required=False, choices=lazy(getTimezoneChoices, list)(empty=True))
 
+    role = forms.ModelChoiceField(required=False, queryset=Role.objects.all())
+    location = forms.ModelChoiceField(required=False, queryset=Location.objects.all())
+    author = forms.ModelChoiceField(required=False, queryset=User.objects.all())
+    
     def clean_event_timezone(self):
-        if self.cleaned_data['timezone'] == 'utc':
+        if self.cleaned_data['event_timezone'] == 'utc':
             return 'Etc/UTC'
         else:
-            return self.cleaned_data['timezone']
+            return self.cleaned_data['event_timezone']
         return None
 
     def clean_content(self):
         text = self.cleaned_data['content']
         return cgi.escape(text)
 
+    def buildQueryForField(self, fieldname, field, value, minimum=False, maximum=False):
+        # for hierarchichal search or tags, do custom
+        # otherwise fall back to base method
+        # if fieldname is content, then call sphinx
+        if fieldname == 'tags':
+            hierarchy = self.cleaned_data['hierarchy']
+            return self.buildQueryForTags(fieldname, value, hierarchy)
+        elif fieldname == 'hierarchy':
+            return None
+        return super(SearchNoteForm, self).buildQueryForField(fieldname, field, value, minimum, maximum)
+        
 
     class Meta:
         model = Note.get()
