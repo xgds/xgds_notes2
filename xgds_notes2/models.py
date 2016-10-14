@@ -303,6 +303,18 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin):
                 'location'
                 ]
     
+    @classmethod
+    def getSearchFieldOrder(cls):
+        return ['tags',
+                'hierarchy',
+                'content',
+                'author',
+                'role',
+                'location',
+                'event_timezone',
+                'min_event_time',
+                'max_event_time']
+        
 # For sphinx to work right - these next 2 lines *MUST* be in the inherited concrete
 # class. Will fail miserably if it tries to search on this abstract class.
 #    if "SphinxSearch" in globals():

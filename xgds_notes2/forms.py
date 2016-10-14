@@ -13,11 +13,11 @@
 # CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 #__END_LICENSE__
-import pydevd
 import cgi
 import datetime
 import pytz
 
+# from haystack.query import SearchQuerySet
 from django import forms
 from django.conf import settings
 from django.utils.functional import lazy
@@ -112,14 +112,18 @@ class SearchNoteForm(SearchForm):
         '%Y-%m-%dT%H:%M:%S 00:00',
         '%Y-%m-%dT%H:%M:%SZ',
     ]
-    min_event_time = forms.DateTimeField(input_formats=date_formats, required=False, label='Min Time')
-    max_event_time = forms.DateTimeField(input_formats=date_formats, required=False, label = 'Max Time')
+    min_event_time = forms.DateTimeField(input_formats=date_formats, required=False, label='Min Time',
+                                         widget=forms.DateTimeInput(attrs={'class': 'datetimepicker'}))
+    max_event_time = forms.DateTimeField(input_formats=date_formats, required=False, label = 'Max Time',
+                                         widget=forms.DateTimeInput(attrs={'class': 'datetimepicker'}))
     
-    event_timezone = forms.ChoiceField(required=False, choices=lazy(getTimezoneChoices, list)(empty=True))
+    event_timezone = forms.ChoiceField(required=False, choices=lazy(getTimezoneChoices, list)(empty=True), label='Time Zone')
 
     role = forms.ModelChoiceField(required=False, queryset=Role.objects.all())
     location = forms.ModelChoiceField(required=False, queryset=Location.objects.all())
     author = forms.ModelChoiceField(required=False, queryset=User.objects.all())
+    
+    field_order = Note.get().getSearchFieldOrder()
     
     def clean_event_timezone(self):
         if self.cleaned_data['event_timezone'] == 'utc':
@@ -132,8 +136,13 @@ class SearchNoteForm(SearchForm):
         text = self.cleaned_data['content']
         return cgi.escape(text)
 
+#     def buildQueryForContent(self, fieldname, field, value):
+#         sqs = SearchQuerySet().filter(text=value)
+
+    def buildQueryForContent(self, fieldname, field, value):
+        return Q(**{fieldname+'__icontains':str(value)})
+
     def buildQueryForTags(self, fieldname, field, value, hierarchy):
-        pydevd.settrace('192.168.1.65')
         listval = [int(x) for x in value]
         if not hierarchy:
             return Q(**{fieldname+'__id__in': listval})
@@ -163,6 +172,8 @@ class SearchNoteForm(SearchForm):
             return self.buildQueryForTags(fieldname, field, value, hierarchy)
         elif fieldname == 'hierarchy':
             return None
+        elif fieldname == 'content':
+            return self.buildQueryForContent(fieldname, field, value)
         return super(SearchNoteForm, self).buildQueryForField(fieldname, field, value, minimum, maximum)
         
 

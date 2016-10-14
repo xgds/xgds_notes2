@@ -3,11 +3,13 @@
 <div class="sitemenu-nav-secondary">
 	<nav class="subnav">
 	<ul>
-		<li class="nav-item {% if modelName == 'Note' %}currentnav{% endif %}"><a href="{% url 'search_xgds_notes_map' %}">Notes</a></li>
+		<li class="nav-item {% if modelName == 'Note' %}currentnav{% endif %}"><a href="{% url 'search_xgds_notes_map' %}">Search Notes</a></li>
 		<li {% currentnav xgds_notes_edit_tags  %}><a href="{% url 'xgds_notes_edit_tags' %}">Edit Tags</a></li>
 		<li {% currentnav xgds_notes_import %}><a href="{% url 'xgds_notes_import' %}">Import</a></li>
+		<!-- 
 		<li {% currentnav xgds_notes_review %}><a href="{% url 'xgds_notes_review' %}">OLD: Review {{ XGDS_NOTES_MONIKER }}</a></li>
 		<li {% currentnav xgds_notes_record %}><a href="{% url 'xgds_notes_record' %}">OLD: Record {{ XGDS_NOTES_MONIKER }}</a></li>
+		 -->
   	</ul>
   	</nav>
 </div>
