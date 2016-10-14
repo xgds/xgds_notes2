@@ -105,17 +105,9 @@ class SearchNoteForm(SearchForm):
                                             'data-role':'tagsinput',
                                             'placeholder': 'Choose tags'}))
     
-    date_formats = list(forms.DateTimeField.input_formats) + [
-        '%Y/%m/%d %H:%M:%S',
-        '%Y/%m/%d %H:%M:%S UTC',
-        '%Y-%m-%d %H:%M:%S UTC',
-        '%Y-%m-%dT%H:%M:%S+00:00',
-        '%Y-%m-%dT%H:%M:%S 00:00',
-        '%Y-%m-%dT%H:%M:%SZ',
-    ]
-    min_event_time = forms.DateTimeField(input_formats=date_formats, required=False, label='Min Time',
+    min_event_time = forms.DateTimeField(required=False, label='Min Time',
                                          widget=forms.DateTimeInput(attrs={'class': 'datetimepicker'}))
-    max_event_time = forms.DateTimeField(input_formats=date_formats, required=False, label = 'Max Time',
+    max_event_time = forms.DateTimeField(required=False, label = 'Max Time',
                                          widget=forms.DateTimeInput(attrs={'class': 'datetimepicker'}))
     
     event_timezone = forms.ChoiceField(required=False, choices=lazy(getTimezoneChoices, list)(empty=True), 
@@ -162,9 +154,6 @@ class SearchNoteForm(SearchForm):
 #     def buildQueryForContent(self, fieldname, field, value):
 #         sqs = SearchQuerySet().filter(text=value)
 
-    def buildQueryForContent(self, fieldname, field, value):
-        return Q(**{fieldname+'__icontains':str(value)})
-
     def buildQueryForTags(self, fieldname, field, value, hierarchy):
         listval = [int(x) for x in value]
         if not hierarchy:
@@ -196,7 +185,7 @@ class SearchNoteForm(SearchForm):
         elif fieldname == 'hierarchy':
             return None
         elif fieldname == 'content':
-            return self.buildQueryForContent(fieldname, field, value)
+            return self.buildContainsQuery(fieldname, field, value)
         return super(SearchNoteForm, self).buildQueryForField(fieldname, field, value, minimum, maximum)
         
 
