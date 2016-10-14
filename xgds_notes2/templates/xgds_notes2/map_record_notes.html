@@ -121,7 +121,13 @@ xgds_notes.setupEditingTable = function() {
  var input_initialized = false;
  app.vent.on('searchDiv:visible', function(){
  	if (!input_initialized){
-        xgds_notes.initializeInput();
+ 		var formNote = $("#form-Note");
+ 		var input = formNote.find('.taginput');
+        xgds_notes.initializeInput(input);
+        var role = formNote.find("#id_role");
+        role.val(role.find("option:first").val());
+        var location = formNote.find("#id_location");
+        location.val(location.find("option:first").val());
         input_initialized = true;
  	} 
  });

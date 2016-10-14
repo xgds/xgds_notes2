@@ -23,6 +23,7 @@ from django.conf import settings
 from django.utils.functional import lazy
 from django.contrib.auth.models import User
 from django.db.models import Q
+from dateutil.parser import parse as dateparser
 
 from geocamTrack.forms import AbstractImportTrackedForm
 from geocamUtil.extFileField import ExtFileField
@@ -117,13 +118,22 @@ class SearchNoteForm(SearchForm):
     max_event_time = forms.DateTimeField(input_formats=date_formats, required=False, label = 'Max Time',
                                          widget=forms.DateTimeInput(attrs={'class': 'datetimepicker'}))
     
-    event_timezone = forms.ChoiceField(required=False, choices=lazy(getTimezoneChoices, list)(empty=True), label='Time Zone')
+    event_timezone = forms.ChoiceField(required=False, choices=lazy(getTimezoneChoices, list)(empty=True), 
+                                       label='Time Zone', help_text='Required for Min/Max Time')
 
     role = forms.ModelChoiceField(required=False, queryset=Role.objects.all())
     location = forms.ModelChoiceField(required=False, queryset=Location.objects.all())
     author = forms.ModelChoiceField(required=False, queryset=User.objects.all())
     
     field_order = Note.get().getSearchFieldOrder()
+    
+    # populate the times properly
+    def clean_min_event_time(self):
+        return self.clean_time('min_event_time', self.clean_event_timezone())
+
+    # populate the times properly
+    def clean_max_event_time(self):
+        return self.clean_time('max_event_time', self.clean_event_timezone())
     
     def clean_event_timezone(self):
         if self.cleaned_data['event_timezone'] == 'utc':
@@ -135,6 +145,19 @@ class SearchNoteForm(SearchForm):
     def clean_content(self):
         text = self.cleaned_data['content']
         return cgi.escape(text)
+    
+    def clean(self):
+        cleaned_data = super(SearchNoteForm, self).clean()
+        event_timezone = cleaned_data.get("event_timezone")
+        min_event_time = cleaned_data.get("min_event_time")
+        max_event_time = cleaned_data.get("max_event_time")
+
+        if max_event_time or min_event_time:
+            if not event_timezone:
+                self.add_error('event_timezone',"Time Zone is required for min / max times.")
+                raise forms.ValidationError(
+                    "Time Zone is required for min / max times."
+                )
 
 #     def buildQueryForContent(self, fieldname, field, value):
 #         sqs = SearchQuerySet().filter(text=value)
