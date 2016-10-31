@@ -83,7 +83,7 @@ def editUserSession(request, ajax=False):
                 for field in form.fields:
                     request.user.preferences['default_' + field] = form.data[field]
             if not ajax:
-                return redirect('xgds_notes_record')
+                return redirect('search_xgds_notes_map')
             else:
                 return HttpResponse(json.dumps({'success':True}),
                                     content_type='application/json')

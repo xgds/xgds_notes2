@@ -92,7 +92,8 @@ xgds_notes.cleanData = function(data, containerDiv){
 }
 xgds_notes.updateRole = function(stuff) {
 	var theForm = $("#edit_user_session_form");
-	var content = theForm.find("#id_location option:selected").text()
+	var location = theForm.find("#id_location")[0];
+	var content = location.options[location.selectedIndex].innerHTML;
 	if (content == '---------'){
 		theForm.find("#id_location option[value='{{request.session.notes_user_session.location}}']").attr('selected', 'selected');
 		theForm.find("#id_resource option[value='{{request.session.notes_user_session.resource}}']").attr('selected', 'selected');
@@ -100,8 +101,10 @@ xgds_notes.updateRole = function(stuff) {
 		var content = theForm.find("#id_location option:selected").text();
 	} 
 	user_session_exists = true;
-	content += ', ' + theForm.find("#id_resource option:selected").text()
-	content += ', ' + theForm.find("#id_role option:selected").text()
+	var resource = theForm.find("#id_resource")[0];
+	content += ', ' + resource.options[resource.selectedIndex].innerHTML;
+	var role = theForm.find("#id_role")[0];
+	content += ', ' + role.options[role.selectedIndex].innerHTML;
 	$("#roleLocationResource").text(content);
 }
 $("#changeRole").click(function(e){
