@@ -1,5 +1,10 @@
 {% extends 'xgds_map_server/mapSearch.html' %}
 
+
+{% block sitemenu-content-secondary %}
+	{% include "xgds_notes2/notes_subnav.html" %}
+{% endblock %}
+
 {% block scripts %}
 {{block.super}}
 	{% include "xgds_notes2/NoteJS.html" with forceUserSession=True%}
