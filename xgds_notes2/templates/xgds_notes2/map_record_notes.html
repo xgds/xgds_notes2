@@ -57,7 +57,7 @@ xgds_notes.getEventTime = function(context) {
 	    var event_timestring = event_hidden.val();
 	    try {
 	        if (event_timestring !== undefined && event_timestring !== ""){
-	        	var tzified = getUTCTime(event_timestring, serverTimezone);
+	        	var tzified = getUTCTime(event_timestring.substring(0, event_timestring.length-4), serverTimezone);
 				var theUtc = tzified.utc().format('YYYY/MM/DD HH:mm:ss') + ' UTC';
 	            dataString = dataString + '&event_time=' + theUtc;
 	            try {
@@ -91,16 +91,17 @@ xgds_notes.cleanData = function(data, containerDiv){
 		
 }
 xgds_notes.updateRole = function(stuff) {
-	var content = $("#id_location option:selected").text();
+	var theForm = $("#edit_user_session_form");
+	var content = theForm.find("#id_location option:selected").text()
 	if (content == '---------'){
-		$("#id_location option[value='{{request.session.notes_user_session.location}}']").attr('selected', 'selected');
-		$("#id_resource option[value='{{request.session.notes_user_session.resource}}']").attr('selected', 'selected');
-		$("#id_role option[value='{{request.session.notes_user_session.role}}']").attr('selected', 'selected');
-		var content = $("#id_location option:selected").text();
+		theForm.find("#id_location option[value='{{request.session.notes_user_session.location}}']").attr('selected', 'selected');
+		theForm.find("#id_resource option[value='{{request.session.notes_user_session.resource}}']").attr('selected', 'selected');
+		theForm.find("#id_role option[value='{{request.session.notes_user_session.role}}']").attr('selected', 'selected');
+		var content = theForm.find("#id_location option:selected").text();
 	} 
 	user_session_exists = true;
-	content += ', ' + $("#id_resource option:selected").text()
-	content += ', ' + $("#id_role option:selected").text()
+	content += ', ' + theForm.find("#id_resource option:selected").text()
+	content += ', ' + theForm.find("#id_role option:selected").text()
 	$("#roleLocationResource").text(content);
 }
 $("#changeRole").click(function(e){

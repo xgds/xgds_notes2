@@ -90,7 +90,8 @@ def editUserSession(request, ajax=False):
 
         else:
             return HttpResponse(json.dumps(form.errors),
-                                content_type='application/json')
+                                content_type='application/json',
+                                status=406)
     else:
         defaults = {}
         if hasattr(request.user, 'preferences'):
