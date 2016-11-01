@@ -177,24 +177,30 @@ $.extend(xgds_notes,{
 	    });
 	},
 	hookAddNoteButton: function(container) {
-		if (container == undefined){
-			container = $(document);
+		var addNoteButton = undefined;
+		if (container === undefined){
+			addNoteButton = $('.add_note_button');
+		} else {
+			addNoteButton = container.find(".add_note_button");
 		}
-		var addNoteButton = container.find(".add_note_button");
-		addNoteButton.off('click');
-		addNoteButton.on('click',function(event) {
-		    event.preventDefault();
-		    var tar = $(event.target);
-		    var notes_content_div = $(tar.siblings(".notes_content")[0]);
-		    notes_content_div.show();
-		    $(notes_content_div.children('.notediv')[0]).toggle()
-		});
+		if (addNoteButton !== undefined) {
+			addNoteButton.off('click');
+			addNoteButton.on('click',function(event) {
+			    event.preventDefault();
+			    var tar = $(event.target);
+			    var notes_content_div = $(tar.siblings(".notes_content")[0]);
+			    notes_content_div.show();
+			    $(notes_content_div.children('.notediv')[0]).toggle()
+			});
+		}
 	},
 	setupNotesUI: function(container){
-		if (container == undefined){
-			container = $(window);
+		var input = undefined;
+		if (container === undefined){
+			input = $('.taginput');
+		} else {
+			input = container.find('.taginput');
 		}
-		var input = container.find('.taginput');
 	    xgds_notes.initializeInput(input);
 	    xgds_notes.hookNoteSubmit();
 	    xgds_notes.hookAddNoteButton(container);
