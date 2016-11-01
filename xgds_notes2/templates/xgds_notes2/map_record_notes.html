@@ -5,21 +5,15 @@
 	{% include "xgds_notes2/notes_subnav.html" %}
 {% endblock %}
 
-{% block scripts %}
-{{block.super}}
-	{% include "xgds_notes2/NoteJS.html" with forceUserSession=True%}
-	<script type="text/javascript" src="{{ EXTERNAL_URL }}jqueryui-timepicker-addon/dist/jquery-ui-timepicker-addon.min.js"></script>
-	<script type="text/javascript" src='{{ STATIC_URL }}xgds_core/js/datetimepickerUtils.js'></script>
-    {% for template_name, template in templates.items %}
-	<script type="text/handlebars" id="template-{{template_name}}">
-		{{template|safe}}
-	</script>
-    {% endfor %}
-    {#include "xgds_map_server/SearchForms.html" with searchForms=searchForms #}
-    <script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/note_create_form.js"></script>
-    <script type="text/javascript">
+
+{% block prescripts %}
+	<script type="text/javascript">
 	    note_submit_url = "{% url 'xgds_notes_record' %}";
-	</script>
+	</script>	
+{% endblock prescripts %}
+{% block scripts %}
+	{{block.super}}
+    <script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/note_create_form.js"></script>
 {% endblock scripts %}
 
 {% block preDashboard %}
@@ -92,8 +86,7 @@ xgds_notes.cleanData = function(data, containerDiv){
 }
 xgds_notes.updateRole = function(stuff) {
 	var theForm = $("#edit_user_session_form");
-	var location = theForm.find("#id_location")[0];
-	var content = location.options[location.selectedIndex].innerHTML;
+	var content = theForm.find("#id_location option:selected").text();
 	if (content == '---------'){
 		theForm.find("#id_location option[value='{{request.session.notes_user_session.location}}']").attr('selected', 'selected');
 		theForm.find("#id_resource option[value='{{request.session.notes_user_session.resource}}']").attr('selected', 'selected');
@@ -101,12 +94,11 @@ xgds_notes.updateRole = function(stuff) {
 		var content = theForm.find("#id_location option:selected").text();
 	} 
 	user_session_exists = true;
-	var resource = theForm.find("#id_resource")[0];
-	content += ', ' + resource.options[resource.selectedIndex].innerHTML;
-	var role = theForm.find("#id_role")[0];
-	content += ', ' + role.options[role.selectedIndex].innerHTML;
+	content += ', ' + theForm.find("#id_resource option:selected").text();
+	content += ', ' + theForm.find("#id_role option:selected").text();
 	$("#roleLocationResource").text(content);
 }
+
 $("#changeRole").click(function(e){
 	xgds_notes.editUserSession('xgds_notes.updateRole');
 	});

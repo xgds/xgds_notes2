@@ -553,7 +553,7 @@ def getObjectNotes(request, app_label, model_type, obj_pk):
 
 
 def notesSearchMap(request):
-    return getSearchPage(request, Note.get().cls_type(), 'xgds_notes2/map_record_notes.html')
+    return getSearchPage(request, Note.get().cls_type(), 'xgds_notes2/map_record_notes.html', True)
 
 # @never_cache
 # def getNotesJson(request, filter=None, range=0, isLive=1):
