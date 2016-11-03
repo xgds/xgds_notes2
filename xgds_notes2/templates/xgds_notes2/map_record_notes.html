@@ -6,15 +6,15 @@
 {% endblock %}
 
 
-{% block prescripts %}
-	<script type="text/javascript">
-	    note_submit_url = "{% url 'xgds_notes_record' %}";
-	</script>	
-{% endblock prescripts %}
 {% block scripts %}
 	{{block.super}}
     <script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/note_create_form.js"></script>
 {% endblock scripts %}
+{% block postscripts %}
+	<script type="text/javascript">
+	    note_submit_url = "{% url 'xgds_notes_record' %}";
+	</script>	
+{% endblock postscripts %}
 
 {% block preDashboard %}
  <div id="full_notesDiv">
