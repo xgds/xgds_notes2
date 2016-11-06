@@ -48,7 +48,6 @@ XGDS_NOTES_TAGGED_NOTE_MODEL = 'xgds_notes2.TaggedNote'
 XGDS_NOTES_USER_SESSION_MODEL = 'xgds_notes2.UserSession'
 
 XGDS_NOTES_POPULATE_NOTE_DATA = 'xgds_notes2.views.populateNoteData'
-XGDS_NOTES_BUILD_NOTES_FORM = 'xgds_notes2.views.buildNotesForm'
 
 XGDS_NOTES_REVIEW_DEFAULT_SORT = '-event_time'
 

@@ -6,15 +6,15 @@
 {% endblock %}
 
 
+{% block prescripts %}
+	<script type="text/javascript">
+	    note_submit_url = "{% url 'xgds_notes_record' %}";
+	</script>	
+{% endblock prescripts %}
 {% block scripts %}
 	{{block.super}}
     <script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/note_create_form.js"></script>
 {% endblock scripts %}
-{% block postscripts %}
-	<script type="text/javascript">
-	    note_submit_url = "{% url 'xgds_notes_record' %}";
-	</script>	
-{% endblock postscripts %}
 
 {% block preDashboard %}
  <div id="full_notesDiv">
@@ -45,7 +45,6 @@ serverTimezone = "{{TIME_ZONE}}";
 var container = $("#full_notes_input");
 xgds_notes.setupNotesUI(container);
 xgds_notes.initializeNotesForm(false);
-{% block eventTimeFunction %}
 xgds_notes.getEventTime = function(context) {
 		var dataString = "";
 		var event_hidden = $('#id_event_time');
@@ -73,8 +72,6 @@ xgds_notes.getEventTime = function(context) {
 xgds_notes.postSubmit = function(data) {
    xgds_notes.clear_event_time();
 };
-{% endblock eventTimeFunction %}
-{% block cleanDataFunction %}
 xgds_notes.cleanData = function(data, containerDiv){
 	if (containerDiv.attr('id') == 'full_notes_content'){
 		var columns = app.options.searchModels.Note.columns;
@@ -85,8 +82,8 @@ xgds_notes.cleanData = function(data, containerDiv){
 		return result;
 	}
 	return data;
+		
 }
-{% endblock cleanDataFunction %}
 xgds_notes.updateRole = function(stuff) {
 	var theForm = $("#edit_user_session_form");
 	var content = theForm.find("#id_location option:selected").text();
