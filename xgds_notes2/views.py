@@ -53,6 +53,7 @@ from xgds_core.views import getTimeZone
 from xgds_map_server.views import getSearchPage
 from models import HierarchichalTag
 from httplib2 import ServerNotFoundError
+from apps.xgds_notes2.forms import SearchNoteForm
 
 if settings.XGDS_SSE:
     from sse_wrapper.events import send_event
@@ -551,6 +552,10 @@ def getObjectNotes(request, app_label, model_type, obj_pk):
     return HttpResponse(content=json_data,
                         content_type="application/json")
 
+
+def buildNotesForm(args):
+    theForm = SearchNoteForm(args)
+    return theForm
 
 def notesSearchMap(request):
     return getSearchPage(request, Note.get().cls_type(), 'xgds_notes2/map_record_notes.html', True)
