@@ -102,6 +102,14 @@ class AbstractTaggedNote(ItemBase):
             '%s__content_object__isnull' % cls.tag_relname(): False
         })
         return cls.tag_model().objects.filter(**kwargs).distinct()
+    
+    @classmethod
+    def buildTagsQuery(cls, search_value):
+        splits=search_value.split(' ')
+        found_tags = HierarchichalTag.objects.filter(name__in=splits)
+        if found_tags:
+            return {'tags__in':found_tags}
+        return None
 
     class Meta:
         abstract = True
