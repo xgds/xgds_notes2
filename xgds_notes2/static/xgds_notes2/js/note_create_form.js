@@ -35,16 +35,16 @@ $.extend(xgds_notes,{
 	    xgds_notes.time_input.wrap($('<div id="event_time_controls">')).css({display: 'inline-block'});
 	    
 	    $('#id_content').focus(function(e) {
-	        if (! xgds_notes.time_input.attr('value')) {
+	        if (_.isEmpty(xgds_notes.time_input.val())) { //}! xgds_notes.time_input.attr('value')) {
 	            $(this).bind('keyup.content_input', function(e) {
 	                xgds_notes.set_event_time();
 	                $(this).unbind('keyup.content_input');
 	            });
 	        }
-	    }).blur(function(e) { $(this).unbind('keydown.content_input') });
+	    }).blur(function(e) { $(this).unbind('keyup.content_input') });
 	   
 	    $('input').on('itemAdded', function(event) {
-		if (! xgds_notes.time_input.attr('value')) {
+		if (_.isEmpty(xgds_notes.time_input.val()) ) { //xgds_notes.time_input.attr('value')) {
 	            xgds_notes.set_event_time();
 	        }
 	    });
@@ -67,21 +67,25 @@ $.extend(xgds_notes,{
 		* the user starts typing a note.
 		*/
 	    // Get the current time from the server and populate the event_time input
-	    
-	    xgds_notes.time_input.attr({disabled: true, value: 'Waiting for server...'});
+		xgds_notes.time_input.val('Waiting for server...');
+		xgds_notes.time_input.prop('disabled', true);
+//	    xgds_notes.time_input.attr({disabled: true, value: 'Waiting for server...'});
 	    $.get(
 	        server_time_url,
 	        {},
 	        function(data) {
-	            xgds_notes.time_input.attr('value', getLocalTimeString(data, serverTimezone));
-	            xgds_notes.time_input.attr({disabled: false});
+	        	xgds_notes.time_input.val(getLocalTimeString(data, serverTimezone));
+	            xgds_notes.time_input.prop('disabled', false);
+	            //xgds_notes.time_input.attr('value', getLocalTimeString(data, serverTimezone));
+	            //xgds_notes.time_input.attr({disabled: false});
 	        },
 	        'text'
 	    );
 	},
 	clear_event_time: function() {
 		try {
-			xgds_notes.time_input.attr('value', '');
+			xgds_notes.time_input.val('');
+			//xgds_notes.time_input.attr('value', '');
 		} catch (err){
 			//pass
 		}

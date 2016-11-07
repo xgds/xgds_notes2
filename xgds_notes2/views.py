@@ -167,6 +167,10 @@ def createNoteFromData(data, delay=True, serverNow=False):
     empty_keys = [k for k,v in data.iteritems() if v is None]
     for k in empty_keys:
         del data[k]
+    try:
+        del data['note_submit_url']
+    except:
+        pass
     note = NOTE_MODEL(**data)
     for (key, value) in data.items():
         setattr(note, key, value)

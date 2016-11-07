@@ -17,7 +17,7 @@
 var xgds_notes = xgds_notes || {};
 $.extend(xgds_notes,{
 	options: {
-        url: note_submit_url, // override for form's 'action' attribute
+        //url: note_submit_url, // override for form's 'action' attribute
         type: 'post',       // 'get' or 'post', override for form's 'method' attribute
         dataType: 'json',   // 'xml', 'script', or 'json' (expected server response type)
         timeout: 3000
@@ -37,7 +37,10 @@ $.extend(xgds_notes,{
 	    parent.find('#error_div').show();
 	},
 	hideError: function(parent) {
-		parent.find('#error_div').hide();
+		var error_div = parent.find('#error_div');
+		if (error_div.length > 0){
+			error_div.hide();
+		}
 	},
 	getErrorString: function(jqXHR){
 		var result = "Save Failed: " + jqXHR.statusText;
@@ -67,6 +70,13 @@ $.extend(xgds_notes,{
 	    return dataString;
 	},
 	findNotesTable: function(containerDiv){
+		if (containerDiv.prop('id') == "full_notes_content"){
+			var foundTable = $.find('table#searchResultsTable');
+    		if (foundTable.length > 0){
+    			theNotesTable = $(foundTable[0]);
+    			return theNotesTable;
+    		}
+		}
 		var theNotesTable = containerDiv.find('table.notes_list');
         if (theNotesTable.length > 1){
         	theNotesTable = $($(theNotesTable).last());
@@ -126,6 +136,11 @@ $.extend(xgds_notes,{
 	    }
 	    dataString = dataString + xgds_notes.getEventTime(context);
 	    
+	    var note_submit_url = parent.find("#id_note_submit_url").val();
+	    if (_.isUndefined(note_submit_url)){
+	    	note_submit_url = '/notes/recordSimple/'
+	    }
+	    
 	    var context = this;
 	    $.ajax({
 	        type: 'POST',
@@ -137,7 +152,7 @@ $.extend(xgds_notes,{
 		    	    content = content.substring(0, 30) + "...";
 		    	}
 	            xgds_notes.showSuccess('Saved ' + content, containerDiv);
-	            xgds_notes.clear_event_time();
+	            xgds_notes.postSubmit(data);
 	            content_text.val('');
 	            content_text[0].focus();
 	            tagInput.tagsinput('removeAll');
@@ -204,7 +219,7 @@ $.extend(xgds_notes,{
 			input = container.find('.taginput');
 		}
 	    xgds_notes.initializeInput(input);
-	    xgds_notes.hookNoteSubmit();
+	    xgds_notes.hookNoteSubmit(container);
 	    xgds_notes.hookAddNoteButton(container);
 	}
 });

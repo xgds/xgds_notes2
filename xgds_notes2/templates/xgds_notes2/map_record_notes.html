@@ -11,9 +11,9 @@
     <script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/note_create_form.js"></script>
 {% endblock scripts %}
 {% block postscripts %}
-	<script type="text/javascript">
+	<!-- <script type="text/javascript">
 	    note_submit_url = "{% url 'xgds_notes_record' %}";
-	</script>	
+	</script>	 -->
 {% endblock postscripts %}
 
 {% block preDashboard %}
@@ -48,20 +48,38 @@ xgds_notes.initializeNotesForm(false);
 {% block eventTimeFunction %}
 xgds_notes.getEventTime = function(context) {
 		var dataString = "";
-		var event_hidden = $('#id_event_time');
+		var parent = $(context.parentElement.parentElement);
+		//var event_hidden = $('#id_event_time');
+	    var event_hidden = parent.find('#id_event_time');
+	    if (event_hidden.length == 0){
+	    	event_hidden = $("#id_event_time");
+	    }
 	    var event_timestring = event_hidden.val();
+	    
 	    try {
 	        if (event_timestring !== undefined && event_timestring !== ""){
-	        	var tzified = getUTCTime(event_timestring.substring(0, event_timestring.length-4), serverTimezone);
-				var theUtc = tzified.utc().format('YYYY/MM/DD HH:mm:ss') + ' UTC';
-	            dataString = dataString + '&event_time=' + theUtc;
-	            try {
-	            	dataString = dataString + "&event_timezone=" + serverTimezone;
-	            } catch(err){
-	            	// no timezone
-	            }
+	        	if (!event_hidden.is(':visible')){ // in a form
+		            dataString = dataString + '&event_time=' + event_timestring;
+		            try {
+		            	var timezone_hidden = parent.find('#id_event_timezone');
+		            	dataString = dataString + "&event_timezone=" + timezone_hidden.val();
+		            } catch(err){
+		            	// no timezone
+		            }
+			    } else {
+		        	var tzified = getUTCTime(event_timestring.substring(0, event_timestring.length-4), serverTimezone);
+					var theUtc = tzified.utc().format('YYYY/MM/DD HH:mm:ss') + ' UTC';
+		            dataString = dataString + '&event_time=' + theUtc;
+		            try {
+		            	dataString = dataString + "&event_timezone=" + serverTimezone;
+		            } catch(err){
+		            	// no timezone
+		            }
+		        }
 	        } else {
-	            dataString = dataString + "&serverNow=true";
+	        	if (event_hidden.is(':visible')){
+		            dataString = dataString + "&serverNow=true";
+		        }
 	        }
 	    }
 	    catch(err) {
@@ -71,7 +89,8 @@ xgds_notes.getEventTime = function(context) {
 	
 	};
 xgds_notes.postSubmit = function(data) {
-   //xgds_notes.clear_event_time();
+   xgds_notes.clear_event_time();
+   $("#id_show_on_map").attr('checked',false);
 };
 {% endblock eventTimeFunction %}
 {% block cleanDataFunction %}

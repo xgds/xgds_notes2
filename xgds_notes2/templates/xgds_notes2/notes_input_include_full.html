@@ -5,6 +5,7 @@
 	<div class="notediv" id="notes_input" hidden>
 	<p text-align="right">You are {{ user.first_name }} (<span id="roleLocationResource"></span>) [<a href="#" id="changeRole" >change role/location</a>]</p>
 		<form id="create_note" class="create_note_form" action="" method="POST">
+			<input type="hidden" id="id_note_submit_url" value="{% url 'xgds_notes_record' %}">
 			<input type="hidden" id="id_event_timezone" >
 			<input type="hidden" id="id_app_label" >
 			<input type="hidden" id="id_model_type" >

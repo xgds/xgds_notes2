@@ -58,6 +58,8 @@ class NoteForm(forms.ModelForm):
         '%Y-%m-%dT%H:%M:%S 00:00',
         '%Y-%m-%dT%H:%M:%SZ',
     ]
+    note_submit_url = forms.CharField(widget=forms.HiddenInput(), initial='/notes/recordSimple/',  required=False)
+    
     event_time = forms.DateTimeField(input_formats=date_formats, required=False)
     event_timezone = forms.CharField(widget=forms.HiddenInput(), required=False)
     extras = forms.CharField(widget=forms.HiddenInput(), required=False)

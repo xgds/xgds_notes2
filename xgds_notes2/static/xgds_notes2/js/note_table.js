@@ -18,15 +18,19 @@
 var smallNoteColumns = [{'data': 'author_name',
 						 'render': function(data, type, full) {
 							 var splits = full['author_name'];
+							 var initials = '';
 							 try {
 								 splits = full['author_name'].split(' ');
+								 for (var i=0; i < splits.length; i++){
+										initials += splits[i].charAt(0);
+									}
 							 } catch (e){
-								 //pass
+								 if (full['author_name'].length > 2){
+									 splits=full['author_name'].substring(0,2);
+								 }
 							 }
-							var initials = '';
-							for (var i=0; i < splits.length; i++){
-								initials += splits[i].charAt(0);
-							}
+							
+							
 							return initials;
 						}},
 					  { 'data': 'content',
