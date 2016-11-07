@@ -36,9 +36,9 @@ $.extend(xgds_notes,{
 	    
 	    $('#id_content').focus(function(e) {
 	        if (! xgds_notes.time_input.attr('value')) {
-	            $(this).bind('keydown.content_input', function(e) {
+	            $(this).bind('keyup.content_input', function(e) {
 	                xgds_notes.set_event_time();
-	                $(this).unbind('keydown.content_input');
+	                $(this).unbind('keyup.content_input');
 	            });
 	        }
 	    }).blur(function(e) { $(this).unbind('keydown.content_input') });
@@ -80,6 +80,10 @@ $.extend(xgds_notes,{
 	    );
 	},
 	clear_event_time: function() {
-		xgds_notes.time_input.attr('value', '');
+		try {
+			xgds_notes.time_input.attr('value', '');
+		} catch (err){
+			//pass
+		}
 	}
 });

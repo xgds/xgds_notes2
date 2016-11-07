@@ -108,7 +108,7 @@ $.extend(xgds_notes,{
 	    var tags = tagInput.val();
 	
 	    if ((content == '') && (tags == '')) {
-	        content_text.focus();
+	        content_text[0].focus();
 	        xgds_notes.showError('Note must not be empty.');
 	        return false;
 	    }
@@ -137,7 +137,9 @@ $.extend(xgds_notes,{
 		    	    content = content.substring(0, 30) + "...";
 		    	}
 	            xgds_notes.showSuccess('Saved ' + content, containerDiv);
+	            xgds_notes.clear_event_time();
 	            content_text.val('');
+	            content_text[0].focus();
 	            tagInput.tagsinput('removeAll');
 	            var theNotesTable = context.findNotesTable(containerDiv);
 	            if (theNotesTable.length > 0){
