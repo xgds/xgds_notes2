@@ -86,9 +86,9 @@ var Note = {
                 if (noteJson.tag_names.length > 0){
                 	noteJson.flattenedTags = noteJson.tag_names.reduce(function(a, b) {
                 		return a.concat(" " + b);
-                		theText.setText(noteJson.tag_names[0]);
                 	});
-                }
+            		theText.setText(noteJson.tag_names[0]);
+                } 
                 
                 var textStyle = new ol.style.Style({
                     text: theText
