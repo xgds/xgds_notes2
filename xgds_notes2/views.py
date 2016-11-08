@@ -218,6 +218,7 @@ def record(request):
             note = createNoteFromData(data)
             linkTags(note, tags)
             jsonNote = broadcastNote(note)
+
             if not settings.XGDS_SSE:
                 return HttpResponse(jsonNote,
                                     content_type='application/json')
