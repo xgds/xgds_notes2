@@ -350,8 +350,7 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin):
         """
         result = ""
 #         if self.tags:
-#             tags_list = self.tags.all()
-#             result = "".join(str(x) + " " for x in tags_list)
+#             result = str(self.tags.first)
         if result == "":
             result = self.content[:12]
         return result

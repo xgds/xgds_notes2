@@ -128,10 +128,17 @@ $.extend(xgds_notes,{
 	    dataString = dataString + '&app_label=' + parent.find('#id_app_label').val();
 	    dataString = dataString + '&model_type=' + parent.find('#id_model_type').val();
 	    dataString = dataString + '&position_id=' + parent.find('#id_position_id').val();
-	    var showonmap = parent.find("#id_show_on_map")
+	    var showonmap = parent.find("#id_show_on_map");
 	    if (showonmap.length > 0){
 	    	if (showonmap[0].checked) {
 	    		dataString = dataString + '&show_on_map=1';
+	    	}
+	    }
+	    var keepTags = false;
+	    var keepTagsInput = parent.find("#id_keep_tags");
+	    if (keepTagsInput.length > 0){
+	    	if (keepTagsInput[0].checked) {
+	    		keepTags=true;
 	    	}
 	    }
 	    dataString = dataString + xgds_notes.getEventTime(context);
@@ -155,7 +162,9 @@ $.extend(xgds_notes,{
 	            xgds_notes.postSubmit(data);
 	            content_text.val('');
 	            content_text[0].focus();
-	            tagInput.tagsinput('removeAll');
+	            if (!keepTags){
+	            	tagInput.tagsinput('removeAll');
+	            }
 	            var theNotesTable = context.findNotesTable(containerDiv);
 	            if (theNotesTable.length > 0){
 	            	var cleanData = xgds_notes.cleanData(data[0], containerDiv);
