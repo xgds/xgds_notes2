@@ -16,6 +16,7 @@
 
 //TODO if the following are placed within xgds_notes namespace then the datatables break.
 var smallNoteColumns = [{'data': 'author_name',
+						 'className': 'initials',
 						 'render': function(data, type, full) {
 							 var splits = full['author_name'];
 							 var initials = '';
@@ -29,8 +30,9 @@ var smallNoteColumns = [{'data': 'author_name',
 									 splits=full['author_name'].substring(0,2);
 								 }
 							 }
-							
-							
+							if (initials.length > 0){
+								initials =  initials + ':';
+							}
 							return initials;
 						}},
 					  { 'data': 'content',

@@ -3,6 +3,12 @@
 	vertical-align: text-top;
 }
 
+.initials {
+	font-size: 0.8rem;
+	color: #4696af;
+	font-style: italic;
+}
+
 .ui-wrapper {
 	padding-bottom: 0px !important;
 }
