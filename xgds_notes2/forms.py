@@ -25,11 +25,14 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from dateutil.parser import parse as dateparser
 
+from dal import autocomplete
+
 from geocamTrack.forms import AbstractImportTrackedForm
 from geocamUtil.extFileField import ExtFileField
 from geocamUtil.forms.AbstractImportForm import getTimezoneChoices
 from geocamUtil.loader import LazyGetModelByName
 from taggit.forms import *
+from xgds_core.models import XgdsUser
 from xgds_core.forms import SearchForm
 from xgds_notes2.models import Role, Location, HierarchichalTag
 
@@ -118,7 +121,9 @@ class SearchNoteForm(SearchForm):
 
     role = forms.ModelChoiceField(required=False, queryset=Role.objects.all())
     location = forms.ModelChoiceField(required=False, queryset=Location.objects.all())
-    author = forms.ModelChoiceField(required=False, queryset=User.objects.all())
+    author = forms.ModelChoiceField(XgdsUser.objects.all(), 
+                                    required=False,
+                                    widget=autocomplete.ModelSelect2(url='select2_model_user'))
     
     field_order = Note.get().getSearchFieldOrder()
     
