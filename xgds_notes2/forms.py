@@ -21,7 +21,6 @@ import pytz
 from django import forms
 from django.conf import settings
 from django.utils.functional import lazy
-from django.contrib.auth.models import User
 from django.db.models import Q
 from dateutil.parser import parse as dateparser
 

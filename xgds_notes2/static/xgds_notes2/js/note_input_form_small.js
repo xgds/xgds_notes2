@@ -106,7 +106,7 @@ $.extend(xgds_notes,{
 			 */
 	
 	    var parent = $(context).closest('form');
-	    var containerDiv = parent.parent().parent();
+	    var containerDiv = parent.parent().parent().parent();
 	    
 	    // validate and process form here
 	    var content_text = parent.find('textarea#id_content');
