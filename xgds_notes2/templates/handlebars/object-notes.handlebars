@@ -17,7 +17,10 @@
 				<div class="notecontainer" >
 					<textarea class="noteinput"  id="id_content" type="text" name="content" maxlength="500" placeholder="Enter notes here"></textarea>
 	        		<input class="taginput"  id="id_tags" placeholder="Choose tags" type="text" />
-	        		<input id="save_note" type="submit" value="Save" class="mybutton noteSubmit small">
+	        		<div style="display: inline-block; font-size: .8rem;">
+	        			<input id="save_note" type="submit" value="Save" class="mybutton noteSubmit small"><br/>
+	        			<input id="id_keep_tags" name="keep_tags" type="checkbox" >Don't clear tags</input>
+	        		</div>
         		</div>
   			</form>
 		</div>
