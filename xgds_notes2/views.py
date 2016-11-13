@@ -227,25 +227,6 @@ def record(request):
 
         else:
             return HttpResponse(str(form.errors), status=400)  # Bad Request
-    elif request.method == 'GET':
-        if 'notes_user_session' not in request.session:
-            return redirect('xgds_notes_edit_user_session')
-        else:
-            form = NoteForm()
-
-            usersession_form = UserSessionForm(request.session.get('notes_user_session', None))
-            user_session = {field.name: field.field.clean(field.data)
-                            for field in usersession_form}
-
-            return render(
-                request,
-                'xgds_notes2/record_notes.html',
-                {
-                    'user': request.user,
-                    'user_session': user_session,
-                    'form': form,
-                },
-            )
     else:
         raise Exception("Request method %s not supported." % request.method)
 
@@ -330,14 +311,6 @@ def getSortOrder():
     else:
         return getattr(settings, 'XGDS_NOTES_REVIEW_DEFAULT_SORT', '-event_time')
 
-
-@login_required
-def review(request, **kwargs):
-    return render(
-           request,
-           'xgds_notes2/review_notes.html',
-           {}
-       )   
 
 @login_required
 def editTags(request):
@@ -531,7 +504,7 @@ def importNotes(request):
         form = ImportNotesForm(request.POST, request.FILES)
         if form.is_valid():
             doImportNotes(request, request.FILES['sourceFile'], form.getTimezone(), form.getResource())
-            return redirect('xgds_notes_review')
+            return redirect('search_xgds_notes_map')
         else:
             errors = form.errors
     return render(

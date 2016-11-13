@@ -11,9 +11,6 @@
     <script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/note_create_form.js"></script>
 {% endblock scripts %}
 {% block postscripts %}
-	<!-- <script type="text/javascript">
-	    note_submit_url = "{% url 'xgds_notes_record' %}";
-	</script>	 -->
 {% endblock postscripts %}
 
 {% block preDashboard %}
@@ -48,8 +45,7 @@ xgds_notes.initializeNotesForm(false);
 {% block eventTimeFunction %}
 xgds_notes.getEventTime = function(context) {
 		var dataString = "";
-		var parent = $(context.parentElement.parentElement);
-		//var event_hidden = $('#id_event_time');
+		var parent = $(context).closest('.notes_input_container');
 	    var event_hidden = parent.find('#id_event_time');
 	    if (event_hidden.length == 0){
 	    	event_hidden = $("#id_event_time");
@@ -94,7 +90,8 @@ xgds_notes.postSubmit = function(data) {
 {% endblock eventTimeFunction %}
 {% block cleanDataFunction %}
 xgds_notes.cleanData = function(data, containerDiv){
-	if (containerDiv.attr('id') == 'full_notes_content'){
+	var fnc = containerDiv.closest('#full_notes_content');
+	if (fnc.length > 0){
 		var columns = app.options.searchModels.Note.columns;
 		result = [];
 		for (var i=0; i < columns.length; i++) {

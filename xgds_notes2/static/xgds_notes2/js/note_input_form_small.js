@@ -48,7 +48,7 @@ $.extend(xgds_notes,{
 	},
 	getEventTime: function(context) {
 		var dataString = "";
-		var parent = $(context.parentElement.parentElement.parentElement);
+		var parent = $(context).closest('.notes_input_container');
 		var event_hidden = parent.find('#id_event_time');
 	    var event_timestring = event_hidden.val();
 	    try {
@@ -106,7 +106,7 @@ $.extend(xgds_notes,{
 			 */
 	
 	    var parent = $(context).closest('form');
-	    var containerDiv = parent.parent().parent().parent();
+	    var containerDiv = parent.closest('.notes_input_container');
 	    
 	    // validate and process form here
 	    var content_text = parent.find('textarea#id_content');
@@ -165,6 +165,9 @@ $.extend(xgds_notes,{
 	            if (!keepTags){
 	            	tagInput.tagsinput('removeAll');
 	            }
+	            if (showonmap.length > 0){
+	            	showonmap.prop("checked", false);
+	    	    }
 	            var theNotesTable = context.findNotesTable(containerDiv);
 	            if (theNotesTable.length > 0){
 	            	var cleanData = xgds_notes.cleanData(data[0], containerDiv);

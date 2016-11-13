@@ -22,7 +22,6 @@ import xgds_notes2.views as views
 
 
 urlpatterns = [
-    url(r'^review/?$', views.review, {}, 'xgds_notes_review'),
     url(r'^record/?$', views.record, {}, 'xgds_notes_record'),
     url(r'^recordSimple/?$', views.recordSimple, {}, 'record_simple'),
     url(r'^editNote/(?P<note_pk>[\d]+)$', views.editNote, {}, 'xgds_notes_edit_note'),
