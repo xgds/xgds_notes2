@@ -237,7 +237,7 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin):
     tags = "set to DEFAULT_TAGGABLE_MANAGER() or similar in any derived classes"
     
     content_type = models.ForeignKey(ContentType, null=True, blank=True)
-    object_id = models.CharField(max_length=128, null=True, blank=True)
+    object_id = models.CharField(max_length=128, null=True, blank=True, db_index=True)
     content_object = GenericForeignKey('content_type', 'object_id')
 
     @property
