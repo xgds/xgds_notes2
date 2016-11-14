@@ -62,7 +62,15 @@ _fieldTypes.tagsinput = {
     	if (existing_tags != undefined){
     		for (var i = 0; i < existing_tags.length; i++){
     			var result = xgds_notes.allTags.index.search(existing_tags[i]);
-    			field._taginput.tagsinput('add', result[0]);
+    			var foundtag = result[0];
+    			if (result.length > 1){
+    				for (var j=0; j<result.length; j++){
+    					if (result[j].name == val[0]) {
+    						foundtag = result[j];
+    					}
+    				}
+    			}
+    			field._taginput.tagsinput('add', foundtag);
     		}
     	}
     }
