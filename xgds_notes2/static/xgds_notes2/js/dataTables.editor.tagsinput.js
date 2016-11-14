@@ -65,7 +65,7 @@ _fieldTypes.tagsinput = {
     			var foundtag = result[0];
     			if (result.length > 1){
     				for (var j=0; j<result.length; j++){
-    					if (result[j].name == val[0]) {
+    					if (result[j].name === existing_tags[i]) {
     						foundtag = result[j];
     					}
     				}
