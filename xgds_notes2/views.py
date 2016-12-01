@@ -50,7 +50,7 @@ from treebeard.mp_tree import MP_Node
 
 from xgds_notes2.forms import NoteForm, UserSessionForm, TagForm, ImportNotesForm
 from xgds_core.views import getTimeZone
-from xgds_map_server.views import getSearchPage
+from xgds_map_server.views import getSearchPage, getSearchForms, buildFilterDict
 from models import HierarchichalTag
 from httplib2 import ServerNotFoundError
 from apps.xgds_notes2.forms import SearchNoteForm
@@ -535,8 +535,9 @@ def buildNotesForm(args):
     theForm = SearchNoteForm(args)
     return theForm
 
-def notesSearchMap(request):
-    return getSearchPage(request, Note.get().cls_type(), 'xgds_notes2/map_record_notes.html', True)
+def notesSearchMap(request, filter=None):
+    noteType = Note.get().cls_type()
+    return getSearchPage(request, noteType, 'xgds_notes2/map_record_notes.html', True, getSearchForms(noteType, filter))
 
 # @never_cache
 # def getNotesJson(request, filter=None, range=0, isLive=1):

@@ -42,6 +42,8 @@ urlpatterns = [
     url(r'^import/?$', views.importNotes, {}, 'xgds_notes_import'),
     url(r'^notes/(?P<app_label>[\w]+)/(?P<model_type>[\w]+)/(?P<obj_pk>[\d]+)$', views.getObjectNotes, {}, 'xgds_notes_object_notes'),
     url(r'^searchMap$', views.notesSearchMap, {}, 'search_xgds_notes_map'),
+    url(r'^searchMap/(?P<filter>(([\w]+|[a-zA-Z0-9:._\-\s]+),*)+)$', views.notesSearchMap, {}, 'search_xgds_notes_map_filter'),
+
 #     url(r'^mapJson/(?P<extens>([\-]*[\d]+\.[\d]+[\,]*)+)$', views.note_json_extens, {'readOnly': True, 'loginRequired': False, 'securityTags': ['readOnly']}, 'note_json_extens'),
     ]
 
