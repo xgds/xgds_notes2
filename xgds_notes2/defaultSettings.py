@@ -80,7 +80,6 @@ XGDS_NOTES_TABLE_DEFAULT_COLUMNS = ['event_time', 'zone', 'author', 'content', '
 
 BOWER_INSTALLED_APPS = getOrCreateArray('BOWER_INSTALLED_APPS')
 BOWER_INSTALLED_APPS += ['moment',
-                         'lodash#3.10.0',
                          'fancytree=fancytree',
                          'jquery-ui-contextmenu=https://github.com/mar10/jquery-ui-contextmenu.git',
                          'bootstrap-tagsinput',
