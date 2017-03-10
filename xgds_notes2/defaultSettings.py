@@ -82,7 +82,8 @@ BOWER_INSTALLED_APPS = getOrCreateArray('BOWER_INSTALLED_APPS')
 BOWER_INSTALLED_APPS += ['moment',
                          'fancytree=fancytree',
                          'jquery-ui-contextmenu=https://github.com/mar10/jquery-ui-contextmenu.git',
-                         'bootstrap-tagsinput',
+#                          'bootstrap-tagsinput',
+                         'bootstrap-tagsinput=https://github.com/xgds/bootstrap-tagsinput.git#master',
                          'typeahead.js',
                          'datatables-sorting-datetime-moment=https://cdn.datatables.net/plug-ins/1.10.11/sorting/datetime-moment.js'
                          ]
