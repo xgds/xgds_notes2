@@ -25,15 +25,15 @@ $.extend(xgds_notes,{
 	showSuccess: function(errorMessage, parent) {
 	    parent.find('#error_content').html(errorMessage);
 	    parent.find('#error_icon').removeClass();
-	    parent.find('#error_icon').addClass('ui-icon');
-	    parent.find('#error_icon').addClass('ui-icon-circle-check');
+	    parent.find('#error_icon').addClass('fa');
+	    parent.find('#error_icon').addClass('fa-check-circle');
 	    parent.find('#error_div').show();
 	},
 	showError: function(errorMessage, parent) {
 	    parent.find('#error_content').html(errorMessage);
 	    parent.find('#error_icon').removeClass();
-	    parent.find('#error_icon').addClass('ui-icon');
-	    parent.find('#error_icon').addClass('ui-icon-circle-close');
+	    parent.find('#error_icon').addClass('fa');
+	    parent.find('#error_icon').addClass('fa-exclamation-circle');
 	    parent.find('#error_div').show();
 	},
 	hideError: function(parent) {
