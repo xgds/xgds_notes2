@@ -1,13 +1,11 @@
 {% block sitemenu-content-secondary %}
 {% load nav %}
-<div class="sitemenu-nav-secondary">
 	<nav class="subnav">
-	<ul>
-		<li class="nav-item {% if modelName == 'Note' %}currentnav{% endif %}"><a href="{% url 'search_xgds_notes_map' %}">Search Notes</a></li>
-		<li {% currentnav xgds_notes_edit_tags  %}><a href="{% url 'xgds_notes_edit_tags' %}">Edit Tags</a></li>
-		<li {% currentnav xgds_notes_edit_user_session  %}><a href="{% url 'xgds_notes_edit_user_session' %}">Role/Location</a></li>
-		<li {% currentnav xgds_notes_import %}><a href="{% url 'xgds_notes_import' %}">Import</a></li>
+	<ul class="nav nav-pills">
+		<li class="nav-item {% if modelName == 'Note' %} active {% endif %}"><a class="nav-link {% if modelName == 'Note' %} active {% endif %}" href="{% url 'search_xgds_notes_map' %}">Search Notes</a></li>
+		<li class='nav-item {% currentnav xgds_notes_edit_tags  %}'><a class='nav-link {% currentnav xgds_notes_edit_tags  %}' href="{% url 'xgds_notes_edit_tags' %}">Edit Tags</a></li>
+		<li class='nav-item {% currentnav xgds_notes_edit_user_session  %}'><a class='nav-link {% currentnav xgds_notes_edit_user_session  %}' href="{% url 'xgds_notes_edit_user_session' %}">Role/Location</a></li>
+		<li class='nav-item {% currentnav xgds_notes_import %}'><a class='nav-link {% currentnav xgds_notes_import %}' href="{% url 'xgds_notes_import' %}">Import</a></li>
   	</ul>
   	</nav>
-</div>
 {% endblock %}
