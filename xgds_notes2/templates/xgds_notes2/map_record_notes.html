@@ -15,11 +15,11 @@
 
 {% block preDashboard %}
  <div id="full_notesDiv">
-	<div id="notes_content" class="tab-content active notes_content">
-	<button id="advanced_search_button" class="small pull_right">Advanced Search</button>
+	<div id="notes_content" class="d-flex justify-content-end notes_content mb-2">
+	<button id="advanced_search_button" role="button" class="btn btn-primary mr-2">Advanced Search</button>
 	{% include 'xgds_notes2/notes_input_include_full.html' %}
-	</div>
-</div>
+ 	</div>
+ </div>
 {% endblock preDashboard %}
 
 {% block searchResultsDiv %}
@@ -27,9 +27,11 @@
 		data-gs-x="0" data-gs-y="0"
         data-gs-width="3" data-gs-height="3" >
         <div class="grid-stack-item-content" id="search-results-gridstack-item-content" >
-        <i class="fa fa-lock pinDiv warning"></i>
-		<i class="fa fa-window-close fa-lg"></i>
-		<i class="fa fa-refresh right" title="Reload Latest" id="reloadSearchResults"></i>
+        <ul class="nav justify-content-end">
+			<i class="fa fa-refresh mr-2" title="Reload Latest" id="reloadSearchResults"></i>
+        	<i class="fa fa-lock pinDiv mr-2"></i>
+			<i class="fa fa-window-close fa-lg"></i>
+			</ul>
 			<div id="searchResultsDiv" class="notes_list"></div>
 		</div>
 </div>

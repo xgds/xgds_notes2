@@ -20,16 +20,17 @@
 </style>
 
 <div id="tagtreeContainer">
-	<strong>Drag and drop to reorganize tags.  Right-click for menu.</strong><br/>
-	<i class="fa fa-refresh" alt="refresh" id="refreshTreeLink" onclick="javascript: xgds_notes.refreshTree();"></i>
-	<a href="#" class="button small" onclick="xgds_notes.showAddTagDialog('root', null);" id="addRootButton">&nbsp;Add Root Tag&nbsp;</a>
-	<input id="id_tags" class="taginput" data-role="tagsinput" placeholder='Type to check tag' width="200px"/>
+	<p>Drag and drop to reorganize tags.  Right-click for menu.</p>
+	<div class="mb-2">
+	<button role="button" class="btn btn-primary fa fa-refresh" alt="refresh" id="refreshTreeLink" onclick="javascript: xgds_notes.refreshTree();"><!-- <i class="fa fa-refresh"  ></i> --></button>
+	<a href="#" class="btn btn-primary" onclick="xgds_notes.showAddTagDialog('root', null);" id="addRootButton"><i class="fa fa-plus fa-fw" aria-hidden="true"></i> Root Tag</a>
+	<input id="id_tags" class="taginput form-control" data-role="tagsinput" placeholder='Type to check tag' width="200px"/>
+	</div>
 	<div id="tagtree" ></div> 
  </div>
  
  <div id="addTag" style="display:none">
 	<form name='addTagForm' id="addTagForm" action="#" method="post">
-		<p id="title_p"></p>
 		<table>
 			{{ addTagForm.as_table }}
 		</table>

@@ -1,5 +1,5 @@
 {% if user.is_authenticated %}
-<button id="add_note_button" class="small float_button add_note_button">Add Note</button>
+<button id="add_note_button" class="btn btn-primary float_button add_note_button">Add Note</button>
 <div id="notes_content" class="tab-content active notes_content notes_input_container">
 	<div class="notediv" id="notes_input" hidden>
 		<form id="create_note" class="create_note_form" action="" method="POST">
@@ -17,7 +17,7 @@
 			<div class="notecontainer" >
 				<textarea class="noteinput"  id="id_content" type="text" name="content" maxlength="500" style="height:50px;" placeholder="Enter notes here"></textarea>
 		        <input class="taginput"  id="id_tags" placeholder="Choose tags" type="text" />
-		        <input id="save_note" type="submit" value="Save" class="btn btn-primary noteSubmit small">
+		        <input id="save_note" type="submit" value="Save" class="btn btn-primary noteSubmit">
 	        </div>
 	  </form>
 	</div>

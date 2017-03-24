@@ -132,8 +132,8 @@ $.extend(xgds_notes,{
 			document.getElementById("addTagForm").reset();
 			start_position = $("#addRootButton");
 		}
-		$('#title_p').text(title);
 		xgds_notes.addTagDialog = $('#addTag').dialog({
+			title: title,
 			dialogClass: 'no-close',
 			modal: false,
 			resizable: true,

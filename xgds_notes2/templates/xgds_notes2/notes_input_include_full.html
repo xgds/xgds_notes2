@@ -1,6 +1,6 @@
 {% if user.is_authenticated %}
 <div id="full_notes_input">
-<button id="add_note_button" class="small float_button add_note_button">Add Note</button>
+<button id="add_note_button" role="button" class="btn btn-primary add_note_button">Add Note</button>
 <div id="full_notes_content" class="tab-content active notes_content"> 
 	<div class="notediv notes_input_container" id="notes_input" hidden>
 	<p text-align="right">You are {{ user.first_name }} (<span id="roleLocationResource"></span>) [<a href="#" id="changeRole" >change role/location</a>]</p>
@@ -18,13 +18,13 @@
 			<div class="notecontainer" >
 				<div id="event_time_controls2">
 					<input id="id_event_time" name="event_time" type="text" style="margin-right: 10px; display: inline-block;">
-					<button name="Now" id="nowButton" class="small">Now</button>
+					<button name="Now" id="nowButton" class="btn btn-primary">Now</button>
 				</div>
 				<textarea class="noteinput"  id="id_content" type="text" name="content" maxlength="500" style="height:50px;" placeholder="Enter notes here"></textarea>
 		        <input class="taginput"  id="id_tags" placeholder="Choose tags" type="text" />
 		        <div >
 		        <div style="display: inline-block; font-size: .8rem;">
-		        	<input id="save_note" type="submit" value="Save" class="btn btn-primary noteSubmit small"><br/>
+		        	<input id="save_note" type="submit" value="Save" class="btn btn-primary noteSubmit"><br/>
 		        	<input id="id_show_on_map" name="show_on_map" type="checkbox" >Show in GE</input><br/>
 		        	<input id="id_keep_tags" name="keep_tags" type="checkbox" >Don't clear tags</input></div>
 		        </div>
