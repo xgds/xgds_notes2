@@ -20,7 +20,9 @@
 </style>
 
 <div id="tagtreeContainer">
-	<p>Drag and drop to reorganize tags.  Right-click for menu.</p>
+	<div class="alert alert-info my-2" role="alert">
+	Drag and drop to reorganize tags.  Right-click for menu.
+	</div>
 	<div class="mb-2">
 	<button role="button" class="btn btn-primary fa fa-refresh" alt="refresh" id="refreshTreeLink" onclick="javascript: xgds_notes.refreshTree();"><!-- <i class="fa fa-refresh"  ></i> --></button>
 	<a href="#" class="btn btn-primary" onclick="xgds_notes.showAddTagDialog('root', null);" id="addRootButton"><i class="fa fa-plus fa-fw" aria-hidden="true"></i> Root Tag</a>
