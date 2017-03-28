@@ -2,6 +2,9 @@
 {% block content %}
 <form action="{% url 'xgds_notes_edit_user_session' %}" method="post">
     {{ form.as_p }}
-    <input type="submit" value="Save">
+    <p>
+    <label></label>
+    <input type="submit" value="Save" class="btn btn-primary">
+    </p>
 </form>
 {% endblock content %}
