@@ -212,7 +212,7 @@ var recordedNotes = (function(global, $) {
             }
         },
         _setupColumnHeaders: function() {
-          this._theTable.append('<thead class="table_header"><tr id="columnRow"></tr></thead>');
+          this._theTable.append('<thead><tr id="columnRow"></tr></thead>');
           var columnRow = $('#columnRow');
           $.each(this.columns, function(index, col){
               columnRow.append("<th>"+ col +"</th>");
