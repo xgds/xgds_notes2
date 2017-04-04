@@ -4,14 +4,6 @@
     margin-right: 5px;
 }
 
-.label-info {
-  background-color: #5bc0de;
-}
-.label-info[href]:hover,
-.label-info[href]:focus {
-  background-color: #31b0d5;
-}
-
 .accordion {
     margin-bottom:-3px;
 }
