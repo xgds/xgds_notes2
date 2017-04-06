@@ -1,9 +1,9 @@
 {% if user.is_authenticated %}
 <div id="full_notes_input">
-<button id="add_note_button" role="button" class="btn btn-primary add_note_button">Add Note</button>
+<button id="add_note_button" role="button" class="btn btn-primary add_note_button ml-2">Add Note</button>
 <div id="full_notes_content" class="tab-content active notes_content"> 
-	<div class="notediv notes_input_container" id="notes_input" hidden>
-	<p text-align="right">You are {{ user.first_name }} (<span id="roleLocationResource"></span>) [<a href="#" id="changeRole" >change role/location</a>]</p>
+	<div class="notediv notes_input_container" id="notes_input" style="display:none;">
+		<div class="alert alert-info mb-0" role="alert">You are {{ user.first_name }} (<span id="roleLocationResource"></span>) [<a href="#" id="changeRole" >change role/location</a>]</div>
 		<form id="create_note" class="create_note_form" action="" method="POST">
 			<input type="hidden" id="id_note_submit_url" value="{% url 'xgds_notes_record' %}">
 			<input type="hidden" id="id_event_timezone" >
@@ -18,7 +18,7 @@
 			<div class="notecontainer" >
 				<div id="event_time_controls2">
 					<input id="id_event_time" name="event_time" type="text" style="margin-right: 10px; display: inline-block;">
-					<button name="Now" id="nowButton" class="btn btn-primary">Now</button>
+					<button name="Now" id="nowButton" class="btn btn-primary mt-1">Now</button>
 				</div>
 				<textarea class="noteinput"  id="id_content" type="text" name="content" maxlength="500" style="height:50px;" placeholder="Enter notes here"></textarea>
 		        <input class="taginput"  id="id_tags" placeholder="Choose tags" type="text" />

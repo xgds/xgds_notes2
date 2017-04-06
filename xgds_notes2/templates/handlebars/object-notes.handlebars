@@ -1,7 +1,7 @@
 <div id="object_notes"> 
 	<button id="add_note_button" class="btn btn-primary float_button add_note_button">Add Note</button>
 	<div id="notes_content" class="tab-content active notes_content notes_input_container">
-		<div class="notediv" id="notes_input" hidden>
+		<div class="notediv" id="notes_input" style="display:none;">
 			<form id="create_note" class="create_note_form" action="" method="POST">
 				<input type="hidden" id="id_note_submit_url" value="/notes/recordSimple/">
 				<input type="hidden" id="id_event_time" >
@@ -25,7 +25,7 @@
         		</div>
   			</form>
 		</div>
-		<table id="notes_list" class="notes_list display" width="100%" hidden>
+		<table id="notes_list" class="notes_list display" width="100%" style="display:none;">
 		</table>
 	</div>
 </div>
