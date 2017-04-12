@@ -170,6 +170,7 @@ $.extend(xgds_notes,{
 	    	    }
 	            var theNotesTable = context.findNotesTable(containerDiv);
 	            if (theNotesTable.length > 0){
+	            	theNotesTable.show();
 	            	var cleanData = xgds_notes.cleanData(data[0], containerDiv);
 	            	var table_id = theNotesTable.attr('id');
 	                if ( !$.fn.DataTable.isDataTable( '#'+table_id) ) {

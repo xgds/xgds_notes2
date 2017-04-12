@@ -81,6 +81,7 @@ $.extend(xgds_notes,{
 			/* 
 			 * Table View
 			 */
+			table.show();
 			// initialize the table with json of existing data.
 			var table_id = table.attr('id');
 			if ( ! $.fn.DataTable.isDataTable('#'+table_id) ) {
