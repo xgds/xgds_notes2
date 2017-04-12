@@ -55,6 +55,10 @@ blocky div label input{
 	width: 100%;
 }
 
+.notecontainer .btn {
+	align-self:inherit;
+}
+
 .noteitem {
 	flex-basis: auto;
 }
