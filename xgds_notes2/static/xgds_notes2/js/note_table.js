@@ -145,11 +145,13 @@ $.extend(xgds_notes,{
 			url = '/notes/notes/' + app_label + '/' + model_type + '/' + object_id;
 			$.ajax({url: url,
 				type: 'POST',
-				dataType: 'json'
-			}).success(function(data) {
-				xgds_notes.setupNotesTable(divID, table, data);
-			}).error(function(data) {
-				xgds_notes.setupNotesTable(divID, table, []);
+				dataType: 'json',
+				success: function(data) {
+					xgds_notes.setupNotesTable(divID, table, data);
+				},
+				error: function(data){
+					xgds_notes.setupNotesTable(divID, table, []);
+				}
 			});
 		}
 });
