@@ -25,19 +25,15 @@ import ast
 
 from dateutil.parser import parse as dateparser
 
-from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
-from django.db import connection
 from django.views.decorators.cache import never_cache
 from django.http import HttpResponse, JsonResponse
 
-from django.shortcuts import render_to_response, redirect, render
-from django.template import RequestContext
+from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
-from django.utils.translation import ugettext, ugettext_lazy as _
 
 from geocamUtil.datetimeJsonEncoder import DatetimeJsonEncoder
 from geocamUtil.loader import LazyGetModelByName, getClassByName
