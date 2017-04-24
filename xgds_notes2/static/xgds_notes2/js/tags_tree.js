@@ -53,13 +53,15 @@ $.extend(xgds_notes,{
 						type: 'POST',
 						dataType: 'json',
 						data: params,
-					}).success(function() {
-						data.otherNode.moveTo(node, data.hitMode);
-					}).error(function(data) {
-						alert(JSON.parse(data.responseText).failed);
+						success: function() {
+							data.otherNode.moveTo(node, data.hitMode);
+						},
+						error: function() {
+							alert(JSON.parse(data.responseText).failed);
+						}
 					});
 				}
-			},
+			}
 		}); 
 
 		xgds_notes.tagtreeNode.contextmenu({
@@ -88,21 +90,25 @@ $.extend(xgds_notes,{
 			var deleteURL = '/notes/deleteTag/' + node.key;
 			$.ajax({url: deleteURL,
 				type: 'POST',
-				dataType: 'json'
-			}).success(function(data) {
-				node.remove();
-			}).error(function(data) {
-				alert(JSON.parse(data.responseText).failed);
+				dataType: 'json',
+				success: function(data) {
+					node.remove();
+				},
+				error: function(data){
+					alert(JSON.parse(data.responseText).failed);
+				}
 			});
 		} else if (command === 'rootify'){
 			var rootURL = '/notes/makeRoot/' + node.key;
 			$.ajax({url: rootURL,
 				type: 'POST',
-				dataType: 'json'
-			}).success(function() {
-				node.moveTo(xgds_notes.theTree.getRootNode());
-			}).error(function(data) {
-				alert(JSON.parse(data.responseText).failed);
+				dataType: 'json',
+				success: function() {
+					node.moveTo(xgds_notes.theTree.getRootNode());
+				},
+				error: function() {
+					alert(JSON.parse(data.responseText).failed);
+				}
 			});
 		} else {
 			xgds_notes.showAddTagDialog(command, node);
@@ -175,18 +181,20 @@ $.extend(xgds_notes,{
 		$.ajax({url: url,
 			type: 'POST',
 			dataType: 'json',
-			data: postData
-		}).success(function(noteJson) {
-			if (mode === 'add'){
-				node.addChildren([noteJson])
-			} else if (mode === 'edit'){
-				node.fromDict(noteJson);
-			} else {
-				xgds_notes.theTree.getRootNode().addChildren([noteJson]);
+			data: postData,
+			success: function(noteJson){
+				if (mode === 'add'){
+					node.addChildren([noteJson])
+				} else if (mode === 'edit'){
+					node.fromDict(noteJson);
+				} else {
+					xgds_notes.theTree.getRootNode().addChildren([noteJson]);
+				}
+				xgds_notes.addTagDialog.dialog('close'); 
+			},
+			error: function(data) {
+				alert(JSON.parse(data.responseText).failed);
 			}
-			xgds_notes.addTagDialog.dialog('close'); 
-		}).error(function(data) {
-			alert(JSON.parse(data.responseText).failed);
 		});
 	}
 });
