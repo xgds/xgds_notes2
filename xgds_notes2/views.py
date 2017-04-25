@@ -636,6 +636,7 @@ if settings.XGDS_NOTES_ENABLE_GEOCAM_TRACK_MAPPING:
             kml_document = render_to_string(
                 'xgds_notes2/notes_placemark_document.kml',
                 {'days': days},
+                request
             )
             return wrapKmlDjango(kml_document)
         return wrapKmlDjango("")
