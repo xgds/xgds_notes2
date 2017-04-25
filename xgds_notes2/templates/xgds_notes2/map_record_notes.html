@@ -1,5 +1,5 @@
 {% extends 'xgds_map_server/mapSearch.html' %}
-
+{% load static %}
 
 {% block sitemenu-content-secondary %}
 	{% include "xgds_notes2/notes_subnav.html" %}
@@ -8,7 +8,7 @@
 
 {% block scripts %}
 	{{block.super}}
-    <script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/note_create_form.js"></script>
+    <script type="text/javascript" src="{% static 'xgds_notes2/js/note_create_form.js' %}"></script>
 {% endblock scripts %}
 {% block postscripts %}
 {% endblock postscripts %}

@@ -1,3 +1,4 @@
+{% load static %}
 <script type="text/javascript">
 	    server_time_url = "{% url 'server_time' %}";
 	    user_session_exists = true;
@@ -9,10 +10,10 @@
 <script type="text/javascript" src="{{ EXTERNAL_URL }}typeahead.js/dist/typeahead.bundle.min.js"></script> 
 <script type="text/javascript" src="{{ EXTERNAL_URL }}bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js"></script>
 {% include "xgds_notes2/NoteTableJS.html" %}
-<script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/tags_input.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/note_create_form.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/note_input_form_small.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/note_table.js"></script>
+<script type="text/javascript" src="{% static 'xgds_notes2/js/tags_input.js' %}"></script>
+<script type="text/javascript" src="{% static 'xgds_notes2/js/note_create_form.js' %}"></script>
+<script type="text/javascript" src="{% static 'xgds_notes2/js/note_input_form_small.js' %}"></script>
+<script type="text/javascript" src="{% static 'xgds_notes2/js/note_table.js' %}"></script>
 
 {% if user.is_authenticated %}
  {% if forceUserSession or not request.session.notes_user_session %}

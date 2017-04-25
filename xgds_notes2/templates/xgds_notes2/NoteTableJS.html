@@ -1,8 +1,9 @@
+{% load static %}
 	<script type="text/javascript" src="{{ EXTERNAL_URL }}datatables/media/js/jquery.dataTables.js"></script>
 	<script type="text/javascript" src="{{ EXTERNAL_URL }}datatables-select/js/dataTables.select.js"></script>
 	{% if settings.GEOCAM_UTIL_DATATABLES_EDITOR %}
   		<script type="text/javascript" src="{{ EXTERNAL_URL }}datatables-editor/js/dataTables.editor.js"></script>
-  		<script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/dataTables.editor.tagsinput.js"></script>
+  		<script type="text/javascript" src="{% static 'xgds_notes2/js/dataTables.editor.tagsinput.js' %}"></script>
   		<script type="text/javascript">
   		HAS_DATATABLES_EDITOR = true;
   		</script>

@@ -1,18 +1,18 @@
 {% extends "xgds_notes2/notes_base.html" %}
-
+{% load static %}
 {% block scripts %}
 {{ block.super }}
     <script type="text/javascript" src='{{ EXTERNAL_URL }}fancytree/dist/jquery.fancytree.js'></script>
     <script type="text/javascript" src='{{ EXTERNAL_URL }}fancytree/dist/src/jquery.fancytree.dnd.js'></script>
     <script type="text/javascript" src='{{ EXTERNAL_URL }}jquery-ui-contextmenu/jquery.ui-contextmenu.js'></script>
-    <script type="text/javascript" src='{{ STATIC_URL }}xgds_notes2/js/tags_tree.js'></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}xgds_notes2/js/tags_input.js"></script>
+    <script type="text/javascript" src="{% static 'xgds_notes2/js/tags_tree.js' %}"></script>
+	<script type="text/javascript" src="{% static 'xgds_notes2/js/tags_input.js' %}"></script>
 {% endblock scripts %}
 
 {% block contents %}
 <style scoped>
   @import url('{{ EXTERNAL_URL }}fancytree/dist/skin-lion/ui.fancytree.min.css');
-  @import url('{{ STATIC_URL }}xgds_notes2/css/fancytree_tags.css');
+  @import url("{% static 'xgds_notes2/css/fancytree_tags.css' %}");
   ul.fancytree-container {
  	 height: 400px;
   	 width: 95%;
