@@ -30,7 +30,7 @@
 	/*float:left; */ 
 	height:20px;
 	padding-bottom:2px;
-	margin-top: -5px;
+	//margin-top: -5px;
 	color: red;
 }
 
@@ -40,7 +40,7 @@
 
 #error_content {
 	font-size: 0.7em;
-	vertical-align:top;
+	//vertical-align:top;
 }
 
 blocky div label input{
