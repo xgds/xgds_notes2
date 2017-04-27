@@ -50,7 +50,7 @@ if settings.XGDS_NOTES_ENABLE_GEOCAM_TRACK_MAPPING:
     urlpatterns += [url(r'notes.kml', views.note_map_kml, {'readOnly': True, 'loginRequired': False, 'securityTags': ['readOnly']}, 'note_map_kml')]
     urlpatterns += [url(r'notesFeed.kml', views.getKmlNetworkLink, {'readOnly': True, 'loginRequired': False, 'securityTags': ['readOnly']}, 'note_map_kml_feed')]
 
-if settings.XGDS_SSE:
+if False and settings.XGDS_SSE:
     from sse_wrapper.views import EventStreamView
     urlpatterns += [
         url(r'^live/notes/(?P<filter>[\w]+:[\w]+)/$', views.getNotesJson, {}, 'xgds_notes_liveNotes'),

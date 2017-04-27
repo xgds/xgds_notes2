@@ -51,7 +51,7 @@ from models import HierarchichalTag
 from httplib2 import ServerNotFoundError
 from apps.xgds_notes2.forms import SearchNoteForm
 
-if settings.XGDS_SSE:
+if False and settings.XGDS_SSE:
     from sse_wrapper.events import send_event
     
 UNSET_SESSION = 'Unset Session'
@@ -195,7 +195,7 @@ def broadcastNote(note):
     """
     json_data = json.dumps([note.toMapDict()], cls=DatetimeJsonEncoder)
 
-    if settings.XGDS_SSE:
+    if False and settings.XGDS_SSE:
         channels = note.getChannels()
         for channel in channels:
             send_event('notes', json_data, channel)
@@ -215,11 +215,13 @@ def record(request):
             linkTags(note, tags)
             jsonNote = broadcastNote(note)
 
-            if not settings.XGDS_SSE:
-                return HttpResponse(jsonNote,
-                                    content_type='application/json')
-            else:
-                return HttpResponse(json.dumps({'success': 'true'}), content_type='application/json')
+            return HttpResponse(jsonNote,
+                                content_type='application/json')
+#             if not settings.XGDS_SSE:
+#                 return HttpResponse(jsonNote,
+#                                     content_type='application/json')
+#             else:
+#                 return HttpResponse(json.dumps({'success': 'true'}), content_type='application/json')
 
         else:
             return HttpResponse(str(form.errors), status=400)  # Bad Request
