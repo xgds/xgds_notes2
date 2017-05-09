@@ -129,20 +129,22 @@ xgds_notes.updateRole();
 
 {% if settings.GEOCAM_UTIL_DATATABLES_EDITOR %}
 xgds_notes.setupEditingTable = function() {
-        var _editor = new $.fn.dataTable.Editor( {
-        	ajax: '/notes/editNote/_id_',
-            table: '#searchResultsTable', 
-            idSrc:  20,
-            fields: app.searchResultsView.editableColumns
-        });
-        
-        var _this = this;
-        var mmap = app.searchResultsView.lookupModelMap('Note');
-        $('#searchResultsTable').on( 'dblclick', 'tbody td.editable', function (e) {
-        	var col = e.currentTarget._DT_CellIndex.column;
-        	var col_name = mmap.columns[col];
-            _editor.inline( this, col_name );
-        });
+		if (app.searchResultsView !== undefined){
+	        var _editor = new $.fn.dataTable.Editor( {
+	        	ajax: '/notes/editNote/_id_',
+	            table: '#searchResultsTable', 
+	            idSrc:  20,
+	            fields: app.searchResultsView.editableColumns
+	        });
+	        
+	        var _this = this;
+	        var mmap = app.searchResultsView.lookupModelMap('Note');
+	        $('#searchResultsTable').on( 'dblclick', 'tbody td.editable', function (e) {
+	        	var col = e.currentTarget._DT_CellIndex.column;
+	        	var col_name = mmap.columns[col];
+	            _editor.inline( this, col_name );
+	        });
+	     }
 };
 xgds_notes.setupEditingTable();
 
