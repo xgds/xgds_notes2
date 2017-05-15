@@ -43,9 +43,13 @@
 {% block otherJSInit %}
 server_time_url = "{% url 'server_time' %}";
 serverTimezone = "{{TIME_ZONE}}";
+
+{% block initializeNotes %}
 var container = $("#full_notes_input");
 xgds_notes.setupNotesUI(container);
 xgds_notes.initializeNotesForm(false);
+{% endblock initializeNotes %}
+
 {% block eventTimeFunction %}
 xgds_notes.getEventTime = function(context) {
 		var dataString = "";
