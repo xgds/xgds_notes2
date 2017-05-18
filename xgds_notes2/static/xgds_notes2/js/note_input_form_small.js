@@ -122,12 +122,19 @@ $.extend(xgds_notes,{
 	        xgds_notes.showError('Note must not be empty.');
 	        return false;
 	    }
+	    
+	    var dataString = content + '&tags=' + tags;
 	    var extras = parent.find('input#id_extras').val();
-	    var dataString = content + '&tags=' + tags + '&extras=' + extras;
+	    if (!_.isEmpty(extras)) {
+	    	dataString = dataString + '&extras=' + extras;
+	    }
 	    dataString = dataString + '&object_id=' + parent.find('#id_object_id').val();
 	    dataString = dataString + '&app_label=' + parent.find('#id_app_label').val();
 	    dataString = dataString + '&model_type=' + parent.find('#id_model_type').val();
-	    dataString = dataString + '&position_id=' + parent.find('#id_position_id').val();
+	    var positionVal = parent.find('#id_position_id').val();
+	    if (!_.isEmpty(positionVal)){
+	    	dataString = dataString + '&position_id=' + positionVal;
+	    }
 	    var showonmap = parent.find("#id_show_on_map");
 	    if (showonmap.length > 0){
 	    	if (showonmap[0].checked) {
@@ -190,6 +197,58 @@ $.extend(xgds_notes,{
 	        }
 	
 	    });
+	},
+	genericFunction: function(path) {
+	    return [window].concat(path.split('.')).reduce(function(prev, curr) {
+	        return prev[curr];
+	    });
+	},
+	editUserSession: function(nextFunction, context) {
+		var edit_user_session_div = $('#edit_user_session_div');
+		if (edit_user_session_div.length > 0){
+		  edit_user_session_div.dialog({
+	        dialogClass: 'no-close',
+	        modal: false,
+	        resizable: true,
+	        width: 400,
+	        closeOnEscape: true,
+	        title: "Configure Note Recording",
+	        buttons: [
+	                  {
+	                    text: "Cancel",
+	                    click: function() {
+	                      $( this ).dialog( "close" );
+	                    }
+	                  },
+	                  {
+		                    text: "Save",
+		                    click: function() {
+		                    	var _dialog = this;
+		    	            	var theForm = $("#edit_user_session_form");
+		    					var postData = theForm.serializeArray();
+		    	                $.ajax(
+		    		            {
+		    		                url: xgds_notes.edit_user_session_ajax, //'/notes/record/session/ajax/'//"{% url 'xgds_notes_edit_user_session_ajax' %}",
+		    		                type: "POST",
+		    		                data: postData,
+		    		                dataType: "json",
+		    		                context: $(this),
+		    		                success: function(data)
+		    		                {
+		    		                    user_session_exists=true;
+		    		                    $( this ).dialog( "close" );
+		    		                    xgds_notes.genericFunction(nextFunction)(context, data);
+		    		                },
+		    		                error: function(data)
+		    		                {	
+		    		                	alert("Please enter values for all the fields");
+		    		                }
+		    		            });
+		                    }
+		                  }
+	                ]
+	    });
+		}
 	},
 	hookNoteSubmit: function(container) {
 		if (container == undefined){

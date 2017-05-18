@@ -1,7 +1,7 @@
 {% load static %}
 <script type="text/javascript">
 	    server_time_url = "{% url 'server_time' %}";
-	    user_session_exists = true;
+	    user_session_exists = false;
 </script>
 {% include "xgds_core/timeJS.html" %}
 <!--  TODO remove the below 2 lines once we switch to bootstrap -->
@@ -12,15 +12,18 @@
 {% include "xgds_notes2/NoteTableJS.html" %}
 <script type="text/javascript" src="{% static 'xgds_notes2/js/tags_input.js' %}"></script>
 <script type="text/javascript" src="{% static 'xgds_notes2/js/note_create_form.js' %}"></script>
-<script type="text/javascript" src="{% static 'xgds_notes2/js/note_input_form_small.js' %}"></script>
 <script type="text/javascript" src="{% static 'xgds_notes2/js/note_table.js' %}"></script>
 
 {% if user.is_authenticated %}
  {% if forceUserSession or not request.session.notes_user_session %}
  	{% load user_session_popup %}
  	{% show_user_session_popup %}
+ {% else %}
  	<script type="text/javascript">
- 		user_session_exists = false;
+ 		// user is already authenticated
+ 		user_session_exists = true;
  	</script>
  {% endif %}
 {% endif %}
+
+<script type="text/javascript" src="{% static 'xgds_notes2/js/note_input_form_small.js' %}"></script>

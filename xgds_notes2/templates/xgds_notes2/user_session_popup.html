@@ -5,59 +5,9 @@
 </form>
 </div>
 
-<script language="javascript">
-
-
+<script type="text/javascript">
 var xgds_notes = xgds_notes || {};
 $.extend(xgds_notes,{
-	genericFunction: function(path) {
-	    return [window].concat(path.split('.')).reduce(function(prev, curr) {
-	        return prev[curr];
-	    });
-	},
-	editUserSession: function(nextFunction, context) {
-		$('#edit_user_session_div').dialog({
-	        dialogClass: 'no-close',
-	        modal: false,
-	        resizable: true,
-	        width: 400,
-	        closeOnEscape: true,
-	        title: "Configure Note Recording",
-	        buttons: [
-	                  {
-	                    text: "Cancel",
-	                    click: function() {
-	                      $( this ).dialog( "close" );
-	                    }
-	                  },
-	                  {
-		                    text: "Save",
-		                    click: function() {
-		                    	var _dialog = this;
-		    	            	var theForm = $("#edit_user_session_form");
-		    					var postData = theForm.serializeArray();
-		    	                $.ajax(
-		    		            {
-		    		                url: "{% url 'xgds_notes_edit_user_session_ajax' %}",
-		    		                type: "POST",
-		    		                data: postData,
-		    		                dataType: "json",
-		    		                context: $(this),
-		    		                success: function(data)
-		    		                {
-		    		                    user_session_exists=true;
-		    		                    $( this ).dialog( "close" );
-		    		                    xgds_notes.genericFunction(nextFunction)(context, data);
-		    		                },
-		    		                error: function(data)
-		    		                {	
-		    		                	alert("Please enter values for all the fields");
-		    		                }
-		    		            });
-		                    }
-		                  }
-	                ]
-	    });
-	}
+	edit_user_session_ajax: "{% url 'xgds_notes_edit_user_session_ajax' %}"
 });
 </script>

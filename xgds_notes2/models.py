@@ -261,7 +261,7 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin):
     @property
     def tag_names(self):
         result = []
-        for tag in self.tags.get_query_set():
+        for tag in self.tags.get_queryset():
             result.append(tag.name)
         return result
 #             return [t.encode('utf-8') for t in self.tags.names()]
