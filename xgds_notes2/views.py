@@ -31,6 +31,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.views.decorators.cache import never_cache
 from django.http import HttpResponse, JsonResponse
+from django.core.urlresolvers import reverse
 
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
@@ -45,7 +46,7 @@ from geocamTrack.utils import getClosestPosition
 from treebeard.mp_tree import MP_Node
 
 from xgds_notes2.forms import NoteForm, UserSessionForm, TagForm, ImportNotesForm
-from xgds_core.views import getTimeZone
+from xgds_core.views import getTimeZone, addRelay
 from xgds_map_server.views import getSearchPage, getSearchForms, buildFilterDict
 from models import HierarchichalTag
 from httplib2 import ServerNotFoundError
@@ -214,6 +215,10 @@ def record(request):
             note = createNoteFromData(data)
             linkTags(note, tags)
             jsonNote = broadcastNote(note)
+            
+            # Right now we are using relay for the show on map
+            if note.show_on_map:
+                addRelay(note, None, json.dumps(request.POST), reverse('xgds_notes_record'))
 
             return HttpResponse(jsonNote,
                                 content_type='application/json')

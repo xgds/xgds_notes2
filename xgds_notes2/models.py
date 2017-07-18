@@ -241,6 +241,10 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin):
     content_object = GenericForeignKey('content_type', 'object_id')
 
     @property
+    def acquisition_time(self):
+        return self.event_time
+
+    @property
     def object_type(self):
         if self.content_type:
             return self.content_type.model_class().cls_type()
