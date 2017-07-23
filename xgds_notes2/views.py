@@ -184,7 +184,9 @@ def createNoteFromData(data, delay=True, serverNow=False):
         
     # hook up the position if it can have one
     if hasattr(note, 'position'):
-        note.getPosition()
+        position = note.getPosition()
+        if not position:
+            note.position = getClosestPosition(timestamp=note.event_time)
 
     note.save()
     return note
