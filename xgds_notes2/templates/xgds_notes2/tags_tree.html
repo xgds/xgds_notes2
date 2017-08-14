@@ -13,6 +13,8 @@
 <style scoped>
   @import url('{{ EXTERNAL_URL }}fancytree/dist/skin-lion/ui.fancytree.min.css');
   @import url("{% static 'xgds_notes2/css/fancytree_tags.css' %}");
+  @import url("{% static 'xgds_map_server/css/fancytree_custom.css' %}");
+  
   ul.fancytree-container {
  	 height: 400px;
   	 width: 95%;
@@ -52,3 +54,6 @@
          });
    xgds_notes.initializeInput();
 {% endblock %}
+
+{% block footer %}
+{% endblock footer %}
