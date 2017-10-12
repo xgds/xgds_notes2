@@ -14,7 +14,7 @@
 # specific language governing permissions and limitations under the License.
 #__END_LICENSE__
 
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.conf import settings
 
 import xgds_notes2.views as views
@@ -26,29 +26,25 @@ urlpatterns = [
     url(r'^editNote/(?P<note_pk>[\d]+)$', views.editNote, {}, 'xgds_notes_edit_note'),
     url(r'^record/session/?$', views.editUserSession, {}, 'xgds_notes_edit_user_session'),
     url(r'^record/session/ajax/?$', views.editUserSession, {'ajax':True}, 'xgds_notes_edit_user_session_ajax'),
-    url(r'time.txt', views.serverTime, {}, 'server_time'),
     url(r'^editTags/?$', views.editTags, {}, 'xgds_notes_edit_tags'),
     url(r'^addRootTag/?$', views.addRootTag, {}, 'xgds_notes_add_root_tag'),
     url(r'^addTag/?$', views.addTag, {}, 'xgds_notes_add_tag'),
     url(r'^moveTag/?$', views.moveTag, {}, 'xgds_notes_move_tag'),
     url(r'^makeRoot/(?P<tag_id>[\d]+)$', views.makeRootTag, {}, 'xgds_notes_move_tag'),
     url(r'^editTag/(?P<tag_id>[\d]+)$', views.editTag, {}, 'xgds_notes_edit_tag'),
-    url(r'^tagsTree/?$', views.tagsGetOneLevelTreeJson, {}, 'xgds_notes_get_root_tags'),
-    url(r'^tagsTree/(?P<root>[\d]+)$', views.tagsGetOneLevelTreeJson, {}, 'xgds_notes_get_tags'),
-    url(r'^tagsChildrenTree/(?P<root>[\d]+)$', views.tagsGetTreeJson, {}, 'xgds_notes_get_tags'),
     url(r'^deleteTag/(?P<tag_id>[\d]+)$', views.deleteTag, {}, 'xgds_notes_delete_tag'),
-    url(r'^tagsArray.json$', views.tagsJsonArray, {}, 'xgds_notes_tags_array'),
     url(r'^import/?$', views.importNotes, {}, 'xgds_notes_import'),
-    url(r'^notes/(?P<app_label>[\w]+)/(?P<model_type>[\w]+)/(?P<obj_pk>[\d]+)$', views.getObjectNotes, {}, 'xgds_notes_object_notes'),
     url(r'^searchMap$', views.notesSearchMap, {}, 'search_xgds_notes_map'),
     url(r'^searchMap/(?P<filter>(([\w]+|[a-zA-Z0-9:._\-\s]+),*)+)$', views.notesSearchMap, {}, 'search_xgds_notes_map_filter'),
 
-#     url(r'^mapJson/(?P<extens>([\-]*[\d]+\.[\d]+[\,]*)+)$', views.note_json_extens, {'readOnly': True, 'loginRequired': False, 'securityTags': ['readOnly']}, 'note_json_extens'),
+#     url(r'^mapJson/(?P<extens>([\-]*[\d]+\.[\d]+[\,]*)+)$', views.note_json_extens, {'readOnly': True, 'securityTags': ['readOnly']}, 'note_json_extens'),
+
+    # Including these in this order ensures that reverse will return the non-rest urls for use in our server
+    url(r'^rest/', include('xgds_notes2.restUrls')),
+    url('', include('xgds_notes2.restUrls')),
+
     ]
 
-if settings.XGDS_NOTES_ENABLE_GEOCAM_TRACK_MAPPING:
-    urlpatterns += [url(r'notes.kml', views.note_map_kml, {'readOnly': True, 'loginRequired': False, 'securityTags': ['readOnly']}, 'note_map_kml')]
-    urlpatterns += [url(r'notesFeed.kml', views.getKmlNetworkLink, {'readOnly': True, 'loginRequired': False, 'securityTags': ['readOnly']}, 'note_map_kml_feed')]
 
 if False and settings.XGDS_SSE:
     from sse_wrapper.views import EventStreamView
