@@ -37,8 +37,6 @@ urlpatterns = [
     url(r'^searchMap$', views.notesSearchMap, {}, 'search_xgds_notes_map'),
     url(r'^searchMap/(?P<filter>(([\w]+|[a-zA-Z0-9:._\-\s]+),*)+)$', views.notesSearchMap, {}, 'search_xgds_notes_map_filter'),
 
-#     url(r'^mapJson/(?P<extens>([\-]*[\d]+\.[\d]+[\,]*)+)$', views.note_json_extens, {'readOnly': True, 'securityTags': ['readOnly']}, 'note_json_extens'),
-
     # Including these in this order ensures that reverse will return the non-rest urls for use in our server
     url(r'^rest/', include('xgds_notes2.restUrls')),
     url('', include('xgds_notes2.restUrls')),

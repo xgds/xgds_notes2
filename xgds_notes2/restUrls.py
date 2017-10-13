@@ -28,11 +28,11 @@ urlpatterns = [
     url(r'^tagsArray.json$', views.tagsJsonArray, {}, 'xgds_notes_tags_array'),
     url(r'^notes/(?P<app_label>[\w]+)/(?P<model_type>[\w]+)/(?P<obj_pk>[\d]+)$', views.getObjectNotes, {}, 'xgds_notes_object_notes'),
 
-#     url(r'^mapJson/(?P<extens>([\-]*[\d]+\.[\d]+[\,]*)+)$', views.note_json_extens, {'readOnly': True, 'securityTags': ['readOnly']}, 'note_json_extens'),
+#     url(r'^mapJson/(?P<extens>([\-]*[\d]+\.[\d]+[\,]*)+)$', views.note_json_extens, {}, 'note_json_extens'),
     ]
 
 if settings.XGDS_NOTES_ENABLE_GEOCAM_TRACK_MAPPING:
-    urlpatterns += [url(r'notes.kml', views.note_map_kml, {'readOnly': True, 'securityTags': ['readOnly']}, 'note_map_kml')]
-    urlpatterns += [url(r'notesFeed.kml', views.getKmlNetworkLink, {'readOnly': True, 'securityTags': ['readOnly']}, 'note_map_kml_feed')]
+    urlpatterns += [url(r'notes.kml', views.note_map_kml, {}, 'note_map_kml')]
+    urlpatterns += [url(r'notesFeed.kml', views.getKmlNetworkLink, {}, 'note_map_kml_feed')]
 
 

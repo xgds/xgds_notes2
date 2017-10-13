@@ -615,6 +615,7 @@ if settings.XGDS_NOTES_ENABLE_GEOCAM_TRACK_MAPPING:
     from geocamUtil.KmlUtil import wrapKmlDjango, djangoResponse
 
     def getKmlNetworkLink(request):
+        ''' This refreshes note_map_kml every 5 seconds'''
         url = request.build_absolute_uri(settings.SCRIPT_NAME + 'notes/rest/notes.kml')
         return djangoResponse('''
     <NetworkLink>
@@ -641,7 +642,7 @@ if settings.XGDS_NOTES_ENABLE_GEOCAM_TRACK_MAPPING:
 
         if days:
             kml_document = render_to_string(
-                'xgds_notes2/rest/notes_placemark_document.kml',
+                'xgds_notes2/notes_placemark_document.kml',
                 {'days': days},
                 request
             )
