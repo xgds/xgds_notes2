@@ -144,6 +144,11 @@ def populateNoteData(request, form):
     except:
         pass
     
+    # This is for relay purposes
+    if 'id' in request.POST:
+        print 'GOT ID FROM REQUEST.POST %s' % request.POST['id']
+        data['id'] = request.POST['id']
+    
     return data, tags, errors
 
 
@@ -212,6 +217,8 @@ def record(request):
             data = {str(k): v
                     for k, v in data.items()}
 
+            if 'id' in data:
+                print 'ID FROM DATA %s' % data['id']
             note = createNoteFromData(data)
             linkTags(note, tags)
             jsonNote = broadcastNote(note)
