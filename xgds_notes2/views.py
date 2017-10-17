@@ -146,7 +146,6 @@ def populateNoteData(request, form):
     
     # This is for relay purposes
     if 'id' in request.POST:
-        print 'GOT ID FROM REQUEST.POST %s' % request.POST['id']
         data['id'] = request.POST['id']
     
     return data, tags, errors
@@ -217,8 +216,6 @@ def record(request):
             data = {str(k): v
                     for k, v in data.items()}
 
-            if 'id' in data:
-                print 'ID FROM DATA %s' % data['id']
             note = createNoteFromData(data)
             linkTags(note, tags)
             jsonNote = broadcastNote(note)
@@ -260,8 +257,14 @@ def recordSimple(request):
         linkTags(note, tags)
         json_data = broadcastNote(note)
 
-        #return JsonResponse(json_data,
-        #                    status=200)
+        # Right now we are using relay for the show on map
+        if note.show_on_map:
+            mutable = request.POST._mutable
+            request.POST._mutable = True
+            request.POST['id'] = note.pk
+            request.POST._mutable = mutable
+            addRelay(note, None, json.dumps(request.POST), reverse('xgds_notes_record'))
+
         return HttpResponse(json_data,
                             content_type='application/json')
     else:
