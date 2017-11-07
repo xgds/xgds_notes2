@@ -27,7 +27,6 @@ from dateutil.parser import parse as dateparser
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.views.decorators.cache import never_cache
 from django.http import HttpResponse, JsonResponse
@@ -67,7 +66,6 @@ def serverTime(request):
         content_type="text"
     )
     
-@login_required
 def editUserSession(request, ajax=False):
 
     # display a form to edit the content of the UserSession object in request.session['notes_user_session']
@@ -127,7 +125,8 @@ def populateNoteData(request, form):
     else:
         errors.append(UNSET_SESSION)
 
-    data['author'] = request.user
+    if 'author_id' not in data:
+        data['author'] = request.user
     
     if data['app_label'] and data['model_type']:
         data['content_type'] = ContentType.objects.get(app_label=data['app_label'], model=data['model_type'])
@@ -206,7 +205,6 @@ def broadcastNote(note):
             send_event('notes', json_data, channel)
     return json_data
 
-@login_required
 def record(request):
     if request.method == 'POST':
         form = NoteForm(request.POST)
@@ -225,6 +223,7 @@ def record(request):
                 mutable = request.POST._mutable
                 request.POST._mutable = True
                 request.POST['id'] = note.pk
+                request.POST['author_id'] = note.author_id
                 request.POST._mutable = mutable
                 addRelay(note, None, json.dumps(request.POST), reverse('xgds_notes_record'))
 
@@ -242,7 +241,6 @@ def record(request):
         raise Exception("Request method %s not supported." % request.method)
 
 
-@login_required
 def recordSimple(request):
     if request.method != 'POST':
         return HttpResponse(json.dumps({'error': {'code': -32099,
@@ -262,6 +260,7 @@ def recordSimple(request):
             mutable = request.POST._mutable
             request.POST._mutable = True
             request.POST['id'] = note.pk
+            request.POST['author_id'] = note.author_id
             request.POST._mutable = mutable
             addRelay(note, None, json.dumps(request.POST), reverse('xgds_notes_record'))
 
@@ -275,7 +274,6 @@ def recordSimple(request):
                             status=406)
 
 
-@login_required
 def editNote(request, note_pk=None):
     try:
         tags_list = []
@@ -329,7 +327,6 @@ def getSortOrder():
         return getattr(settings, 'XGDS_NOTES_REVIEW_DEFAULT_SORT', '-event_time')
 
 
-@login_required
 def editTags(request):
     return render(
                 request,
@@ -418,7 +415,6 @@ def deleteTag(request, tag_id):
             found_tag.delete()
             return HttpResponse(json.dumps({'success': 'true'}), content_type='application/json')
 
-@login_required
 def addRootTag(request):
     if request.method == 'POST':
         form = TagForm(request.POST)
@@ -428,7 +424,6 @@ def addRootTag(request):
         else:
             return HttpResponse(json.dumps({'failed': 'Problem adding root: ' + form.errors}), content_type='application/json', status=406)
 
-@login_required
 def makeRootTag(request, tag_id):
     if request.method == 'POST':
         tag = Tag.get().objects.get(pk=tag_id)
@@ -439,7 +434,6 @@ def makeRootTag(request, tag_id):
             return HttpResponse(json.dumps({'failed': 'Problem making root'}), content_type='application/json', status=406)
 
             
-@login_required
 def addTag(request):
     if request.method == 'POST':
         parent_id = request.POST.get('parent_id')
@@ -452,7 +446,6 @@ def addTag(request):
             return HttpResponse(json.dumps({'failed': 'Problem adding tag: ' + form.errors}), content_type='application/json', status=406)
 
 
-@login_required
 def editTag(request, tag_id):
     if request.method == 'POST':
         tag = Tag.get().objects.get(pk=tag_id)
@@ -464,7 +457,6 @@ def editTag(request, tag_id):
             return HttpResponse(json.dumps({'failed': 'Problem editing tag: ' + form.errors}), content_type='application/json', status=406)
 
 
-@login_required
 def moveTag(request):
     if request.method == 'POST':
         parent_id = request.POST.get('parent_id')
@@ -514,7 +506,6 @@ def doImportNotes(request, sourceFile, tz, resource):
         note.save()
     
     
-@login_required
 def importNotes(request):
     errors = None
     if request.method == 'POST':
