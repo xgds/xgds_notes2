@@ -125,7 +125,7 @@ def populateNoteData(request, form):
     else:
         errors.append(UNSET_SESSION)
 
-    if 'author_id' not in data:
+    if request.user:
         data['author'] = request.user
     
     if data['app_label'] and data['model_type']:
@@ -209,11 +209,14 @@ def record(request):
     if request.method == 'POST':
         form = NoteForm(request.POST)
         if form.is_valid():
+
             data, tags, errors = getClassByName(settings.XGDS_NOTES_POPULATE_NOTE_DATA)(request, form)
-            
+
             data = {str(k): v
                     for k, v in data.items()}
 
+            if 'author_id' in request.POST:
+                data['author'] = User.objects.get(id=request.POST['author_id'])
             note = createNoteFromData(data)
             linkTags(note, tags)
             jsonNote = broadcastNote(note)
@@ -225,7 +228,7 @@ def record(request):
                 request.POST['id'] = note.pk
                 request.POST['author_id'] = note.author.id
                 request.POST._mutable = mutable
-                addRelay(note, None, json.dumps(request.POST), reverse('xgds_notes_record'))
+                addRelay(note, None, json.dumps(request.POST, cls=DatetimeJsonEncoder), reverse('xgds_notes_record'))
 
             return HttpResponse(jsonNote,
                                 content_type='application/json')
@@ -262,7 +265,7 @@ def recordSimple(request):
             request.POST['id'] = note.pk
             request.POST['author_id'] = note.author.id
             request.POST._mutable = mutable
-            addRelay(note, None, json.dumps(request.POST), reverse('xgds_notes_record'))
+            addRelay(note, None, json.dumps(request.POST, cls=DatetimeJsonEncoder), reverse('xgds_notes_record'))
 
         return HttpResponse(json_data,
                             content_type='application/json')
