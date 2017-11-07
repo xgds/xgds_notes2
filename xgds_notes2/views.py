@@ -223,7 +223,7 @@ def record(request):
                 mutable = request.POST._mutable
                 request.POST._mutable = True
                 request.POST['id'] = note.pk
-                request.POST['author_id'] = note.author_id
+                request.POST['author_id'] = note.author.id
                 request.POST._mutable = mutable
                 addRelay(note, None, json.dumps(request.POST), reverse('xgds_notes_record'))
 
@@ -260,7 +260,7 @@ def recordSimple(request):
             mutable = request.POST._mutable
             request.POST._mutable = True
             request.POST['id'] = note.pk
-            request.POST['author_id'] = note.author_id
+            request.POST['author_id'] = note.author.id
             request.POST._mutable = mutable
             addRelay(note, None, json.dumps(request.POST), reverse('xgds_notes_record'))
 
