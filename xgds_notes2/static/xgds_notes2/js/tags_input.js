@@ -40,6 +40,7 @@ $.extend(xgds_notes,{
 	    $(input).tagsinput({
 		  itemValue: 'id',
 		  itemText: 'name',
+//		  confirmKeys: [13, 188], // this does not work, suggestion is to use comma
 //		  tagClass: function(item) {
 //	    	return 'tag label label-info'; 
 //		  },
