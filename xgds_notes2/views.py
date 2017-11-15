@@ -29,7 +29,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.views.decorators.cache import never_cache
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
 from django.shortcuts import redirect, render
@@ -656,4 +656,18 @@ if settings.XGDS_NOTES_ENABLE_GEOCAM_TRACK_MAPPING:
             )
             return wrapKmlDjango(kml_document)
         return wrapKmlDjango("")
+
+
+def getSseNoteChannels(request):
+    # Look up the note channels we are using for SSE
+    return JsonResponse(settings.XGDS_SSE_NOTE_CHANNELS, safe=False)
+
+
+def defaultCurrentMapNotes(request):
+    return HttpResponseRedirect(reverse('xgds_map_server_objectsJson', kwargs={'object_name': 'XGDS_NOTES_NOTE_MODEL',
+                                                                               'filter':{'show_on_map': True}}))
+
+def getCurrentMapNotes(request):
+    getNotesFunction = getClassByName(settings.XGDS_NOTES_CURRENT_MAPPED_FUNCTION)
+    return getNotesFunction(request)
 

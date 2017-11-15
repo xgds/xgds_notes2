@@ -27,12 +27,15 @@ urlpatterns = [
     url(r'^tagsChildrenTree/(?P<root>[\d]+)$', views.tagsGetTreeJson, {}, 'xgds_notes_get_tags'),
     url(r'^tagsArray.json$', views.tagsJsonArray, {}, 'xgds_notes_tags_array'),
     url(r'^notes/(?P<app_label>[\w]+)/(?P<model_type>[\w]+)/(?P<obj_pk>[\d]+)$', views.getObjectNotes, {}, 'xgds_notes_object_notes'),
+    url(r'^currentMapNotes.json$', views.getCurrentMapNotes, {}, 'xgds_notes_current_map_notes'),
 
-#     url(r'^mapJson/(?P<extens>([\-]*[\d]+\.[\d]+[\,]*)+)$', views.note_json_extens, {}, 'note_json_extens'),
+    #     url(r'^mapJson/(?P<extens>([\-]*[\d]+\.[\d]+[\,]*)+)$', views.note_json_extens, {}, 'note_json_extens'),
     ]
 
 if settings.XGDS_NOTES_ENABLE_GEOCAM_TRACK_MAPPING:
     urlpatterns += [url(r'notes.kml', views.note_map_kml, {}, 'note_map_kml')]
     urlpatterns += [url(r'notesFeed.kml', views.getKmlNetworkLink, {}, 'note_map_kml_feed')]
 
+if settings.XGDS_CORE_REDIS:
+    urlpatterns.append(url(r'^sseNoteChannels/$', views.getSseNoteChannels, {}, 'xgds_note_sse_channels'))
 
