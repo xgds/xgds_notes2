@@ -29,7 +29,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.views.decorators.cache import never_cache
-from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
+from django.http import HttpResponse, JsonResponse
 from django.core.urlresolvers import reverse
 
 from django.shortcuts import redirect, render
@@ -192,18 +192,6 @@ def createNoteFromData(data, delay=True, serverNow=False):
     note.save()
     return note
 
-def broadcastNote(note):
-    """
-    Send the json note information out on SSE
-    return json note information regardless
-    """
-    json_data = json.dumps([note.toMapDict()], cls=DatetimeJsonEncoder)
-
-    if False and settings.XGDS_SSE:
-        channels = note.getChannels()
-        for channel in channels:
-            send_event('notes', json_data, channel)
-    return json_data
 
 def record(request):
     if request.method == 'POST':
@@ -219,10 +207,12 @@ def record(request):
                 data['author'] = User.objects.get(id=request.POST['author_id'])
             note = createNoteFromData(data)
             linkTags(note, tags)
-            jsonNote = broadcastNote(note)
-            
+            jsonNote = json.dumps([note.toMapDict()], cls=DatetimeJsonEncoder)
+
             # Right now we are using relay for the show on map
             if note.show_on_map:
+                if settings.XGDS_CORE_REDIS and settings.XGDS_SSE:
+                    note.broadcast()
                 mutable = request.POST._mutable
                 request.POST._mutable = True
                 request.POST['id'] = note.pk
@@ -256,10 +246,12 @@ def recordSimple(request):
         data, tags, errors = getClassByName(settings.XGDS_NOTES_POPULATE_NOTE_DATA)(request, form)
         note = createNoteFromData(data, False, 'serverNow' in request.POST)
         linkTags(note, tags)
-        json_data = broadcastNote(note)
+        json_data = json.dumps([note.toMapDict()], cls=DatetimeJsonEncoder)
 
         # Right now we are using relay for the show on map
         if note.show_on_map:
+            if settings.XGDS_CORE_REDIS and settings.XGDS_SSE:
+                note.broadcast()
             mutable = request.POST._mutable
             request.POST._mutable = True
             request.POST['id'] = note.pk
@@ -657,7 +649,6 @@ if settings.XGDS_NOTES_ENABLE_GEOCAM_TRACK_MAPPING:
             return wrapKmlDjango(kml_document)
         return wrapKmlDjango("")
 
-
 def getSseNoteChannels(request):
     # Look up the note channels we are using for SSE
     return JsonResponse(settings.XGDS_SSE_NOTE_CHANNELS, safe=False)
@@ -670,4 +661,3 @@ def defaultCurrentMapNotes(request):
 def getCurrentMapNotes(request):
     getNotesFunction = getClassByName(settings.XGDS_NOTES_CURRENT_MAPPED_FUNCTION)
     return getNotesFunction(request)
-

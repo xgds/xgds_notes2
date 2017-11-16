@@ -121,3 +121,7 @@ XGDS_DATA_MASKED_FIELDS['xgds_notes'] = {'Note': ['uuid',
 #TODO override this to expose the sse channels for notes
 XGDS_SSE_NOTE_CHANNELS = []
 XGDS_NOTES_CURRENT_MAPPED_FUNCTION = 'xgds_notes.views.defaultCurrentMapNotes'
+
+XGDS_NOTES_MAP_NOTE_CHANNEL = 'map_note'
+XGDS_NOTES_NOTE_CHANNEL = 'note'
+

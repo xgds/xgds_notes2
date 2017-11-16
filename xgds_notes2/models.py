@@ -39,7 +39,7 @@ from treebeard.mp_tree import MP_Node
 from taggit.models import TagBase, ItemBase
 from taggit.managers import TaggableManager
 
-from xgds_core.models import SearchableModel
+from xgds_core.models import SearchableModel, BroadcastMixin
 
 
 class HierarchichalTag(TagBase, MP_Node):
@@ -202,7 +202,7 @@ class NoteMixin(object):
         except:
             return None
 
-class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin):
+class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, BroadcastMixin):
     ''' Abstract base class for notes
     '''
 #     # custom id field for uniqueness
@@ -239,6 +239,13 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin):
     content_type = models.ForeignKey(ContentType, null=True, blank=True)
     object_id = models.CharField(max_length=128, null=True, blank=True, db_index=True)
     content_object = GenericForeignKey('content_type', 'object_id')
+
+
+    def getSseType(self):
+        if self.show_on_map:
+            return settings.XGDS_NOTES_MAP_NOTE_CHANNEL
+        else:
+            return settings.XGDS_NOTES_NOTE_CHANNEL
 
     @property
     def acquisition_time(self):
