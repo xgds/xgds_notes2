@@ -13,6 +13,7 @@
 # CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 #__END_LICENSE__
+
 import traceback
 import cgi
 import re
@@ -81,7 +82,10 @@ def editUserSession(request, ajax=False):
             if not ajax:
                 return redirect('search_xgds_notes_map')
             else:
-                return HttpResponse(json.dumps({'success':True}),
+                resultDict = {'success': True}
+                for key, value in form.cleaned_data.iteritems():
+                    resultDict[key] = str(value);
+                return HttpResponse(json.dumps(resultDict),
                                     content_type='application/json')
 
         else:

@@ -1,6 +1,6 @@
 {% if user.is_authenticated %}
 <div id="full_notes_input">
-<button id="add_note_button" role="button" class="btn btn-primary add_note_button ml-2">Add Note</button>
+<button id="add_note_button" role="button" class="btn btn-primary add_note_button ml-2">+ Note</button>
 <div id="full_notes_content" class="tab-content active notes_content"> 
 	<div class="notediv notes_input_container" id="notes_input" style="display:none;">
 		<div class="alert alert-info mb-0" role="alert">You are {{ user.first_name }} (<span id="roleLocationResource"></span>) [<a href="#" id="changeRole" >change role/location</a>]</div>

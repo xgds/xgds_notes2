@@ -237,7 +237,25 @@ $.extend(xgds_notes,{
 		    		                {
 		    		                    user_session_exists=true;
 		    		                    $( this ).dialog( "close" );
-		    		                    xgds_notes.genericFunction(nextFunction)(context, data);
+		    		                    var rlr = $("#roleLocationResource");
+		    		                    var text = '';
+		    		                    if ('role' in data) {
+		    		                    	text += data['role'];
+										}
+		    		                    if ('location' in data) {
+		    		                    	text += ', ';
+		    		                    	text += data['location'];
+										}
+		    		                    if ('resource' in data) {
+		    		                    	text += ', ';
+		    		                    	text += data['resource'];
+										}
+
+		    		                    if (rlr.length > 0){
+		    		                  		rlr.text(text);
+										}
+										xgds_notes.genericFunction(nextFunction)(context, data);
+
 		    		                },
 		    		                error: function(data)
 		    		                {	
