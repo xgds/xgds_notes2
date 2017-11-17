@@ -175,8 +175,13 @@ $.extend(xgds_notes,{
 	            if (showonmap.length > 0){
 	            	showonmap.prop("checked", false);
 	    	    }
-	            var theNotesTable = context.findNotesTable(containerDiv);
-	            if (theNotesTable.length > 0){
+	    	    var theNotesTable = undefined;
+	            try {
+                    theNotesTable = context.findNotesTable(containerDiv);
+                } catch (e) {
+                    theNotesTable = xgds_notes.findNotesTable(containerDiv);
+				}
+	            if (!_.isUndefined(theNotesTable) && theNotesTable.length > 0){
 	            	theNotesTable.show();
 	            	var cleanData = xgds_notes.cleanData(data[0], containerDiv);
 	            	var table_id = theNotesTable.attr('id');
