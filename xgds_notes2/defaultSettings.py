@@ -78,16 +78,6 @@ XGDS_NOTES_TAG_TREE_URL = '/notes/tagsTree/'
 # These are the columns that will show by default for all note tables.
 XGDS_NOTES_TABLE_DEFAULT_COLUMNS = ['event_time', 'zone', 'author', 'content', 'tags', 'link']
 
-BOWER_INSTALLED_APPS = getOrCreateArray('BOWER_INSTALLED_APPS')
-BOWER_INSTALLED_APPS += ['moment',
-                         'fancytree=fancytree#v2.25.0',
-                         'jquery-ui-contextmenu=https://github.com/mar10/jquery-ui-contextmenu.git',
-#                          'bootstrap-tagsinput',
-                         'bootstrap-tagsinput=https://github.com/xgds/bootstrap-tagsinput.git#master',
-                         'typeahead.js',
-                         'datatables-sorting-datetime-moment=https://cdn.datatables.net/plug-ins/1.10.11/sorting/datetime-moment.js'
-                         ]
-
 XGDS_MAP_SERVER_JS_MAP = getOrCreateDict('XGDS_MAP_SERVER_JS_MAP')
 XGDS_MAP_SERVER_JS_MAP['Note'] = {'ol': 'xgds_notes2/js/olNoteMap.js',
                                       'model': XGDS_NOTES_NOTE_MODEL,
