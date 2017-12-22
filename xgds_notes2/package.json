@@ -1,5 +1,5 @@
 {
-  "name": "xgds_core",
+  "name": "xgds_notes2",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,12 +9,12 @@
     "jquery-ui-contextmenu": "mar10/jquery-ui-contextmenu#v1.18.1",
     "bootstrap-tagsinput": "xgds/bootstrap-tagsinput#master",
     "typeahead.js": "^0.11.0",
-    "datatables-sorting-datetime-moment" : "https://cdn.datatables.net/plug-ins/1.10.11/sorting/datetime-moment.js"
+    "datatables-sorting-datetime-moment" : "DataTables/Plugins"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "Apache-2.0"
 }
