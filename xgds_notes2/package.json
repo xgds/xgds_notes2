@@ -6,7 +6,7 @@
   "dependencies": {
     "moment": "^2.19.3",
     "jquery.fancytree": "2.25.0",
-    "jquery-ui-contextmenu": "mar10/jquery-ui-contextmenu#v1.18.1",
+    "ui-contextmenu": "^1.18.1",
     "bootstrap-tagsinput": "xgds/bootstrap-tagsinput#master",
     "typeahead.js": "^0.11.0",
     "datatables-sorting-datetime-moment" : "DataTables/Plugins"
