@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block cssExtras %}
-<link rel="stylesheet" type="text/css" href="{{ EXTERNAL_URL }}jquery-ui/themes/base/jquery-ui.min.css" ></link>
+<link rel="stylesheet" type="text/css" href="{{ EXTERNAL_URL }}jquery-ui/themes/base/jquery-ui.css" ></link>
 {% include "xgds_notes2/NoteCSS.html" %}
 {% endblock cssExtras %}
 
@@ -11,7 +11,7 @@
 	
 {% block scripts %}
 {{ block.super }}
-<script language="javascript" type="text/javascript" src="{{ EXTERNAL_URL }}jquery-ui/jquery-ui.min.js"></script>
+<script language="javascript" type="text/javascript" src="{{ EXTERNAL_URL }}jquery-ui/jquery-ui.js"></script>
 {% include "xgds_notes2/NoteJS.html" %}
 {% endblock scripts %}
 
