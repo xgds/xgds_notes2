@@ -2,7 +2,7 @@
 {% load static %}
 {% block scripts %}
 {{ block.super }}
-    <script type="text/javascript" src='{{ EXTERNAL_URL }}fancytree/dist/jquery.fancytree-all.min.js'></script>
+    <script type="text/javascript" src='{{ EXTERNAL_URL }}jquery.fancytree/dist/jquery.fancytree-all.min.js'></script>
     <script type="text/javascript" src='{{ EXTERNAL_URL }}jquery-ui-contextmenu/jquery.ui-contextmenu.js'></script>
     <script type="text/javascript" src="{% static 'xgds_notes2/js/tags_tree.js' %}"></script>
 	<script type="text/javascript" src="{% static 'xgds_notes2/js/tags_input.js' %}"></script>
@@ -10,7 +10,7 @@
 
 {% block contents %}
 <style scoped>
-  @import url('{{ EXTERNAL_URL }}fancytree/dist/skin-lion/ui.fancytree.min.css');
+  @import url('{{ EXTERNAL_URL }}jquery.fancytree/dist/skin-lion/ui.fancytree.min.css');
   @import url("{% static 'xgds_notes2/css/fancytree_tags.css' %}");
   @import url("{% static 'xgds_map_server/css/fancytree_custom.css' %}");
   
