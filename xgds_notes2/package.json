@@ -20,6 +20,12 @@
       "exclude": [
         "examples/*"
       ]
+    },
+    "jquery.fancytree": {
+      "include": [
+        "dist/*.js",
+        "dist/skin-lion/*"
+      ]
     }
   },
   "author": "",
