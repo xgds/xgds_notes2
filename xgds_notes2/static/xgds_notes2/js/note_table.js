@@ -85,7 +85,6 @@ $.extend(xgds_notes,{
 			// initialize the table with json of existing data.
 			var table_id = table.attr('id');
 			if ( ! $.fn.DataTable.isDataTable('#'+table_id) ) {
-				noteDefaultOptions['aaData'] = initialData;
 				noteDefaultOptions['data'] = initialData;
 				var theNotesTable = $(table).dataTable(noteDefaultOptions);
 				//theNotesTable._fnAdjustColumnSizing();
