@@ -37,7 +37,8 @@ Don't try to get the value of FOO from django.conf.settings.  That
 settings object will not know about the default value!
 """
 
-XGDS_NOTES_MONIKER = 'Notes' # Sometimes we call them Console Log
+XGDS_NOTES_NOTE_MONIKER = 'Note'
+XGDS_NOTES_MONIKER = XGDS_NOTES_NOTE_MONIKER + 's' # Sometimes we call them Console Log
 XGDS_NOTES_ALLOW_MAPPING = True
 XGDS_NOTES_ENABLE_GEOCAM_TRACK_MAPPING = True
 
@@ -78,10 +79,27 @@ XGDS_NOTES_TAG_TREE_URL = '/notes/tagsTree/'
 # These are the columns that will show by default for all note tables.
 XGDS_NOTES_TABLE_DEFAULT_COLUMNS = ['event_time', 'zone', 'author', 'content', 'tags', 'link']
 
+STATIC_URL = '/static/'
+EXTERNAL_URL = STATIC_URL
+
 XGDS_MAP_SERVER_JS_MAP = getOrCreateDict('XGDS_MAP_SERVER_JS_MAP')
-XGDS_MAP_SERVER_JS_MAP['Note'] = {'ol': 'xgds_notes2/js/olNoteMap.js',
-                                      'model': XGDS_NOTES_NOTE_MODEL,
-                                      'hiddenColumns': []}
+XGDS_MAP_SERVER_JS_MAP[XGDS_NOTES_NOTE_MONIKER] = {'ol': 'xgds_notes2/js/olNoteMap.js',
+                                                   'model': XGDS_NOTES_NOTE_MODEL,
+                                                   'columns': ['checkbox', 'event_time', 'event_timezone', 'author_name', 'role_name', 'location_name', 'content', 'tag_names','content_url', 'content_thumbnail_url', 'content_name', 'app_label', 'model_type', 'type', 'lat', 'lon', 'alt', 'flight_name','object_type', 'object_id', 'creation_time','show_on_map','pk'],
+                                                   'hiddenColumns': ['app_label', 'model_type', 'type', 'lat', 'lon', 'alt', 'flight_name', 'content_thumbnail_url', 'content_name', 'object_type', 'object_id', 'creation_time','show_on_map','pk'],
+                                                   'searchableColumns': ['name','description','flight_name', 'author_name'],
+                                                   'editableColumns':{'content':'text','tag_names':'tagsinput'},
+                                                   'unsortableColumns': ['content_url'],
+                                                   #[{'label':'Content','name':'content','data':5},
+                                                   #                   {'label':'Tags','name':'tag_names','data':6}],
+                                                   'columnTitles': ['Time', 'TZ', 'Author', 'Role', 'Location', 'Content', 'Tags', 'Link'],
+                                                   'viewHandlebars': 'xgds_notes2/templates/handlebars/note-view.handlebars',
+                                                   'viewJS': [STATIC_URL + 'xgds_notes2/js/genericNotesView.js' ],
+                                                   'viewInitMethods': ['xgds_notes.initDetailView'],
+                                                   'searchInitMethods': ['xgds_notes.initializeInput'],
+                                                   'event_time_field': 'event_time',
+                                                   'event_timezone_field': 'event_timezone',
+                                                   'search_form_class': 'xgds_notes2.forms.SearchNoteForm'}
 
 XGDS_DATA_IMPORTS = getOrCreateDict('XGDS_DATA_IMPORTS')
 XGDS_DATA_IMPORTS[XGDS_NOTES_MONIKER] = '/notes/import'
