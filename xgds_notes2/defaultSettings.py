@@ -113,7 +113,10 @@ XGDS_DATA_MASKED_FIELDS['xgds_notes'] = {'Note': ['uuid',
 #  
 #                                             }
 
-#TODO override this to expose the sse channels for notes
+# TODO override this to expose the sse channels for notes
+# Typically they will be broadcast per vehicle, so for example if you have
+# tracked vehicles A and B, it will be ['A','B']
+
 XGDS_SSE_NOTE_CHANNELS = []
 XGDS_NOTES_CURRENT_MAPPED_FUNCTION = 'xgds_notes.views.defaultCurrentMapNotes'
 
