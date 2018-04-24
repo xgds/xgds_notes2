@@ -60,24 +60,11 @@ XGDS_NOTES_SORT_FUNCTION = None
 # Override this in your application with the path to a django_filters.FilterSet subclass to customise the available filters.
 XGDS_NOTES_REVIEW_FILTER_CLASS = None
 
-# All timestamps in xgds_notes data tables should always use the UTC
-# time zone.  XGDS_NOTES_OPS_TIME_ZONE is currently used only to
-# choose how to split up days in the daily notes index. We split at
-# midnight in the specified time zone. Since ops are usually idle at
-# night and we want to split during the idle period, we usually set this
-# to the time zone where most ops actually occur.
-# note this duplicates functionality in GEOCAM_TRACK so in your siteSettings you might set
-# XGDS_NOTES_OPS_TIME_ZONE = GEOCAM_TRACK_OPS_TIME_ZONE
-XGDS_NOTES_OPS_TIME_ZONE = 'UTC'
-
 XGDS_NOTES_KML_EXPORT = False
 
 XGDS_NOTES_NOTES_CHANNEL = 'live/notes'
 
 XGDS_NOTES_TAG_TREE_URL = '/notes/tagsTree/'
-
-# These are the columns that will show by default for all note tables.
-XGDS_NOTES_TABLE_DEFAULT_COLUMNS = ['event_time', 'zone', 'author', 'content', 'tags', 'link']
 
 STATIC_URL = '/static/'
 EXTERNAL_URL = STATIC_URL
