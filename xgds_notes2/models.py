@@ -195,7 +195,7 @@ class NoteLinksMixin(object):
         return self.view_url
 
 
-DEFAULT_NOTES_GENERIC_RELATION = lambda: GenericRelation('LocatedNote', related_name='%(app_label)s_%(class)s_related')
+DEFAULT_NOTES_GENERIC_RELATION = lambda: GenericRelation('xgds_notes2.LocatedNote', related_name='%(app_label)s_%(class)s_related')
 
 
 class NoteMixin(object):
@@ -433,6 +433,7 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, Bro
     
 
 DEFAULT_POSITION_FIELD = lambda: models.ForeignKey(PastResourcePosition, null=True, blank=True)
+
 
 class AbstractLocatedNote(AbstractNote):
     """ This is a basic note with a location, pulled from the current settings for geocam track past position model.
