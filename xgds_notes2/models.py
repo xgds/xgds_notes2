@@ -40,6 +40,7 @@ from taggit.models import TagBase, ItemBase
 from taggit.managers import TaggableManager
 
 from xgds_core.models import SearchableModel, BroadcastMixin
+from django.contrib.contenttypes.fields import GenericRelation
 
 
 class HierarchichalTag(TagBase, MP_Node):
@@ -81,9 +82,12 @@ class HierarchichalTag(TagBase, MP_Node):
                 'abb': self.abbreviation,
                 'slug': self.slug}
 
+
 DEFAULT_TAGGED_NOTE_FIELD = lambda: models.ForeignKey("LocatedNote", related_name='%(app_label)s_%(class)s_related')
 
+
 class AbstractTaggedNote(ItemBase):
+    """ This is the through table linking tags to notes. """
     content_object = 'set to DEFAULT_TAGGED_NOTE_FIELD() or similar in derived classes'
     tag = models.ForeignKey('xgds_notes2.HierarchichalTag',
                             related_name="%(app_label)s_%(class)s_related",
@@ -175,6 +179,7 @@ class UserSession(AbstractUserSession):
 
 DEFAULT_TAGGABLE_MANAGER = lambda: TaggableManager(through=TaggedNote, blank=True)
 
+
 class NoteLinksMixin(object):
     """ extend NoteLinksMixin to properly show up in the notes list table.
     Object should also be extending SearchableModel.
@@ -189,18 +194,31 @@ class NoteLinksMixin(object):
     def view_time_url(self, event_time):
         return self.view_url
 
-class NoteMixin(object):
-    """ If your model has notes on it, it should extend NoteMixin.
-    """
-    @property
-    def notes(self):
-        ctype = ContentType.objects.get_for_model(self.__class__)
-        Note = LazyGetModelByName(getattr(settings, 'XGDS_NOTES_NOTE_MODEL'))
 
-        try:
-            return Note.get().objects.filter(content_type__pk = ctype.id, object_id=self.pk)
-        except:
-            return None
+DEFAULT_NOTES_GENERIC_RELATION = lambda: GenericRelation('xgds_notes2.LocatedNote', related_name='%(app_label)s_%(class)s_related')
+
+
+class NoteMixin(object):
+
+    """ If your model has notes on it, it should extend NoteMixin.
+        You MUST define the GenericRelation to notes for the reverse note search to work.
+        To do so, include something like the following
+        from django.contrib.contenttypes.fields import GenericRelation
+        notes = GenericRelation(MyNoteModel, related_query_name='notes')
+
+    """
+    notes = "set to DEFAULT_NOTES_GENERIC_RELATION() or similar in derived classes"
+
+    # @property
+    # def notes(self):
+    #     ctype = ContentType.objects.get_for_model(self.__class__)
+    #     Note = LazyGetModelByName(getattr(settings, 'XGDS_NOTES_NOTE_MODEL'))
+    #
+    #     try:
+    #         return Note.get().objects.filter(content_type__pk = ctype.id, object_id=self.pk)
+    #     except:
+    #         return None
+
 
 class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, BroadcastMixin):
     ''' Abstract base class for notes
@@ -413,14 +431,9 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, Bro
     def getSearchableFields(self):
         return ['content', 'author__first_name', 'author__last_name']
     
-class Note(AbstractNote):
-    '''
-    Non-Abstract note class (with no position)
-    '''
-    tags = DEFAULT_TAGGABLE_MANAGER()
-
 
 DEFAULT_POSITION_FIELD = lambda: models.ForeignKey(PastResourcePosition, null=True, blank=True)
+
 
 class AbstractLocatedNote(AbstractNote):
     """ This is a basic note with a location, pulled from the current settings for geocam track past position model.
@@ -452,32 +465,7 @@ class AbstractLocatedNote(AbstractNote):
             'notelabel': notelabel,
         }))
           
-#     def toMapDict(self):
-#         """
-#         Return a reduced dictionary that will be turned to JSON for rendering in a map
-#         """
-#         result = AbstractNote.toMapDict(self)
-#         if result['position']:
-#             result['lon'] = self.position.longitude
-#             result['lat'] = self.position.latitude
-#             try:
-#                 result['heading'] = self.position.heading
-#             except:
-#                 result['heading'] = ''
-#             try:
-#                 result['altitude'] = self.position.altitude
-#             except:
-#                 result['altitude'] = ''
-#               
-#         else:
-#             result['lat'] = ''
-#             result['lon'] = ''
-#             result['heading'] = ''
-#             result['altitude'] = ''
-#   
-#         del(result['position'])
-#         return result
-      
+
     @staticmethod
     def getMapBoundedQuery(minLon, minLat, maxLon, maxLat, today=False):
         bounds = {'minLon': minLon,
@@ -509,6 +497,9 @@ class AbstractLocatedNote(AbstractNote):
 
 
 class LocatedNote(AbstractLocatedNote):
+    """ This is the default note class, which can have tags and can have notes on it."""
     position = DEFAULT_POSITION_FIELD()
     tags = DEFAULT_TAGGABLE_MANAGER()
+    notes = DEFAULT_NOTES_GENERIC_RELATION()
+
 
