@@ -41,9 +41,18 @@ $.extend(xgds_notes,{
 		  itemValue: 'id',
 		  itemText: 'name',
 //		  confirmKeys: [13, 188], // this does not work, suggestion is to use comma
-//		  tagClass: function(item) {
-//	    	return 'tag label label-info'; 
-//		  },
+		  tagClass: function(item) {
+		  	if (!_.isUndefined(item.className)){
+				switch (item.className) {
+				  case 'connector': return 'tag connector-tag';
+				  default: return 'tag label label-info';
+				}
+			}
+
+			else {
+				return 'tag label label-info';
+            }
+		  },
 		  typeaheadjs: {
 		    name: 'allTags',
 		    displayKey: 'name',

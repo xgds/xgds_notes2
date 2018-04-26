@@ -34,6 +34,7 @@ from taggit.forms import *
 from xgds_core.models import XgdsUser
 from xgds_core.forms import SearchForm
 from xgds_notes2.models import Role, Location, HierarchichalTag
+from xgds_notes2.utils import buildQueryForTags
 
 Note = LazyGetModelByName(settings.XGDS_NOTES_NOTE_MODEL)
 UserSession = LazyGetModelByName(settings.XGDS_NOTES_USER_SESSION_MODEL)
@@ -160,27 +161,6 @@ class SearchNoteForm(SearchForm):
 
 #     def buildQueryForContent(self, fieldname, field, value):
 #         sqs = SearchQuerySet().filter(text=value)
-
-    def buildQueryForTags(self, fieldname, field, value, hierarchy):
-        listval = [int(x) for x in value]
-        if not hierarchy:
-            return Q(**{fieldname+'__id__in': listval})
-        else:
-            result = None
-            tags = []
-            for pk in listval:
-                tag = HierarchichalTag.objects.get(pk=pk)
-                tags.append(tag)
-            for tag in tags:
-                tagqs = tag.get_tree(tag)
-                qs = Q(**{fieldname+'__in':tagqs})
-                if not result:
-                    result = qs
-                else:
-                    result |= qs
-            return result
-                
-        #tags__id__in=[21]
         
     def buildQueryForField(self, fieldname, field, value, minimum=False, maximum=False):
         # for hierarchichal search or tags, do custom
@@ -188,7 +168,7 @@ class SearchNoteForm(SearchForm):
         # if fieldname is content, then call sphinx
         if fieldname == 'tags':
             hierarchy = self.cleaned_data['hierarchy']
-            return self.buildQueryForTags(fieldname, field, value, hierarchy)
+            return buildQueryForTags(fieldname, field, value, hierarchy)
         elif fieldname == 'hierarchy':
             return None
         elif fieldname == 'content':
