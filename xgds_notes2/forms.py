@@ -26,19 +26,17 @@ from dateutil.parser import parse as dateparser
 
 from dal import autocomplete
 
-from geocamTrack.forms import AbstractImportTrackedForm
 from geocamUtil.extFileField import ExtFileField
 from geocamUtil.forms.AbstractImportForm import getTimezoneChoices
 from geocamUtil.loader import LazyGetModelByName
 from taggit.forms import *
 from xgds_core.models import XgdsUser
-from xgds_core.forms import SearchForm
+from xgds_core.forms import SearchForm, AbstractImportVehicleForm
 from xgds_notes2.models import Role, Location, HierarchichalTag
 
 Note = LazyGetModelByName(settings.XGDS_NOTES_NOTE_MODEL)
 UserSession = LazyGetModelByName(settings.XGDS_NOTES_USER_SESSION_MODEL)
 Tag = LazyGetModelByName(settings.XGDS_NOTES_TAG_MODEL)
-Resource = LazyGetModelByName(settings.GEOCAM_TRACK_RESOURCE_MODEL)
 
 class UserSessionForm(forms.ModelForm):
     class Meta:
@@ -99,7 +97,7 @@ class TagForm(forms.ModelForm):
         fields = Tag.get().getFormFields()
 
 
-class ImportNotesForm(AbstractImportTrackedForm):
+class ImportNotesForm(AbstractImportVehicleForm):
     sourceFile = ExtFileField(ext_whitelist=(".csv", ), required=True)
 
 

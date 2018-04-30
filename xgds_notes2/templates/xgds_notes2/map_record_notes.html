@@ -97,13 +97,13 @@ xgds_notes.updateRole = function(stuff) {
 	var content = theForm.find("#id_location option:selected").text();
 	if (content == '---------'){
 		theForm.find("#id_location option[value='{{request.session.notes_user_session.location}}']").attr('selected', 'selected');
-		theForm.find("#id_resource option[value='{{request.session.notes_user_session.resource}}']").attr('selected', 'selected');
+		theForm.find("#id_vehicle option[value='{{request.session.notes_user_session.vehicle}}']").attr('selected', 'selected');
 		theForm.find("#id_role option[value='{{request.session.notes_user_session.role}}']").attr('selected', 'selected');
 		var content = theForm.find("#id_location option:selected").text();
 	} 
-	content += ', ' + theForm.find("#id_resource option:selected").text();
+	content += ', ' + theForm.find("#id_vehicle option:selected").text();
 	content += ', ' + theForm.find("#id_role option:selected").text();
-	$("#roleLocationResource").text(content);
+	$("#roleLocationVehicle").text(content);
 	if (content.indexOf('--') == -1){
 		user_session_exists = true;
 	}
