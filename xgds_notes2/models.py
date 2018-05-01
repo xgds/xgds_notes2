@@ -342,7 +342,8 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, Bro
                 'event_timezone',
                 'author',
                 'role',
-                'location'
+                'location',
+                'flight__vehicle'
                 ]
     
     @classmethod
@@ -353,6 +354,7 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, Bro
                 'author',
                 'role',
                 'location',
+                'flight__vehicle',
                 'event_timezone',
                 'min_event_time',
                 'max_event_time']
