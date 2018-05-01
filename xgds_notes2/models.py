@@ -39,8 +39,15 @@ from treebeard.mp_tree import MP_Node
 from taggit.models import TagBase, ItemBase
 from taggit.managers import TaggableManager
 
-from xgds_core.models import SearchableModel, BroadcastMixin
+from xgds_core.models import SearchableModel, BroadcastMixin, HasFlight, HasVehicle
 from django.contrib.contenttypes.fields import GenericRelation
+
+
+DEFAULT_TAGGED_NOTE_FIELD = lambda: models.ForeignKey("xgds_notes2.LocatedNote", related_name='%(app_label)s_%(class)s_related')
+DEFAULT_VEHICLE_FIELD = lambda: models.ForeignKey('xgds_core.Vehicle', related_name='%(app_label)s_%(class)s_related',
+                                                  verbose_name=settings.XGDS_CORE_VEHICLE_MONIKER, blank=True, null=True)
+# TODO if you are using a different default flight field then you will have to customize the Plan Execution
+DEFAULT_FLIGHT_FIELD = lambda: models.ForeignKey('xgds_core.Flight', null=True, blank=True, related_name='%(app_label)s_%(class)s_related')
 
 
 class HierarchichalTag(TagBase, MP_Node):
@@ -82,8 +89,6 @@ class HierarchichalTag(TagBase, MP_Node):
                 'abb': self.abbreviation,
                 'slug': self.slug}
 
-
-DEFAULT_TAGGED_NOTE_FIELD = lambda: models.ForeignKey("LocatedNote", related_name='%(app_label)s_%(class)s_related')
 
 
 class AbstractTaggedNote(ItemBase):
@@ -157,7 +162,7 @@ class Location(AbstractEnumModel):
     pass
 
 
-class AbstractUserSession(models.Model):
+class AbstractUserSession(models.Model, HasVehicle):
     role = models.ForeignKey(Role)
 
     @classmethod
@@ -170,6 +175,7 @@ class AbstractUserSession(models.Model):
 
 class UserSession(AbstractUserSession):
     location = models.ForeignKey(Location)
+    vehicle = DEFAULT_VEHICLE_FIELD()
     
     @classmethod
     def getFormFields(cls):
@@ -220,9 +226,9 @@ class NoteMixin(object):
     #         return None
 
 
-class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, BroadcastMixin):
-    ''' Abstract base class for notes
-    '''
+class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, BroadcastMixin, HasFlight):
+    """ Abstract base class for notes
+    """
 #     # custom id field for uniqueness
 #     id = models.CharField(max_length=128,
 #                           unique=True, blank=False,
@@ -257,7 +263,6 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, Bro
     content_type = models.ForeignKey(ContentType, null=True, blank=True)
     object_id = models.CharField(max_length=128, null=True, blank=True, db_index=True)
     content_object = GenericForeignKey('content_type', 'object_id')
-
 
     def getSseType(self):
         if self.show_on_map:
@@ -501,5 +506,7 @@ class LocatedNote(AbstractLocatedNote):
     position = DEFAULT_POSITION_FIELD()
     tags = DEFAULT_TAGGABLE_MANAGER()
     notes = DEFAULT_NOTES_GENERIC_RELATION()
+    flight = DEFAULT_FLIGHT_FIELD()
+
 
 
