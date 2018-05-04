@@ -242,7 +242,7 @@ $.extend(xgds_notes,{
 		    		                {
 		    		                    user_session_exists=true;
 		    		                    $( this ).dialog( "close" );
-		    		                    var rlr = $("#roleLocationResource");
+		    		                    var rlr = $("#roleLocationVehicle");
 		    		                    var text = '';
 		    		                    if ('role' in data) {
 		    		                    	text += data['role'];
@@ -251,9 +251,9 @@ $.extend(xgds_notes,{
 		    		                    	text += ', ';
 		    		                    	text += data['location'];
 										}
-		    		                    if ('resource' in data) {
+		    		                    if ('vehicle' in data) {
 		    		                    	text += ', ';
-		    		                    	text += data['resource'];
+		    		                    	text += data['vehicle'];
 										}
 
 		    		                    if (rlr.length > 0){

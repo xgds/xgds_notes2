@@ -59,14 +59,15 @@ UNSET_SESSION = 'Unset Session'
 
 Note = LazyGetModelByName(getattr(settings, 'XGDS_NOTES_NOTE_MODEL'))
 Tag = LazyGetModelByName(getattr(settings, 'XGDS_NOTES_TAG_MODEL'))
-Resource = LazyGetModelByName(settings.GEOCAM_TRACK_RESOURCE_MODEL)
+
 
 def serverTime(request):
     return HttpResponse(
         datetime.now(pytz.utc).strftime('%Y-%m-%d %H:%M:%S'),
         content_type="text"
     )
-    
+
+
 def editUserSession(request, ajax=False):
 
     # display a form to edit the content of the UserSession object in request.session['notes_user_session']
@@ -111,6 +112,7 @@ def editUserSession(request, ajax=False):
                 'form': form
             },
         )
+
 
 def populateNoteData(request, form):
     """ Populate the basic data dictionary for a new note from a submitted form
@@ -165,6 +167,7 @@ def linkTags(note, tags):
                 tag = HierarchichalTag.objects.get(slug=t)
                 note.tags.add(tag)
         note.save()
+
 
 def createNoteFromData(data, delay=True, serverNow=False):
     NOTE_MODEL = Note.get()
@@ -469,7 +472,7 @@ def moveTag(request):
             except:
                 return HttpResponse(json.dumps({'failed': 'badness.'}), content_type='application/json', status=406)
 
-def doImportNotes(request, sourceFile, tz, resource):
+def doImportNotes(request, sourceFile, tz, vehicle):
     dictreader = csv.DictReader(sourceFile)
     for row in dictreader:
         row['author'] = request.user
@@ -500,8 +503,8 @@ def doImportNotes(request, sourceFile, tz, resource):
         note.creation_time = datetime.now(pytz.utc)
         note.modification_time = datetime.now(pytz.utc)
         
-        if resource:
-            note.position = getClosestPosition(timestamp=note.event_time, resource=resource)
+        if vehicle:
+            note.position = getClosestPosition(timestamp=note.event_time, vehicle=vehicle)
         note.save()
     
     
@@ -510,7 +513,7 @@ def importNotes(request):
     if request.method == 'POST':
         form = ImportNotesForm(request.POST, request.FILES)
         if form.is_valid():
-            doImportNotes(request, request.FILES['sourceFile'], form.getTimezone(), form.getResource())
+            doImportNotes(request, request.FILES['sourceFile'], form.getTimezone(), form.getVehicle())
             return redirect('search_xgds_notes_map')
         else:
             errors = form.errors
