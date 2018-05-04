@@ -31,15 +31,15 @@ $.extend(xgds_notes,{
 	        xgds_notes.allTags.initialize();
 	    }
 	},
-	initializeInput: function(input) {
+	initializeInput: function(input, maxTags) {
 	    if (input == undefined){
 	    	input = $('.taginput');
 	    }
-	    
 	    xgds_notes.initializeTags();
 	    $(input).tagsinput({
 		  itemValue: 'id',
 		  itemText: 'name',
+		  maxTags: maxTags,
 //		  confirmKeys: [13, 188], // this does not work, suggestion is to use comma
 		  tagClass: function(item) {
 		  	if (!_.isUndefined(item.className)){
