@@ -297,6 +297,8 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, Bro
         result = []
         for tag in self.tags.get_queryset():
             result.append(tag.name)
+        if not result:
+            return None
         return result
 #             return [t.encode('utf-8') for t in self.tags.names()]
 #         return None
@@ -370,7 +372,7 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, Bro
         """
         return self.event_time
 
-    def calculateDelayedEventTime(self):
+    def calculateDelayedEventTime(self, raw_time):
         """
         This is so derived classes can adapt event time in the case of being in "delay" mode
         """

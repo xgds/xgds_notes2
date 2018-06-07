@@ -168,7 +168,6 @@ def linkTags(note, tags):
                 note.tags.add(tag)
         note.save()
 
-
 def createNoteFromData(data, delay=True, serverNow=False):
     NOTE_MODEL = Note.get()
     empty_keys = [k for k,v in data.iteritems() if v is None]
@@ -240,7 +239,6 @@ def record(request):
     else:
         raise Exception("Request method %s not supported." % request.method)
 
-
 def recordSimple(request):
     if request.method != 'POST':
         return HttpResponse(json.dumps({'error': {'code': -32099,
@@ -272,7 +270,7 @@ def recordSimple(request):
         return JsonResponse(json.dumps({'error': {'code': -32099,
                                                   'message': 'problem submitting note',
                                                   'data': form.errors}
-                                        }),
+                                        }, safe=False),
                             status=406)
 
 

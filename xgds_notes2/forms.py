@@ -53,6 +53,7 @@ class NoteForm(forms.ModelForm):
     date_formats = list(forms.DateTimeField.input_formats) + [
         '%Y/%m/%d %H:%M:%S',
         '%Y-%m-%d %H:%M:%S',
+        '%Y-%m-%d %H:%M:%S 00:00',
         '%Y/%m/%d %H:%M:%S UTC',
         '%Y-%m-%d %H:%M:%S UTC',
         '%Y-%m-%dT%H:%M:%S+00:00',
