@@ -274,17 +274,17 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, Bro
             if found.exists():
                 moniker = settings.XGDS_NOTES_NOTE_MONIKER + 's'
                 flight = found[0].flight
-                result = {"title": moniker,
-                          "selected": False,
-                          "tooltip": "%s for %s " % (moniker, flight.name),
-                          "key": "%s_%s" % (flight.uuid, moniker),
-                          "data": {"json": reverse('xgds_map_server_objectsJson',
-                                                   kwargs={'object_name': 'XGDS_NOTES_NOTE_MODEL',
-                                                           'filter': 'flight__pk:' + str(flight.pk)}),
-                                   "sseUrl": "",
-                                   "type": 'MapLink',
-                                   }
-                          }
+                result = [{"title": moniker,
+                           "selected": False,
+                           "tooltip": "%s for %s " % (moniker, flight.name),
+                           "key": "%s_%s" % (flight.uuid, moniker),
+                           "data": {"json": reverse('xgds_map_server_objectsJson',
+                                                    kwargs={'object_name': 'XGDS_NOTES_NOTE_MODEL',
+                                                            'filter': 'flight__pk:' + str(flight.pk)}),
+                                    "sseUrl": "",
+                                    "type": 'MapLink',
+                                    }
+                           }]
             return result
         except ObjectDoesNotExist:
             return None
