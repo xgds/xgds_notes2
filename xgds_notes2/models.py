@@ -22,9 +22,11 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ObjectDoesNotExist
 
 from django.template.loader import get_template
 from django.template import Context
+from django.urls import reverse
 
 from geocamUtil.loader import LazyGetModelByName, getModelByName
 from geocamUtil.models import AbstractEnumModel
@@ -39,7 +41,7 @@ from treebeard.mp_tree import MP_Node
 from taggit.models import TagBase, ItemBase
 from taggit.managers import TaggableManager
 
-from xgds_core.models import SearchableModel, BroadcastMixin, HasFlight, HasVehicle
+from xgds_core.models import SearchableModel, BroadcastMixin, HasFlight, HasVehicle, IsFlightChild
 from django.contrib.contenttypes.fields import GenericRelation
 
 
@@ -226,7 +228,7 @@ class NoteMixin(object):
     #         return None
 
 
-class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, BroadcastMixin, HasFlight):
+class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, BroadcastMixin, HasFlight, IsFlightChild):
     """ Abstract base class for notes
     """
 #     # custom id field for uniqueness
@@ -263,6 +265,29 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, Bro
     content_type = models.ForeignKey(ContentType, null=True, blank=True)
     object_id = models.CharField(max_length=128, null=True, blank=True, db_index=True)
     content_object = GenericForeignKey('content_type', 'object_id')
+
+    @classmethod
+    def get_tree_json(cls, parent_class, parent_pk):
+        try:
+            found = LazyGetModelByName(settings.XGDS_NOTES_NOTE_MODEL).get().objects.filter(flight__id=parent_pk)
+            result = None
+            if found.exists():
+                moniker = settings.XGDS_NOTES_NOTE_MONIKER + 's'
+                flight = found[0].flight
+                result = {"title": moniker,
+                          "selected": False,
+                          "tooltip": "%s for %s " % (moniker, flight.name),
+                          "key": "%s_%s" % (flight.uuid, moniker),
+                          "data": {"json": reverse('xgds_map_server_objectsJson',
+                                                   kwargs={'object_name': 'XGDS_NOTES_NOTE_MODEL',
+                                                           'filter': 'flight__pk:' + str(flight.pk)}),
+                                   "sseUrl": "",
+                                   "type": 'MapLink',
+                                   }
+                          }
+            return result
+        except ObjectDoesNotExist:
+            return None
 
     def getSseType(self):
         if self.show_on_map:
