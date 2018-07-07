@@ -41,7 +41,7 @@ from treebeard.mp_tree import MP_Node
 from taggit.models import TagBase, ItemBase
 from taggit.managers import TaggableManager
 
-from xgds_core.models import SearchableModel, BroadcastMixin, HasFlight, HasVehicle, IsFlightChild
+from xgds_core.models import SearchableModel, BroadcastMixin, HasFlight, HasVehicle, IsFlightChild, IsFlightData
 from django.contrib.contenttypes.fields import GenericRelation
 
 
@@ -228,7 +228,8 @@ class NoteMixin(object):
     #         return None
 
 
-class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, BroadcastMixin, HasFlight, IsFlightChild):
+class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, BroadcastMixin, HasFlight, IsFlightChild,
+                   IsFlightData):
     """ Abstract base class for notes
     """
 #     # custom id field for uniqueness
@@ -265,6 +266,19 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, Bro
     content_type = models.ForeignKey(ContentType, null=True, blank=True)
     object_id = models.CharField(max_length=128, null=True, blank=True, db_index=True)
     content_object = GenericForeignKey('content_type', 'object_id')
+
+    @classmethod
+    def get_info_json(cls, flight_pk):
+        found = LazyGetModelByName(settings.XGDS_NOTES_NOTE_MODEL).get().objects.filter(flight__id=flight_pk)
+        result = None
+        if found.exists():
+            result = {'name': settings.XGDS_NOTES_NOTE_MONIKER + 's',
+                      'count': found.count(),
+                      'url': reverse('search_map_object_filter',
+                                     kwargs={'modelName': settings.XGDS_NOTES_NOTE_MONIKER,
+                                             'filter': 'flight__pk:' + str(flight_pk)})
+                      }
+        return result
 
     @classmethod
     def get_tree_json(cls, parent_class, parent_pk):
