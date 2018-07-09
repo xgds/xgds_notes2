@@ -47,6 +47,7 @@ from treebeard.mp_tree import MP_Node
 
 from xgds_notes2.forms import NoteForm, UserSessionForm, TagForm, ImportNotesForm
 from xgds_core.views import getTimeZone, addRelay
+from xgds_core.flightUtils import getFlight
 from xgds_map_server.views import getSearchPage, getSearchForms, buildFilterDict
 from models import HierarchichalTag
 from httplib2 import ServerNotFoundError
@@ -190,14 +191,19 @@ def createNoteFromData(data, delay=True, serverNow=False):
         note.event_time = note.calculateDelayedEventTime(note.creation_time)
     if not note.event_timezone:
         note.event_timezone = getTimeZone(note.event_time)
-        
+
+    if hasattr(note, 'flight'):
+        # hook up the flight, this should always be true
+        note.flight = getFlight(note.event_time)
+        # TODO handle using the vehicle that came in from session
+
     # hook up the position if it can have one
-    if hasattr(note, 'position'):
-        position = note.getPosition()
+    # if hasattr(note, 'position'):
+    #     note.position = note.lookupPosition()
+    # TODO TODO fix this is the resource ordering problem
 
     note.save()
     return note
-
 
 def record(request):
     if request.method == 'POST':
