@@ -268,6 +268,14 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, Bro
     content_object = GenericForeignKey('content_type', 'object_id')
 
     @classmethod
+    def buildTagsQuery(cls, search_value):
+        splits = search_value.split(' ')
+        found_tags = HierarchichalTag.objects.filter(name__in=splits)
+        if found_tags:
+            return {'tags__in': found_tags}
+        return None
+
+    @classmethod
     def get_info_json(cls, flight_pk):
         found = LazyGetModelByName(settings.XGDS_NOTES_NOTE_MODEL).get().objects.filter(flight__id=flight_pk)
         result = None
