@@ -14,7 +14,6 @@
 # specific language governing permissions and limitations under the License.
 #__END_LICENSE__
 
-import pydevd
 import traceback
 import cgi
 import re
@@ -192,7 +191,6 @@ def createNoteFromData(data, delay=True, serverNow=False):
                 note.flight = note.content_object.flight
             note.position = note.content_object.getPosition()
         except:
-            traceback.print_exc()
             pass
     else:
         if delay:
@@ -264,7 +262,6 @@ def recordSimple(request):
                                         }),
                             content_type='application/json')
 
-    pydevd.settrace('192.168.0.101', port=8888)
     form = NoteForm(request.POST)
     if form.is_valid():
         data, tags, errors = getClassByName(settings.XGDS_NOTES_POPULATE_NOTE_DATA)(request, form)
