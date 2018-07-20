@@ -14,6 +14,7 @@
 # specific language governing permissions and limitations under the License.
 #__END_LICENSE__
 
+import pydevd
 import traceback
 import cgi
 import re
@@ -184,26 +185,37 @@ def createNoteFromData(data, delay=True, serverNow=False):
     note.creation_time = datetime.now(pytz.utc)
     note.modification_time = note.creation_time
 
-    if delay:
-        # this is to handle delay state shifting of event time by default it does not change event time
-        note.event_time = note.calculateDelayedEventTime(data['event_time'])
-    elif serverNow:
-        note.event_time = note.calculateDelayedEventTime(note.creation_time)
-    if not note.event_timezone:
-        note.event_timezone = getTimeZone(note.event_time)
+    # if we are taking a note on an object, get the flight and position from the object
+    if note.content_object:
+        try:
+            if hasattr(note, 'flight'):
+                note.flight = note.content_object.flight
+            note.position = note.content_object.getPosition()
+        except:
+            traceback.print_exc()
+            pass
+    else:
+        if delay:
+            # this is to handle delay state shifting of event time by default it does not change event time
+            note.event_time = note.calculateDelayedEventTime(data['event_time'])
+        elif serverNow:
+            note.event_time = note.calculateDelayedEventTime(note.creation_time)
+        if not note.event_timezone:
+            note.event_timezone = getTimeZone(note.event_time)
 
-    if hasattr(note, 'flight'):
+    if hasattr(note, 'flight') and not note.flight:
         # hook up the flight, this should always be true
         note.flight = getFlight(note.event_time)
         # TODO handle using the vehicle that came in from session
 
     # hook up the position if it can have one
-    # if hasattr(note, 'position'):
+    # if hasattr(note, 'position') and not note.position:
     #     note.position = note.lookupPosition()
     # TODO TODO fix this is the resource ordering problem
 
     note.save()
     return note
+
 
 def record(request):
     if request.method == 'POST':
@@ -252,6 +264,7 @@ def recordSimple(request):
                                         }),
                             content_type='application/json')
 
+    pydevd.settrace('192.168.0.101', port=8888)
     form = NoteForm(request.POST)
     if form.is_valid():
         data, tags, errors = getClassByName(settings.XGDS_NOTES_POPULATE_NOTE_DATA)(request, form)

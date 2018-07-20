@@ -45,11 +45,11 @@ from xgds_core.models import SearchableModel, BroadcastMixin, HasFlight, HasVehi
 from django.contrib.contenttypes.fields import GenericRelation
 
 
-DEFAULT_TAGGED_NOTE_FIELD = lambda: models.ForeignKey("xgds_notes2.LocatedNote", related_name='%(app_label)s_%(class)s_related')
-DEFAULT_VEHICLE_FIELD = lambda: models.ForeignKey('xgds_core.Vehicle', related_name='%(app_label)s_%(class)s_related',
+DEFAULT_TAGGED_NOTE_FIELD = lambda: models.ForeignKey(settings.XGDS_NOTES_NOTE_MODEL, related_name='%(app_label)s_%(class)s_related')
+DEFAULT_VEHICLE_FIELD = lambda: models.ForeignKey(settings.XGDS_CORE_VEHICLE_MODEL, related_name='%(app_label)s_%(class)s_related',
                                                   verbose_name=settings.XGDS_CORE_VEHICLE_MONIKER, blank=True, null=True)
 # TODO if you are using a different default flight field then you will have to customize the Plan Execution
-DEFAULT_FLIGHT_FIELD = lambda: models.ForeignKey('xgds_core.Flight', null=True, blank=True, related_name='%(app_label)s_%(class)s_related')
+DEFAULT_FLIGHT_FIELD = lambda: models.ForeignKey(settings.XGDS_CORE_FLIGHT_MODEL, null=True, blank=True, related_name='%(app_label)s_%(class)s_related')
 
 
 class HierarchichalTag(TagBase, MP_Node):
@@ -490,7 +490,7 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, Bro
         return ['content', 'author__first_name', 'author__last_name']
     
 
-DEFAULT_POSITION_FIELD = lambda: models.ForeignKey(PastResourcePosition, null=True, blank=True)
+DEFAULT_POSITION_FIELD = lambda: models.ForeignKey(settings.GEOCAM_TRACK_PAST_POSITION_MODEL, null=True, blank=True, related_name="%(app_label)s_%(class)s_notes_set"  )
 
 
 class AbstractLocatedNote(AbstractNote):
