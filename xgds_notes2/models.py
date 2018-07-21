@@ -547,7 +547,11 @@ class AbstractLocatedNote(AbstractNote):
     def lookupPosition(self):
         # IMPORTANT this should not be used across multitudes of notes, it is designed to be used during construction.
         if not self.position:
-            self.position = getClosestPosition(timestamp=self.event_time)
+            track=None
+            if hasattr(self, 'flight') and self.flight:
+                track = self.flight.track
+            self.position = getClosestPosition(track=track, timestamp=self.event_time)
+            return self.position
 
     class Meta:
         abstract = True

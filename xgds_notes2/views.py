@@ -46,7 +46,7 @@ from geocamTrack.utils import getClosestPosition
 from treebeard.mp_tree import MP_Node
 
 from xgds_notes2.forms import NoteForm, UserSessionForm, TagForm, ImportNotesForm
-from xgds_core.views import getTimeZone, addRelay
+from xgds_core.views import getTimeZone, addRelay, getDelay
 from xgds_core.flightUtils import getFlight
 from xgds_map_server.views import getSearchPage, getSearchForms, buildFilterDict
 from models import HierarchichalTag
@@ -169,6 +169,7 @@ def linkTags(note, tags):
                 note.tags.add(tag)
         note.save()
 
+
 def createNoteFromData(data, delay=True, serverNow=False):
     NOTE_MODEL = Note.get()
     empty_keys = [k for k,v in data.iteritems() if v is None]
@@ -207,9 +208,8 @@ def createNoteFromData(data, delay=True, serverNow=False):
         # TODO handle using the vehicle that came in from session
 
     # hook up the position if it can have one
-    # if hasattr(note, 'position') and not note.position:
-    #     note.position = note.lookupPosition()
-    # TODO TODO fix this is the resource ordering problem
+    if hasattr(note, 'position') and not note.position:
+        note.lookupPosition()
 
     note.save()
     return note
@@ -227,7 +227,9 @@ def record(request):
 
             if 'author_id' in request.POST:
                 data['author'] = User.objects.get(id=request.POST['author_id'])
-            note = createNoteFromData(data)
+
+            delay = getDelay()
+            note = createNoteFromData(data, delay=delay>0)
             linkTags(note, tags)
             jsonNote = json.dumps([note.toMapDict()], cls=DatetimeJsonEncoder)
 
@@ -254,6 +256,7 @@ def record(request):
             return HttpResponse(str(form.errors), status=400)  # Bad Request
     else:
         raise Exception("Request method %s not supported." % request.method)
+
 
 def recordSimple(request):
     if request.method != 'POST':
