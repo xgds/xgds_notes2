@@ -29,6 +29,7 @@ $.extend(xgds_notes,{
 		            success: $.proxy(function(incomingData) {
 		            	var data = _.object(modelMap.columns, incomingData);
 		            	app.trigger('forceDetail', data);
+                        app.trigger('updateNewWindowButton', data);
 		            }, this),
 		            error: $.proxy(function(data){
 		            	console.log(data);
