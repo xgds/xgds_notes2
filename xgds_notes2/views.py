@@ -286,10 +286,11 @@ def recordSimple(request):
         return HttpResponse(json_data,
                             content_type='application/json')
     else:
-        return JsonResponse(json.dumps({'error': {'code': -32099,
-                                                  'message': 'problem submitting note',
-                                                  'data': form.errors}
-                                        }, safe=False),
+        return JsonResponse({'error': {'code': -32099,
+                                       'message': 'problem submitting note',
+                                       'data': form.errors}
+                                        },
+                            safe=False,
                             status=406)
 
 
