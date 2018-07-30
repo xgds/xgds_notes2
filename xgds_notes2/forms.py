@@ -50,27 +50,10 @@ class NoteForm(forms.ModelForm):
                                             'data-role':'tagsinput',
                                             'placeholder': 'Choose tags'}))
     
-    date_formats = list(forms.DateTimeField.input_formats) + [
-        '%Y/%m/%d %H:%M:%S',
-        '%Y/%m/%d %H:%M:%S.%f',
-        '%Y-%m-%d %H:%M:%S',
-        '%Y-%m-%d %H:%M:%S.%f',
-        '%Y-%m-%d %H:%M:%S 00:00',
-        '%Y-%m-%d %H:%M:%S.%f 00:00',
-        '%Y/%m/%d %H:%M:%S UTC',
-        '%Y/%m/%d %H:%M:%S.%f UTC',
-        '%Y-%m-%d %H:%M:%S UTC',
-        '%Y-%m-%d %H:%M:%S.%f UTC',
-        '%Y-%m-%dT%H:%M:%S+00:00',
-        '%Y-%m-%dT%H:%M:%S.%f+00:00',# 2018-07-20T17:19:50.362043+00:00
-        '%Y-%m-%dT%H:%M:%S 00:00',
-        '%Y-%m-%dT%H:%M:%S.%f 00:00',
-        '%Y-%m-%dT%H:%M:%SZ',
-        '%Y-%m-%dT%H:%M:%S.%fZ',
-    ]
+
     note_submit_url = forms.CharField(widget=forms.HiddenInput(), initial='/notes/recordSimple/',  required=False)
     
-    event_time = forms.DateTimeField(input_formats=date_formats, required=False)
+    event_time = forms.DateTimeField(input_formats=settings.XGDS_CORE_DATE_FORMATS, required=False)
     event_timezone = forms.CharField(widget=forms.HiddenInput(), required=False)
     extras = forms.CharField(widget=forms.HiddenInput(), required=False)
 
@@ -118,9 +101,9 @@ class SearchNoteForm(SearchForm):
                                             'data-role':'tagsinput',
                                             'placeholder': 'Choose tags'}))
     
-    min_event_time = forms.DateTimeField(required=False, label='Min Time',
+    min_event_time = forms.DateTimeField(input_formats=settings.XGDS_CORE_DATE_FORMATS, required=False, label='Min Time',
                                          widget=forms.DateTimeInput(attrs={'class': 'datetimepicker'}))
-    max_event_time = forms.DateTimeField(required=False, label = 'Max Time',
+    max_event_time = forms.DateTimeField(input_formats=settings.XGDS_CORE_DATE_FORMATS, required=False, label = 'Max Time',
                                          widget=forms.DateTimeInput(attrs={'class': 'datetimepicker'}))
     
     event_timezone = forms.ChoiceField(required=False, choices=lazy(getTimezoneChoices, list)(empty=True), 
