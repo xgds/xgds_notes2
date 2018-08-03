@@ -148,6 +148,8 @@ class SearchNoteForm(SearchForm):
                 raise forms.ValidationError(
                     "Time Zone is required for min / max times."
                 )
+            else:
+                del cleaned_data["event_timezone"]
 
 #     def buildQueryForContent(self, fieldname, field, value):
 #         sqs = SearchQuerySet().filter(text=value)
