@@ -1,12 +1,12 @@
 span.fancytree-node.tag span.fancytree-icon
 {
 	background-position: 0px 2px;
-	background-image: url("/static/xgds_notes2/icons/tag.png");
+	background-image: url("/static/xgds_notes2/icons/label.png");
 }
 
 span.fancytree-node.tag:hover span.fancytree-icon:hover {
   	background-position: 0px 2px;
-	background-image: url("/static/xgds_notes2/icons/tag.png");
+	background-image: url("/static/xgds_notes2/icons/label.png");
 }
 
 /*__BEGIN_LICENSE__

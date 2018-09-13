@@ -92,7 +92,6 @@ class HierarchichalTag(TagBase, MP_Node):
                 'slug': self.slug}
 
 
-
 class AbstractTaggedNote(ItemBase):
     """ This is the through table linking tags to notes. """
     content_object = 'set to DEFAULT_TAGGED_NOTE_FIELD() or similar in derived classes'
