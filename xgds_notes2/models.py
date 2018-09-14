@@ -13,6 +13,8 @@
 # CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 #__END_LICENSE__
+
+import unicodedata
 import traceback
 from django.utils import timezone
 
@@ -375,7 +377,7 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, Bro
         )
         
     def __unicode__(self):
-        return "%s: %s" % (self.event_time, self.content)
+        return "%s: %s" % (self.event_time, unicodedata.normalize('NFKD', unicode(self.content, 'utf-8')).encode('ascii','ignore'))
     
     @classmethod
     def getFormFields(cls):
