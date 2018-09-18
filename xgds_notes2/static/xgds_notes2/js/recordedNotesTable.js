@@ -111,7 +111,7 @@ $.extend(recordedNotes,{
 					if (row['tag_names'].length > 0){
 						var result = "";
 						for (var i = 0; i < row['tag_names'].length; i++) {
-							result = result + '<span class="tag label label-info">' + row['tag_names'][i] + '</span>&nbsp;';
+							result = result + '<span class="tag label label-info">' + row['tag_names'][i] + '</span> ';
 						}
 						return result;
 					}

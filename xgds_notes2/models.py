@@ -550,7 +550,8 @@ class AbstractLocatedNote(AbstractNote):
         if not self.position:
             track=None
             if hasattr(self, 'flight') and self.flight:
-                track = self.flight.track
+                if hasattr(self.flight, 'track'):
+                    track = self.flight.track
             self.position = getClosestPosition(track=track, timestamp=self.event_time)
             return self.position
 

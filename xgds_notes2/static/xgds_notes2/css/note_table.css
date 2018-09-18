@@ -3,9 +3,27 @@
 	height: auto !important;
 }
 
+.label {
+    margin: 5px !important;
+    padding-top: 1px !important;
+    padding-bottom: 1px !important;
+}
+
 div.DTE_Inline div.DTE_Inline_Field div.DTE_Field input, div.DTE_Inline div.DTE_Inline_Buttons div.DTE_Field input {
     width: 250%;
     max-width: 400px;
     height: 60px;
 }
 
+th.tag_col{
+    width:150px !important;
+}
+
+th.content_col{
+    width:250px !important;
+}
+
+
+table#searchResultsTable{
+table-layout:fixed;
+}
