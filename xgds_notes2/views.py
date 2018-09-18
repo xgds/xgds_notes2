@@ -463,7 +463,7 @@ def addTag(request):
             new_child = parent.add_child(**form.cleaned_data)
             return HttpResponse(json.dumps(new_child.getTreeJson()), content_type='application/json')
         else:
-            return HttpResponse(json.dumps({'failed': 'Problem adding tag: ' + form.errors}), content_type='application/json', status=406)
+            return HttpResponse(json.dumps({'failed': 'Problem adding tag: ' + str(form.errors)}), content_type='application/json', status=406)
 
 
 def editTag(request, tag_id):
