@@ -16,6 +16,8 @@
 
 from django.db.models import Q
 from xgds_notes2.models import HierarchichalTag
+from xgds_map_server.models import Place
+
 
 def buildQueryForTags(fieldname, field, value, hierarchy):
     listval = [int(x) for x in value]
@@ -28,10 +30,12 @@ def buildQueryForTags(fieldname, field, value, hierarchy):
             tag = HierarchichalTag.objects.get(pk=pk)
             tags.append(tag)
         for tag in tags:
-            tagqs = tag.get_tree(tag)
+            tagqs = HierarchichalTag.get_tree(tag)
             qs = Q(**{fieldname + '__in': tagqs})
             if not result:
                 result = qs
             else:
                 result |= qs
         return result
+
+

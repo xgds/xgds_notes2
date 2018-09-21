@@ -42,6 +42,7 @@ XGDS_NOTES_MONIKER = XGDS_NOTES_NOTE_MONIKER + 's' # Sometimes we call them Cons
 XGDS_NOTES_ALLOW_MAPPING = True
 XGDS_NOTES_ENABLE_GEOCAM_TRACK_MAPPING = True
 
+XGDS_NOTES_MODEL_NAME = 'Note' # used for building filters
 XGDS_NOTES_NOTE_MODEL = 'xgds_notes2.LocatedNote'
 XGDS_NOTES_TAG_MODEL = 'xgds_notes2.HierarchichalTag'
 XGDS_NOTES_TAGGED_NOTE_MODEL = 'xgds_notes2.TaggedNote'

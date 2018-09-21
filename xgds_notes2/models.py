@@ -46,6 +46,8 @@ from taggit.managers import TaggableManager
 from xgds_core.models import SearchableModel, BroadcastMixin, HasFlight, HasVehicle, IsFlightChild, IsFlightData
 from django.contrib.contenttypes.fields import GenericRelation
 
+from xgds_map_server.models import Place
+
 
 DEFAULT_TAGGED_NOTE_FIELD = lambda: models.ForeignKey(settings.XGDS_NOTES_NOTE_MODEL, related_name='%(app_label)s_%(class)s_related')
 DEFAULT_VEHICLE_FIELD = lambda: models.ForeignKey(settings.XGDS_CORE_VEHICLE_MODEL, related_name='%(app_label)s_%(class)s_related',
@@ -285,7 +287,7 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, Bro
             result = {'name': settings.XGDS_NOTES_NOTE_MONIKER + 's',
                       'count': found.count(),
                       'url': reverse('search_map_object_filter',
-                                     kwargs={'modelName': settings.XGDS_NOTES_NOTE_MONIKER,
+                                     kwargs={'modelName': settings.XGDS_NOTES_MODEL_NAME,
                                              'filter': 'flight__group:%d,flight__vehicle:%d' % (flight.group.pk, flight.vehicle.pk)})
                                              #'filter': 'flight__pk:' + str(flight_pk)})
                       }
@@ -377,8 +379,9 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, Bro
         )
         
     def __unicode__(self):
-        return "%s: %s" % (self.event_time, unicodedata.normalize('NFKD', unicode(self.content, 'utf-8')).encode('ascii','ignore'))
-    
+        # return "%s: %s" % (self.event_time, unicodedata.normalize('NFKD', unicode(self.content, 'utf-8')).encode('ascii','ignore'))
+        return "%s: %s" % (self.event_time, self.content)
+
     @classmethod
     def getFormFields(cls):
         return ['event_time',
@@ -498,7 +501,20 @@ class AbstractLocatedNote(AbstractNote):
     """ This is a basic note with a location, pulled from the current settings for geocam track past position model.
     """
     position = "set to DEFAULT_POSITION_FIELD() or similar in derived classes"
-      
+    place = models.ForeignKey(Place, blank=True, null=True, related_name="%(app_label)s_%(class)s_related")
+
+    @classmethod
+    def getSearchFormFields(cls):
+        result = super(AbstractLocatedNote, cls).getSearchFormFields()
+        result.append('place')
+        return result
+
+    @classmethod
+    def getSearchFieldOrder(cls):
+        result = super(AbstractLocatedNote, cls).getSearchFieldOrder()
+        result.append('place')
+        return result
+
     def to_kml(self, animated=False, timestampLabels=False, ignoreLabels=None):
         if ignoreLabels is None:
             ignoreLabels = []

@@ -13,6 +13,7 @@
 # CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 #__END_LICENSE__
+
 import cgi
 import datetime
 import pytz
@@ -32,6 +33,9 @@ from geocamUtil.loader import LazyGetModelByName
 from taggit.forms import *
 from xgds_core.models import XgdsUser
 from xgds_core.forms import SearchForm, AbstractImportVehicleForm
+
+from xgds_map_server.models import Place
+from xgds_map_server.forms import buildQueryForPlace
 from xgds_notes2.models import Role, Location, HierarchichalTag
 from xgds_notes2.utils import buildQueryForTags
 
@@ -39,10 +43,14 @@ Note = LazyGetModelByName(settings.XGDS_NOTES_NOTE_MODEL)
 UserSession = LazyGetModelByName(settings.XGDS_NOTES_USER_SESSION_MODEL)
 Tag = LazyGetModelByName(settings.XGDS_NOTES_TAG_MODEL)
 
+PLACE_FILTER_URL = '/xgds_core/complete/%s.json/' % 'xgds_map_server.Place'
+
+
 class UserSessionForm(forms.ModelForm):
     class Meta:
         model = UserSession.get()
         fields = UserSession.get().getFormFields()
+
 
 class NoteForm(forms.ModelForm):
     tags = TagField(required=False,
@@ -83,7 +91,6 @@ class NoteForm(forms.ModelForm):
         fields = Note.get().getFormFields()
 
 
-
 class TagForm(forms.ModelForm):
     class Meta:
         model = Tag.get()
@@ -114,6 +121,13 @@ class SearchNoteForm(SearchForm):
     author = forms.ModelChoiceField(XgdsUser.objects.all(), 
                                     required=False,
                                     widget=autocomplete.ModelSelect2(url='select2_model_user'))
+    place_hierarchy = forms.BooleanField(required=False, label='Include %s descendants' % settings.XGDS_MAP_SERVER_PLACE_MONIKER)
+
+    place = forms.ModelChoiceField(Place.objects.all(),
+                                   label=settings.XGDS_MAP_SERVER_PLACE_MONIKER,
+                                   required=False,
+                                   widget=autocomplete.ModelSelect2(url=PLACE_FILTER_URL))
+
     
     field_order = Note.get().getSearchFieldOrder()
     
@@ -158,15 +172,18 @@ class SearchNoteForm(SearchForm):
         # for hierarchichal search or tags, do custom
         # otherwise fall back to base method
         # if fieldname is content, then call sphinx
+
         if fieldname == 'tags':
             hierarchy = self.cleaned_data['hierarchy']
             return buildQueryForTags(fieldname, field, value, hierarchy)
-        elif fieldname == 'hierarchy':
+        if fieldname == 'place':
+            place_hierarchy = self.cleaned_data['place_hierarchy']
+            return buildQueryForPlace(fieldname, field, value, place_hierarchy)
+        elif fieldname == 'hierarchy' or fieldname == 'place_hierarchy':
             return None
         elif fieldname == 'content':
             return self.buildContainsQuery(fieldname, field, value)
         return super(SearchNoteForm, self).buildQueryForField(fieldname, field, value, minimum, maximum)
-        
 
     class Meta:
         model = Note.get()
