@@ -334,7 +334,7 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, Bro
 
     @classmethod
     def cls_type(cls):
-        return 'Note'
+        return settings.XGDS_NOTES_NOTE_MONIKER
 
     @property
     def tag_ids(self):

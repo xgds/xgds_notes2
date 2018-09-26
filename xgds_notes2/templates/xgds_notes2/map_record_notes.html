@@ -126,7 +126,7 @@ xgds_notes.setupEditingTable = function() {
 	        });
 	        
 	        var _this = this;
-	        var mmap = app.searchResultsView.lookupModelMap('Note');
+	        var mmap = app.searchResultsView.lookupModelMap('{{ settings.XGDS_NOTES_NOTE_MONIKER }}');
 	        $('#searchResultsTable').on( 'dblclick', 'tbody td.editable', function (e) {
 	        	var col = e.currentTarget._DT_CellIndex.column;
 	        	var col_name = mmap.columns[col];
