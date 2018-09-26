@@ -501,7 +501,7 @@ class AbstractLocatedNote(AbstractNote):
     """ This is a basic note with a location, pulled from the current settings for geocam track past position model.
     """
     position = "set to DEFAULT_POSITION_FIELD() or similar in derived classes"
-    place = models.ForeignKey(Place, blank=True, null=True, related_name="%(app_label)s_%(class)s_related")
+    place = models.ForeignKey(Place, blank=True, null=True, verbose_name=settings.XGDS_MAP_SERVER_PLACE_MONIKER, related_name="%(app_label)s_%(class)s_related")
 
     @classmethod
     def getSearchFormFields(cls):
