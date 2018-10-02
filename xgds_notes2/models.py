@@ -220,86 +220,58 @@ class NoteMixin(object):
     """
     notes = "set to DEFAULT_NOTES_GENERIC_RELATION() or similar in derived classes"
 
-    # @property
-    # def notes(self):
-    #     ctype = ContentType.objects.get_for_model(self.__class__)
-    #     Note = LazyGetModelByName(getattr(settings, 'XGDS_NOTES_NOTE_MODEL'))
-    #
-    #     try:
-    #         return Note.get().objects.filter(content_type__pk = ctype.id, object_id=self.pk)
-    #     except:
-    #         return None
 
-
-class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, BroadcastMixin, HasFlight, IsFlightChild,
-                   IsFlightData):
-    """ Abstract base class for notes
+class AbstractMessage(models.Model, SearchableModel, BroadcastMixin, HasFlight, IsFlightChild, IsFlightData):
     """
-#     # custom id field for uniqueness
-#     id = models.CharField(max_length=128,
-#                           unique=True, blank=False,
-#                           editable=False, primary_key=True)
-
-    # Override this to specify a list of related fields
-    # to be join-query loaded when notes are listed, as an optimization
-    # prefetch for reverse or for many to many.
-    prefetch_related_fields = ['tags']
-
-    # select related for forward releationships.  
-    select_related_fields = ['author', 'role', 'location']
-
-    show_on_map = models.BooleanField(default=False) # broadcast this note on the map by default
-
+    Abstract base class for simple messages
+    """
     event_time = models.DateTimeField(null=True, blank=False, db_index=True)
     event_timezone = models.CharField(null=True, blank=False, max_length=128, default=settings.TIME_ZONE, db_index=True)
-    creation_time = models.DateTimeField(blank=True, default=timezone.now, editable=False, db_index=True)
-    modification_time = models.DateTimeField(blank=True, default=timezone.now, editable=False, db_index=True)
-
     author = models.ForeignKey(User)
-    role = models.ForeignKey(Role, null=True)
-    location = models.ForeignKey(Location, null=True)
-    # True if we have searched for the location and found one, False if we searched and did not find one.
-    # null if we this field was created after this note existed or we have not tried looking.  
-    location_found = models.NullBooleanField(default = None) 
-    
     content = models.TextField(blank=True, null=True)
-    
-    tags = "set to DEFAULT_TAGGABLE_MANAGER() or similar in any derived classes"
-    
-    content_type = models.ForeignKey(ContentType, null=True, blank=True)
-    object_id = models.CharField(max_length=128, null=True, blank=True, db_index=True)
-    content_object = GenericForeignKey('content_type', 'object_id')
+
+    @property
+    def acquisition_time(self):
+        return self.event_time
 
     @classmethod
-    def buildTagsQuery(cls, search_value):
-        splits = search_value.split(' ')
-        found_tags = HierarchichalTag.objects.filter(name__in=splits)
-        if found_tags:
-            return {'tags__in': found_tags}
-        return None
+    def get_moniker(cls):
+        return settings.XGDS_NOTES_MESSAGE_MONIKER
+
+    @classmethod
+    def get_plural_moniker(cls):
+        return settings.XGDS_NOTES_MESSAGES_MONIKER
+
+    @classmethod
+    def get_qualified_model_name(cls):
+        return settings.XGDS_NOTES_MESSAGE_MODEL
+
+    @classmethod
+    def get_jsmap_key(cls):
+        return settings.XGDS_NOTES_MESSAGE_MODEL_NAME
 
     @classmethod
     def get_info_json(cls, flight_pk):
-        found = LazyGetModelByName(settings.XGDS_NOTES_NOTE_MODEL).get().objects.filter(flight__id=flight_pk)
+        found = LazyGetModelByName(cls.get_qualified_model_name()).get().objects.filter(flight__id=flight_pk)
         result = None
         if found.exists():
             flight = LazyGetModelByName(settings.XGDS_CORE_FLIGHT_MODEL).get().objects.get(id=flight_pk)
-            result = {'name': settings.XGDS_NOTES_NOTE_MONIKER + 's',
+            result = {'name': cls.get_plural_moniker(),
                       'count': found.count(),
                       'url': reverse('search_map_object_filter',
-                                     kwargs={'modelName': settings.XGDS_NOTES_MODEL_NAME,
-                                             'filter': 'flight__group:%d,flight__vehicle:%d' % (flight.group.pk, flight.vehicle.pk)})
-                                             #'filter': 'flight__pk:' + str(flight_pk)})
+                                     kwargs={'modelName': cls.get_jsmap_key(),
+                                             'filter': 'flight__group:%d,flight__vehicle:%d' % (
+                                             flight.group.pk, flight.vehicle.pk)})
                       }
         return result
 
     @classmethod
     def get_tree_json(cls, parent_class, parent_pk):
         try:
-            found = LazyGetModelByName(settings.XGDS_NOTES_NOTE_MODEL).get().objects.filter(flight__id=parent_pk)
+            found = LazyGetModelByName(cls.get_qualified_model_name()).get().objects.filter(flight__id=parent_pk)
             result = None
             if found.exists():
-                moniker = settings.XGDS_NOTES_NOTE_MONIKER + 's'
+                moniker = cls.get_plural_moniker()
                 flight = found[0].flight
                 result = [{"title": moniker,
                            "selected": False,
@@ -317,14 +289,143 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, Bro
             return None
 
     def getSseType(self):
+        return settings.XGDS_NOTES_MESSAGE_CHANNEL
+
+    def getChannels(self):
+        """ for sse, return a list of channels """
+        return [settings.XGDS_NOTES_MESSAGE_CHANNEL]
+
+    @property
+    def author_name(self):
+        return getUserName(self.author)
+
+    def to_kml(self, animated=False, timestampLabels=False, ignoreLabels=None):
+        """Define me, or override in your subclass
+        """
+        raise NotImplementedError
+
+    @property
+    def name(self):
+        return self.getLabel()
+
+    def getLabel(self):
+        """
+        Get the KML note label, use tag if exists or content otherwise
+        """
+        return self.content[:12]
+
+    @classmethod
+    def getSearchableFields(self):
+        return ['content', 'author__first_name', 'author__last_name']
+
+    @classmethod
+    def getFormFields(cls):
+        return ['event_time',
+                'content',
+                ]
+
+    @classmethod
+    def getSearchFormFields(cls):
+        return ['content',
+                'tags',
+                'event_timezone',
+                'author',
+                'flight__vehicle'
+                ]
+
+    @classmethod
+    def getSearchFieldOrder(cls):
+        return ['content',
+                'author',
+                'flight__vehicle',
+                'event_timezone',
+                'min_event_time',
+                'max_event_time']
+
+    def adjustedEventTime(self):
+        """
+        This is so derived classes can adapt event time for display
+        """
+        return self.event_time
+
+    def calculateDelayedEventTime(self, raw_time):
+        """
+        This is so derived classes can adapt event time in the case of being in "delay" mode
+        """
+        return self.event_time
+
+    class Meta:
+        abstract = True
+        ordering = ['event_time']
+        permissions = (
+            ('edit_all_messages', 'Can edit messages authored by others.'),
+        )
+
+    def __unicode__(self):
+        # return "%s: %s" % (self.event_time, unicodedata.normalize('NFKD', unicode(self.content, 'utf-8')).encode('ascii','ignore'))
+        return "%s: %s %s" % (self.event_time, self.author_name, self.content)
+
+
+class AbstractNote(AbstractMessage, NoteMixin, NoteLinksMixin):
+    """ Abstract base class for notes
+    """
+
+    # Override this to specify a list of related fields
+    # to be join-query loaded when notes are listed, as an optimization
+    # prefetch for reverse or for many to many.
+    prefetch_related_fields = ['tags']
+
+    # select related for forward releationships.  
+    select_related_fields = ['author', 'role', 'location']
+
+    show_on_map = models.BooleanField(default=False)  # broadcast this note on the map by default
+
+    creation_time = models.DateTimeField(blank=True, default=timezone.now, editable=False, db_index=True)
+    modification_time = models.DateTimeField(blank=True, default=timezone.now, editable=False, db_index=True)
+
+    role = models.ForeignKey(Role, null=True)
+    location = models.ForeignKey(Location, null=True)
+
+    # True if we have searched for the location and found one, False if we searched and did not find one.
+    # null if we this field was created after this note existed or we have not tried looking.
+    # TODO this is not truly the location of the user, it's the position of the note on the map
+    location_found = models.NullBooleanField(default = None) 
+    
+    tags = "set to DEFAULT_TAGGABLE_MANAGER() or similar in any derived classes"
+    
+    content_type = models.ForeignKey(ContentType, null=True, blank=True)
+    object_id = models.CharField(max_length=128, null=True, blank=True, db_index=True)
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    @classmethod
+    def get_moniker(cls):
+        return settings.XGDS_NOTES_NOTE_MONIKER
+
+    @classmethod
+    def get_plural_moniker(cls):
+        return settings.XGDS_NOTES_MONIKER
+
+    @classmethod
+    def get_qualified_model_name(cls):
+        return settings.XGDS_NOTES_NOTE_MODEL
+
+    @classmethod
+    def get_jsmap_key(cls):
+        return settings.XGDS_NOTES_MODEL_NAME
+
+    @classmethod
+    def buildTagsQuery(cls, search_value):
+        splits = search_value.split(' ')
+        found_tags = HierarchichalTag.objects.filter(name__in=splits)
+        if found_tags:
+            return {'tags__in': found_tags}
+        return None
+
+    def getSseType(self):
         if self.show_on_map:
             return settings.XGDS_NOTES_MAP_NOTE_CHANNEL
         else:
             return settings.XGDS_NOTES_NOTE_CHANNEL
-
-    @property
-    def acquisition_time(self):
-        return self.event_time
 
     @property
     def object_type(self):
@@ -339,10 +440,6 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, Bro
     @property
     def tag_ids(self):
         return None
-
-    @property
-    def name(self):
-        return self.getLabel()
 
     @property
     def tag_names(self):
@@ -367,21 +464,6 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, Bro
             return self.location.display_name
         return None
     
-    @property
-    def author_name(self):
-        return getUserName(self.author)
-
-    class Meta:
-        abstract = True
-        ordering = ['event_time']
-        permissions = (
-            ('edit_all_notes', 'Can edit notes authored by others.'),
-        )
-        
-    def __unicode__(self):
-        # return "%s: %s" % (self.event_time, unicodedata.normalize('NFKD', unicode(self.content, 'utf-8')).encode('ascii','ignore'))
-        return "%s: %s" % (self.event_time, self.content)
-
     @classmethod
     def getFormFields(cls):
         return ['event_time',
@@ -419,34 +501,16 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, Bro
 #    if "SphinxSearch" in globals():
 #        search = SphinxSearch()
 
-    def adjustedEventTime(self):
-        """
-        This is so derived classes can adapt event time for display
-        """
-        return self.event_time
-
-    def calculateDelayedEventTime(self, raw_time):
-        """
-        This is so derived classes can adapt event time in the case of being in "delay" mode
-        """
-        return self.event_time
-
-    def to_kml(self, animated=False, timestampLabels=False, ignoreLabels=None):
-        "Define me, or override in your subclass"
-        raise NotImplementedError
-
     def getLabel(self):
         """
         Get the KML note label, use tag if exists or content otherwise
         """
-        result = ""
-#         if self.tags:
-#             result = str(self.tags.first)
+        result = self.content[:12]
         if result == "":
-            result = self.content[:12]
+            if self.tags:
+                result = str(self.tags.first)
         return result
 
-    
     @property
     def content_url(self):
         if self.content_object:
@@ -468,16 +532,6 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, Bro
             return self.content_object.thumbnail_time_url(self.event_time)
         return None
 
-#     def toMapDict(self):
-#         """
-#         Return a reduced dictionary that will be turned to JSON for rendering in a map
-#         """
-#         columns = settings.XGDS_MAP_SERVER_JS_MAP[self.cls_type()]['columns']
-#         values =  self.toMapList(columns)
-#         result = dict(zip(columns, values))
-#         return result
-#         
-
     @staticmethod
     def getMapBoundedQuery(minLon, minLat, maxLon, maxLat, today=False):
         """
@@ -487,20 +541,33 @@ class AbstractNote(models.Model, SearchableModel, NoteMixin, NoteLinksMixin, Bro
 
     def getChannels(self):
         """ for sse, return a list of channels """
-        return [settings.XGDS_NOTES2_NOTES_CHANNEL]
+        return [settings.XGDS_NOTES_NOTE_CHANNEL]
 
-    @classmethod
-    def getSearchableFields(self):
-        return ['content', 'author__first_name', 'author__last_name']
-    
+    class Meta:
+        abstract = True
+        ordering = ['event_time']
+        permissions = (
+            ('edit_all_notes', 'Can edit notes authored by others.'),
+        )
+
+    def __unicode__(self):
+        # return "%s: %s" % (self.event_time, unicodedata.normalize('NFKD', unicode(self.content, 'utf-8')).encode('ascii','ignore'))
+        return "%s: %s" % (self.event_time, self.content)
+
 
 DEFAULT_POSITION_FIELD = lambda: models.ForeignKey(settings.GEOCAM_TRACK_PAST_POSITION_MODEL, null=True, blank=True, related_name="%(app_label)s_%(class)s_notes_set"  )
 
 
-class AbstractLocatedNote(AbstractNote):
-    """ This is a basic note with a location, pulled from the current settings for geocam track past position model.
+class PositionMixin(object):
+    """
+    Mixin to provide position
     """
     position = "set to DEFAULT_POSITION_FIELD() or similar in derived classes"
+
+
+class AbstractLocatedNote(AbstractNote, PositionMixin):
+    """ This is a basic note with a location, pulled from the current settings for geocam track past position model.
+    """
     place = models.ForeignKey(Place, blank=True, null=True, verbose_name=settings.XGDS_MAP_SERVER_PLACE_MONIKER, related_name="%(app_label)s_%(class)s_related")
 
     @classmethod
@@ -577,6 +644,12 @@ class AbstractLocatedNote(AbstractNote):
         permissions = (
             ('edit_all_notes', 'Can edit notes authored by others.'),
         )
+
+
+class LocatedMessage(AbstractMessage, PositionMixin):
+    """ This is a simple note to be used for chat messages; it does not support tags or notes on it. """
+    position = DEFAULT_POSITION_FIELD()
+    flight = DEFAULT_FLIGHT_FIELD()
 
 
 class LocatedNote(AbstractLocatedNote):

@@ -37,13 +37,19 @@ Don't try to get the value of FOO from django.conf.settings.  That
 settings object will not know about the default value!
 """
 
+XGDS_NOTES_MODEL_NAME = 'Note' # used for building filters
+XGDS_NOTES_NOTE_MODEL = 'xgds_notes2.LocatedNote'
 XGDS_NOTES_NOTE_MONIKER = 'Note'
 XGDS_NOTES_MONIKER = XGDS_NOTES_NOTE_MONIKER + 's' # Sometimes we call them Console Log
+
+XGDS_NOTES_MESSAGE_MODEL_NAME = 'Message' # used for building filters
+XGDS_NOTES_MESSAGE_MODEL = 'xgds_notes2.LocatedMessage'
+XGDS_NOTES_MESSAGE_MONIKER = 'Message'
+XGDS_NOTES_MESSAGES_MONIKER = XGDS_NOTES_MESSAGE_MONIKER + 's'
+
 XGDS_NOTES_ALLOW_MAPPING = True
 XGDS_NOTES_ENABLE_GEOCAM_TRACK_MAPPING = True
 
-XGDS_NOTES_MODEL_NAME = 'Note' # used for building filters
-XGDS_NOTES_NOTE_MODEL = 'xgds_notes2.LocatedNote'
 XGDS_NOTES_TAG_MODEL = 'xgds_notes2.HierarchichalTag'
 XGDS_NOTES_TAGGED_NOTE_MODEL = 'xgds_notes2.TaggedNote'
 
@@ -123,4 +129,5 @@ XGDS_NOTES_CURRENT_MAPPED_FUNCTION = 'xgds_notes.views.defaultCurrentMapNotes'
 
 XGDS_NOTES_MAP_NOTE_CHANNEL = 'map_note'
 XGDS_NOTES_NOTE_CHANNEL = 'note'
+XGDS_NOTES_MESSAGE_CHANNEL = 'message'
 

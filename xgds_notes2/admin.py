@@ -20,3 +20,5 @@ from models import *
 admin.site.register(HierarchichalTag)
 admin.site.register(Role)
 admin.site.register(Location)
+admin.site.register(LocatedNote)
+admin.site.register(LocatedMessage)
