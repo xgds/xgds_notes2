@@ -52,6 +52,7 @@ from xgds_map_server.models import Place
 DEFAULT_TAGGED_NOTE_FIELD = lambda: models.ForeignKey(settings.XGDS_NOTES_NOTE_MODEL, related_name='%(app_label)s_%(class)s_related')
 DEFAULT_VEHICLE_FIELD = lambda: models.ForeignKey(settings.XGDS_CORE_VEHICLE_MODEL, related_name='%(app_label)s_%(class)s_related',
                                                   verbose_name=settings.XGDS_CORE_VEHICLE_MONIKER, blank=True, null=True)
+
 # TODO if you are using a different default flight field then you will have to customize the Plan Execution
 DEFAULT_FLIGHT_FIELD = lambda: models.ForeignKey(settings.XGDS_CORE_FLIGHT_MODEL, null=True, blank=True, related_name='%(app_label)s_%(class)s_related')
 
@@ -330,14 +331,14 @@ class AbstractMessage(models.Model, SearchableModel, BroadcastMixin, HasFlight, 
                 'tags',
                 'event_timezone',
                 'author',
-                'flight__vehicle'
+                # 'flight__vehicle'
                 ]
 
     @classmethod
     def getSearchFieldOrder(cls):
         return ['content',
                 'author',
-                'flight__vehicle',
+                # 'flight__vehicle',
                 'event_timezone',
                 'min_event_time',
                 'max_event_time']
@@ -354,16 +355,15 @@ class AbstractMessage(models.Model, SearchableModel, BroadcastMixin, HasFlight, 
         """
         return self.event_time
 
+    def __unicode__(self):
+        return "%s: %s %s" % (self.event_time, self.author_name, self.content)
+
     class Meta:
         abstract = True
         ordering = ['event_time']
         permissions = (
             ('edit_all_messages', 'Can edit messages authored by others.'),
         )
-
-    def __unicode__(self):
-        # return "%s: %s" % (self.event_time, unicodedata.normalize('NFKD', unicode(self.content, 'utf-8')).encode('ascii','ignore'))
-        return "%s: %s %s" % (self.event_time, self.author_name, self.content)
 
 
 class AbstractNote(AbstractMessage, NoteMixin, NoteLinksMixin):
@@ -378,19 +378,12 @@ class AbstractNote(AbstractMessage, NoteMixin, NoteLinksMixin):
     # select related for forward releationships.  
     select_related_fields = ['author', 'role', 'location']
 
-    show_on_map = models.BooleanField(default=False)  # broadcast this note on the map by default
-
     creation_time = models.DateTimeField(blank=True, default=timezone.now, editable=False, db_index=True)
     modification_time = models.DateTimeField(blank=True, default=timezone.now, editable=False, db_index=True)
 
     role = models.ForeignKey(Role, null=True)
     location = models.ForeignKey(Location, null=True)
 
-    # True if we have searched for the location and found one, False if we searched and did not find one.
-    # null if we this field was created after this note existed or we have not tried looking.
-    # TODO this is not truly the location of the user, it's the position of the note on the map
-    location_found = models.NullBooleanField(default = None) 
-    
     tags = "set to DEFAULT_TAGGABLE_MANAGER() or similar in any derived classes"
     
     content_type = models.ForeignKey(ContentType, null=True, blank=True)
@@ -422,10 +415,7 @@ class AbstractNote(AbstractMessage, NoteMixin, NoteLinksMixin):
         return None
 
     def getSseType(self):
-        if self.show_on_map:
-            return settings.XGDS_NOTES_MAP_NOTE_CHANNEL
-        else:
-            return settings.XGDS_NOTES_NOTE_CHANNEL
+        return settings.XGDS_NOTES_NOTE_CHANNEL
 
     @property
     def object_type(self):
@@ -469,7 +459,6 @@ class AbstractNote(AbstractMessage, NoteMixin, NoteLinksMixin):
         return ['event_time',
                 'content',
                 'tags',
-                'show_on_map',
                 ]
     
     @classmethod
@@ -480,7 +469,7 @@ class AbstractNote(AbstractMessage, NoteMixin, NoteLinksMixin):
                 'author',
                 'role',
                 'location',
-                'flight__vehicle'
+                # 'flight__vehicle'
                 ]
     
     @classmethod
@@ -491,7 +480,7 @@ class AbstractNote(AbstractMessage, NoteMixin, NoteLinksMixin):
                 'author',
                 'role',
                 'location',
-                'flight__vehicle',
+                # 'flight__vehicle',
                 'event_timezone',
                 'min_event_time',
                 'max_event_time']
@@ -564,11 +553,36 @@ class PositionMixin(object):
     """
     position = "set to DEFAULT_POSITION_FIELD() or similar in derived classes"
 
+    # TODO completely unclear why this cannot be defined here; this should be able to be a models.Model and abstract
+    # BUT it makes migrations have all sorts of problems with method resolution order.  So for now duplicating
+    # implementation.
+    # True if we have searched for the position and found one, False if we searched and did not find one.
+    # null if we this field was created after this note existed or we have not tried looking.
+    # position_found = models.NullBooleanField(default=None)
+
 
 class AbstractLocatedNote(AbstractNote, PositionMixin):
     """ This is a basic note with a location, pulled from the current settings for geocam track past position model.
     """
     place = models.ForeignKey(Place, blank=True, null=True, verbose_name=settings.XGDS_MAP_SERVER_PLACE_MONIKER, related_name="%(app_label)s_%(class)s_related")
+    show_on_map = models.BooleanField(default=False)  # broadcast this note on the map by default
+
+    # True if we have searched for the position and found one, False if we searched and did not find one.
+    # null if we this field was created after this note existed or we have not tried looking.
+    position_found = models.NullBooleanField(default=None)
+
+
+    def getSseType(self):
+        if self.show_on_map:
+            return settings.XGDS_NOTES_MAP_NOTE_CHANNEL
+        else:
+            return settings.XGDS_NOTES_NOTE_CHANNEL
+
+    @classmethod
+    def getFormFields(cls):
+        result = super(AbstractLocatedNote, cls).getSearchFormFields()
+        result.append('show_on_map')
+        return result
 
     @classmethod
     def getSearchFormFields(cls):
@@ -651,6 +665,23 @@ class LocatedMessage(AbstractMessage, PositionMixin):
     position = DEFAULT_POSITION_FIELD()
     flight = DEFAULT_FLIGHT_FIELD()
 
+    # True if we have searched for the position and found one, False if we searched and did not find one.
+    # null if we this field was created after this note existed or we have not tried looking.
+    position_found = models.NullBooleanField(default=None)
+
+
+    @classmethod
+    def getSearchFormFields(cls):
+        result = super(LocatedMessage, cls).getSearchFormFields()
+        result.append('flight__vehicle')
+        return result
+
+    @classmethod
+    def getSearchFieldOrder(cls):
+        result = super(LocatedMessage, cls).getSearchFieldOrder()
+        result.append('flight__vehicle')
+        return result
+
 
 class LocatedNote(AbstractLocatedNote):
     """ This is the default note class, which can have tags and can have notes on it."""
@@ -659,5 +690,14 @@ class LocatedNote(AbstractLocatedNote):
     notes = DEFAULT_NOTES_GENERIC_RELATION()
     flight = DEFAULT_FLIGHT_FIELD()
 
+    @classmethod
+    def getSearchFormFields(cls):
+        result = super(LocatedNote, cls).getSearchFormFields()
+        result.append('flight__vehicle')
+        return result
 
-
+    @classmethod
+    def getSearchFieldOrder(cls):
+        result = super(LocatedNote, cls).getSearchFieldOrder()
+        result.append('flight__vehicle')
+        return result
