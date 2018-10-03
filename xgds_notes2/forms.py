@@ -39,17 +39,17 @@ from xgds_map_server.forms import buildQueryForPlace
 from xgds_notes2.models import Role, Location, HierarchichalTag
 from xgds_notes2.utils import buildQueryForTags
 
-Note = LazyGetModelByName(settings.XGDS_NOTES_NOTE_MODEL)
-UserSession = LazyGetModelByName(settings.XGDS_NOTES_USER_SESSION_MODEL)
-Tag = LazyGetModelByName(settings.XGDS_NOTES_TAG_MODEL)
+NOTE_MODEL = LazyGetModelByName(settings.XGDS_NOTES_NOTE_MODEL)
+USER_SESSION_MODEL = LazyGetModelByName(settings.XGDS_NOTES_USER_SESSION_MODEL)
+TAG_MODEL = LazyGetModelByName(settings.XGDS_NOTES_TAG_MODEL)
 
 PLACE_FILTER_URL = '/xgds_core/complete/%s.json/' % 'xgds_map_server.Place'
 
 
 class UserSessionForm(forms.ModelForm):
     class Meta:
-        model = UserSession.get()
-        fields = UserSession.get().getFormFields()
+        model = USER_SESSION_MODEL.get()
+        fields = USER_SESSION_MODEL.get().getFormFields()
 
 
 class NoteForm(forms.ModelForm):
@@ -87,14 +87,14 @@ class NoteForm(forms.ModelForm):
         return self.as_fieldsets()
     
     class Meta:
-        model = Note.get()
-        fields = Note.get().getFormFields()
+        model = NOTE_MODEL.get()
+        fields = NOTE_MODEL.get().getFormFields()
 
 
 class TagForm(forms.ModelForm):
     class Meta:
-        model = Tag.get()
-        fields = Tag.get().getFormFields()
+        model = TAG_MODEL.get()
+        fields = TAG_MODEL.get().getFormFields()
 
 
 class ImportNotesForm(AbstractImportVehicleForm):
@@ -129,7 +129,7 @@ class SearchNoteForm(SearchForm):
                                    widget=autocomplete.ModelSelect2(url=PLACE_FILTER_URL))
 
     
-    field_order = Note.get().getSearchFieldOrder()
+    field_order = NOTE_MODEL.get().getSearchFieldOrder()
     
     # populate the times properly
     def clean_min_event_time(self):
@@ -186,5 +186,5 @@ class SearchNoteForm(SearchForm):
         return super(SearchNoteForm, self).buildQueryForField(fieldname, field, value, minimum, maximum)
 
     class Meta:
-        model = Note.get()
-        fields = Note.get().getSearchFormFields()
+        model = NOTE_MODEL.get()
+        fields = NOTE_MODEL.get().getSearchFormFields()
