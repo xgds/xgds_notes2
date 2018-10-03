@@ -231,6 +231,10 @@ class AbstractMessage(models.Model, SearchableModel, BroadcastMixin, HasFlight, 
     author = models.ForeignKey(User)
     content = models.TextField(blank=True, null=True)
 
+    @classmethod
+    def cls_type(cls):
+        return settings.XGDS_NOTES_MESSAGE_MODEL_NAME
+
     @property
     def acquisition_time(self):
         return self.event_time
@@ -328,7 +332,6 @@ class AbstractMessage(models.Model, SearchableModel, BroadcastMixin, HasFlight, 
     @classmethod
     def getSearchFormFields(cls):
         return ['content',
-                'tags',
                 'event_timezone',
                 'author',
                 # 'flight__vehicle'
@@ -425,7 +428,7 @@ class AbstractNote(AbstractMessage, NoteMixin, NoteLinksMixin):
 
     @classmethod
     def cls_type(cls):
-        return settings.XGDS_NOTES_NOTE_MONIKER
+        return settings.XGDS_NOTES_MODEL_NAME
 
     @property
     def tag_ids(self):
@@ -570,7 +573,6 @@ class AbstractLocatedNote(AbstractNote, PositionMixin):
     # True if we have searched for the position and found one, False if we searched and did not find one.
     # null if we this field was created after this note existed or we have not tried looking.
     position_found = models.NullBooleanField(default=None)
-
 
     def getSseType(self):
         if self.show_on_map:

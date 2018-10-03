@@ -95,6 +95,19 @@ XGDS_MAP_SERVER_JS_MAP[XGDS_NOTES_NOTE_MONIKER] = {'ol': 'xgds_notes2/js/olNoteM
                                                    'event_timezone_field': 'event_timezone',
                                                    'search_form_class': 'xgds_notes2.forms.SearchNoteForm'}
 
+
+XGDS_MAP_SERVER_JS_MAP[XGDS_NOTES_MESSAGE_MONIKER] = {'ol': 'xgds_notes2/js/olMessageMap.js',
+                                                   'model': XGDS_NOTES_MESSAGE_MODEL,
+                                                   'columns': ['checkbox', 'event_time', 'event_timezone', 'author_name', 'content', 'lat', 'lon', 'alt', 'flight_name', 'app_label', 'model_type', 'type', 'pk'],
+                                                   'hiddenColumns': ['app_label', 'model_type', 'type', 'lat', 'lon', 'alt', 'flight_name', 'pk'],
+                                                   'searchableColumns': ['content','flight_name', 'author_name', ],
+                                                   'editableColumns':{'content':'text'},
+                                                   'columnTitles': ['Time', 'TZ', 'Author', 'Content',],
+                                                   'viewHandlebars': 'xgds_notes2/templates/handlebars/message-view.handlebars',
+                                                   'event_time_field': 'event_time',
+                                                   'event_timezone_field': 'event_timezone',
+                                                   'search_form_class': 'xgds_notes2.forms.SearchMessageForm'}
+
 XGDS_DATA_IMPORTS = getOrCreateDict('XGDS_DATA_IMPORTS')
 XGDS_DATA_IMPORTS[XGDS_NOTES_MONIKER] = '/notes/import'
 
