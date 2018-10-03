@@ -256,6 +256,10 @@ class AbstractMessage(models.Model, SearchableModel, BroadcastMixin, HasFlight, 
         return settings.XGDS_NOTES_MESSAGE_MODEL_NAME
 
     @classmethod
+    def get_object_name(cls):
+        return 'XGDS_NOTES_MESSAGE_MODEL'
+
+    @classmethod
     def get_info_json(cls, flight_pk):
         found = LazyGetModelByName(cls.get_qualified_model_name()).get().objects.filter(flight__id=flight_pk)
         result = None
@@ -283,7 +287,7 @@ class AbstractMessage(models.Model, SearchableModel, BroadcastMixin, HasFlight, 
                            "tooltip": "%s for %s " % (moniker, flight.name),
                            "key": "%s_%s" % (flight.uuid, moniker),
                            "data": {"json": reverse('xgds_map_server_objectsJson',
-                                                    kwargs={'object_name': 'XGDS_NOTES_NOTE_MODEL',
+                                                    kwargs={'object_name': cls.get_object_name(),
                                                             'filter': 'flight__pk:' + str(flight.pk)}),
                                     "sseUrl": "",
                                     "type": 'MapLink',
@@ -369,7 +373,7 @@ class AbstractMessage(models.Model, SearchableModel, BroadcastMixin, HasFlight, 
         )
 
 
-class AbstractNote(AbstractMessage, NoteMixin, NoteLinksMixin):
+class AbstractNote(AbstractMessage, NoteMixin, NoteLinksMixin, IsFlightChild):
     """ Abstract base class for notes
     """
 
@@ -429,6 +433,11 @@ class AbstractNote(AbstractMessage, NoteMixin, NoteLinksMixin):
     @classmethod
     def cls_type(cls):
         return settings.XGDS_NOTES_MODEL_NAME
+
+    @classmethod
+    def get_object_name(cls):
+        return 'XGDS_NOTES_NOTE_MODEL'
+
 
     @property
     def tag_ids(self):
