@@ -96,7 +96,7 @@ var Message = {
         setupPopup: function(feature, messageJson) {
             var trString = "<tr><td>%s</td><td>%s</td></tr>";
             var formattedString = "<table>";
-            for (j = 0; j< 3; j++){
+            for (j = 0; j< 2; j++){
                 formattedString = formattedString + trString;
             }
             formattedString = formattedString + "</table>";

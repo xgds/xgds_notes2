@@ -544,6 +544,29 @@ class AbstractNote(AbstractMessage, NoteMixin, NoteLinksMixin, IsFlightChild):
         """ for sse, return a list of channels """
         return [settings.XGDS_NOTES_NOTE_CHANNEL]
 
+    @classmethod
+    def get_tree_json(cls, parent_class, parent_pk):
+        try:
+            found = LazyGetModelByName(cls.get_qualified_model_name()).get().objects.filter(flight__id=parent_pk)
+            result = None
+            if found.exists():
+                moniker = cls.get_plural_moniker()
+                flight = found[0].flight
+                result = [{"title": moniker,
+                           "selected": False,
+                           "tooltip": "%s for %s " % (moniker, flight.name),
+                           "key": "%s_%s" % (flight.uuid, moniker),
+                           "data": {"json": reverse('xgds_map_server_objectsJson',
+                                                    kwargs={'object_name': cls.get_object_name(),
+                                                            'filter': 'flight__pk:' + str(flight.pk)}),
+                                    "sseUrl": "",
+                                    "type": 'MapLink',
+                                    }
+                           }]
+            return result
+        except ObjectDoesNotExist:
+            return None
+
     class Meta:
         abstract = True
         ordering = ['event_time']
