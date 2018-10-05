@@ -357,7 +357,7 @@ def editTags(request):
 def tagsGetRootTreesJson(root):
     if root is None:
         return []
-    root_json = root.getTreeJson()
+    root_json = root.get_tree_json()
     return root_json
 
 
@@ -385,7 +385,7 @@ def tagsSearchJsonArray(request):
     )
 
 @never_cache
-def tagsGetTreeJson(request, root=None):
+def tagsget_tree_json(request, root=None):
     """
     json tree of children
     note that this does json for jstree
@@ -394,7 +394,7 @@ def tagsGetTreeJson(request, root=None):
     children_json = []
     if root.numchild:
         for child in root.get_children():
-            children_json.append(child.getTreeJson())
+            children_json.append(child.get_tree_json())
     
     json_data = json.dumps(children_json)
     return HttpResponse(content=json_data,
@@ -440,7 +440,7 @@ def addRootTag(request):
         form = TagForm(request.POST)
         if form.is_valid():
             new_root = Tag.get().add_root(**form.cleaned_data)
-            return HttpResponse(json.dumps(new_root.getTreeJson()), content_type='application/json')
+            return HttpResponse(json.dumps(new_root.get_tree_json()), content_type='application/json')
         else:
             return HttpResponse(json.dumps({'failed': 'Problem adding root: ' + form.errors}), content_type='application/json', status=406)
 
@@ -461,7 +461,7 @@ def addTag(request):
         form = TagForm(request.POST)
         if form.is_valid():
             new_child = parent.add_child(**form.cleaned_data)
-            return HttpResponse(json.dumps(new_child.getTreeJson()), content_type='application/json')
+            return HttpResponse(json.dumps(new_child.get_tree_json()), content_type='application/json')
         else:
             return HttpResponse(json.dumps({'failed': 'Problem adding tag: ' + str(form.errors)}), content_type='application/json', status=406)
 
@@ -472,7 +472,7 @@ def editTag(request, tag_id):
         form = TagForm(request.POST, instance=tag)
         if form.is_valid():
             form.save()
-            return HttpResponse(json.dumps(tag.getTreeJson()), content_type='application/json')
+            return HttpResponse(json.dumps(tag.get_tree_json()), content_type='application/json')
         else:
             return HttpResponse(json.dumps({'failed': 'Problem editing tag: ' + form.errors}), content_type='application/json', status=406)
 

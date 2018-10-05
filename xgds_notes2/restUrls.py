@@ -24,7 +24,7 @@ urlpatterns = [
     url(r'time.txt', views.serverTime, {}, 'server_time'),
     url(r'^tagsTree/?$', views.tagsGetOneLevelTreeJson, {}, 'xgds_notes_get_root_tags'),
     url(r'^tagsTree/(?P<root>[\d]+)$', views.tagsGetOneLevelTreeJson, {}, 'xgds_notes_get_tags'),
-    url(r'^tagsChildrenTree/(?P<root>[\d]+)$', views.tagsGetTreeJson, {}, 'xgds_notes_get_tags'),
+    url(r'^tagsChildrenTree/(?P<root>[\d]+)$', views.tagsget_tree_json, {}, 'xgds_notes_get_tags'),
     url(r'^tagsArray.json$', views.tagsJsonArray, {}, 'xgds_notes_tags_array'),
     url(r'^notes/(?P<app_label>[\w]+)/(?P<model_type>[\w]+)/(?P<obj_pk>[\d]+)$', views.getObjectNotes, {}, 'xgds_notes_object_notes'),
     url(r'^currentMapNotes.json$', views.getCurrentMapNotes, {}, 'xgds_notes_current_map_notes'),

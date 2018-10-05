@@ -65,7 +65,7 @@ class HierarchichalTag(TagBase, MP_Node):
     def preSave(self):
         self.name = self.name.lower()
         
-    def getTreeJson(self):
+    def get_tree_json(self):
         """ get the JSON block for fancytree """
         title = self.name
         if self.abbreviation:
@@ -546,6 +546,7 @@ class AbstractNote(AbstractMessage, NoteMixin, NoteLinksMixin, IsFlightChild):
 
     @classmethod
     def get_tree_json(cls, parent_class, parent_pk):
+        """ For some reason because of the way this method is used with reflection we have to redefine it."""
         try:
             found = LazyGetModelByName(cls.get_qualified_model_name()).get().objects.filter(flight__id=parent_pk)
             result = None
@@ -566,6 +567,22 @@ class AbstractNote(AbstractMessage, NoteMixin, NoteLinksMixin, IsFlightChild):
             return result
         except ObjectDoesNotExist:
             return None
+
+    @classmethod
+    def get_info_json(cls, flight_pk):
+        """ For some reason because of the way this method is used with reflection we have to redefine it."""
+        found = LazyGetModelByName(cls.get_qualified_model_name()).get().objects.filter(flight__id=flight_pk)
+        result = None
+        if found.exists():
+            flight = LazyGetModelByName(settings.XGDS_CORE_FLIGHT_MODEL).get().objects.get(id=flight_pk)
+            result = {'name': cls.get_plural_moniker(),
+                      'count': found.count(),
+                      'url': reverse('search_map_object_filter',
+                                     kwargs={'modelName': cls.get_jsmap_key(),
+                                             'filter': 'flight__group:%d,flight__vehicle:%d' % (
+                                                 flight.group.pk, flight.vehicle.pk)})
+                      }
+        return result
 
     class Meta:
         abstract = True

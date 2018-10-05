@@ -6,8 +6,8 @@ String.prototype.trunc = String.prototype.trunc ||
       };
 
 var Message = {
-		selectedStylePath: '/static/xgds_notes2/icons/comment_selected.png',
-		stylePath: '/static/xgds_notes2/icons/comment.png',
+		selectedStylePath: '/static/xgds_notes2/icons/comment2_selected.png',
+		stylePath: '/static/xgds_notes2/icons/comment2.png',
         initStyles: function() {
             if (_.isUndefined(this.styles)){
                 this.styles = {};
