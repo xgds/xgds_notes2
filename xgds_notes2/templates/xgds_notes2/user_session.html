@@ -1,4 +1,8 @@
 {% extends 'xgds_notes2/notes_base.html' %}
+
+{% block sitemenu-content-secondary %}
+{% endblock %}
+
 {% block content %}
 <form action="{% url 'xgds_notes_edit_user_session' %}" method="post">
     {{ form.as_p }}

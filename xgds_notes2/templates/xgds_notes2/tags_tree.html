@@ -1,5 +1,9 @@
 {% extends "xgds_notes2/notes_base.html" %}
 {% load static %}
+
+{% block sitemenu-content-secondary %}
+{% endblock %}
+
 {% block scripts %}
 {{ block.super }}
     <script type="text/javascript" src='{{ EXTERNAL_URL }}jquery.fancytree/dist/jquery.fancytree-all.min.js'></script>
