@@ -58,7 +58,6 @@ class NoteForm(forms.ModelForm):
                     widget=TagWidget(attrs={'class': 'taginput', 
                                             'data-role':'tagsinput',
                                             'placeholder': 'Choose tags'}))
-    
 
     note_submit_url = forms.CharField(widget=forms.HiddenInput(), initial='/notes/recordSimple/',  required=False)
     

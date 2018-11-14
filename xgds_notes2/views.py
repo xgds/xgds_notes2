@@ -115,6 +115,30 @@ def editUserSession(request, ajax=False):
         )
 
 
+def update_note_request_post(request):
+    """
+    Take the author and the notes user session from the request session and put it into the request post
+    :param request:
+    :return: the request with more stuff in the post
+    """
+    request.POST._mutable = True
+
+    # Hijack the UserSessionForm's validation method to translate enumerations to objects in session data
+    if 'notes_user_session' in request.session.keys():
+        session_form = UserSessionForm()
+        session_data = {'%s' % (k): str(session_form.fields[k].clean(v).id)
+                        for k, v in request.session['notes_user_session'].iteritems()
+                        if k in session_form.fields}
+
+        request.POST.update(session_data)
+
+    if request.user:
+        request.POST['author'] = str(request.user.id)
+
+    request.POST._mutable = False
+    return request.POST
+
+
 def populateNoteData(request, form):
     """ Populate the basic data dictionary for a new note from a submitted form
     Form must already be valid
@@ -122,19 +146,6 @@ def populateNoteData(request, form):
     errors = []
     data = form.cleaned_data
 
-    # Hijack the UserSessionForm's validation method to translate enumerations to objects in session data
-    if 'notes_user_session' in request.session.keys():
-        session_form = UserSessionForm()
-        session_data = {k: session_form.fields[k].clean(v)
-                        for k, v in request.session['notes_user_session'].iteritems()
-                        if k in session_form.fields}
-        data.update(session_data)
-    else:
-        errors.append(UNSET_SESSION)
-
-    if request.user:
-        data['author'] = request.user
-    
     if data['app_label'] and data['model_type']:
         data['content_type'] = ContentType.objects.get(app_label=data['app_label'], model=data['model_type'])
     data.pop('app_label')
@@ -217,6 +228,7 @@ def createNoteFromData(data, delay=True, serverNow=False):
 
 def record(request):
     if request.method == 'POST':
+        update_note_request_post(request)
         form = NoteForm(request.POST)
         if form.is_valid():
 
@@ -265,6 +277,7 @@ def recordSimple(request):
                                         }),
                             content_type='application/json')
 
+    update_note_request_post(request)
     form = NoteForm(request.POST)
     if form.is_valid():
         data, tags, errors = getClassByName(settings.XGDS_NOTES_POPULATE_NOTE_DATA)(request, form)
