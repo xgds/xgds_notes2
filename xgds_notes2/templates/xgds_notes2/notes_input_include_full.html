@@ -1,36 +1,50 @@
 {% if user.is_authenticated %}
 <div id="full_notes_input">
-<button id="add_note_button" role="button" class="btn btn-primary add_note_button ml-2">+ {{settings.XGDS_NOTES_NOTE_MONIKER}}</button>
-<div id="full_notes_content" class="tab-content active notes_content"> 
-	<div class="notediv notes_input_container" id="notes_input" style="display:none;">
-		<div class="alert alert-info mb-0" role="alert">You are {{ user.first_name }} (<span id="roleLocationVehicle"></span>) [<a href="#" id="changeRole" >change role/location</a>]</div>
-		<form id="create_note" class="create_note_form" action="" method="POST">
-			<input type="hidden" id="id_note_submit_url" value="{% url 'xgds_notes_record' %}">
-			<input type="hidden" id="id_event_timezone" >
-			<input type="hidden" id="id_app_label" >
-			<input type="hidden" id="id_model_type" >
-			<input type="hidden" id="id_object_id" >
-			<input type="hidden" id="id_position_id" >
-			<div id="error_div" class="noteerrordiv">
-				<span id="error_icon">&nbsp;</span>
-				<span id="error_content"></span>
-			</div>
-			<div class="notecontainer" >
-				<div id="event_time_controls2">
-					<input id="id_event_time" name="event_time" class="mr-1" type="text" style="display: inline-block;" placeholder="time">
-					<button name="Now" id="nowButton" class="btn btn-primary mt-1">Now</button>
-				</div>
-				<textarea class="noteinput"  id="id_content" type="text" name="content" maxlength="500" placeholder="Enter notes here"></textarea>
-		        <input class="taginput"  id="id_tags" placeholder="Choose tags" type="text" />
-		        <div >
-		        <div style="display: inline-block; font-size: .8rem;">
-		        	<input id="save_note" type="submit" value="Save" class="btn btn-primary noteSubmit"><br/>
-		        	<input id="id_show_on_map" name="show_on_map" type="checkbox" class="mr-1">Show in GE</input><br/>
-		        	<input id="id_keep_tags" name="keep_tags" type="checkbox" class="mr-1" >Don't clear tags</input></div>
-		        </div>
-	        </div>
-	  </form>
-	</div>
-</div>
+    <button id="add_note_button" role="button" class="btn btn-primary add_note_button ml-2 mt-1 mr-1" style="color:white; max-height:1.8rem;">+ {{settings.XGDS_NOTES_NOTE_MONIKER}}</button>
+    <div id="add_note_modal" class="modal hide fade notes_content">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Add {{settings.XGDS_NOTES_NOTE_MONIKER}}</h5>
+              </div>
+                   <div class="modal-body">
+                        <div id="full_notes_content" class="tab-content active ">
+                            <div class="notediv notes_input_container" id="notes_input" >
+                                <div class="alert alert-info mb-0" role="alert">You are {{ user.first_name }} (<span id="roleLocationVehicle"></span>) [<a href="#" id="changeRole" >change role/location</a>]</div>
+                                <form id="create_note" class="create_note_form" action="" method="POST">
+                                    <input type="hidden" id="id_note_submit_url" value="{% url 'xgds_notes_record' %}">
+                                    <input type="hidden" id="id_event_timezone" >
+                                    <input type="hidden" id="id_app_label" >
+                                    <input type="hidden" id="id_model_type" >
+                                    <input type="hidden" id="id_object_id" >
+                                    <input type="hidden" id="id_position_id" >
+                                    <div id="error_div" class="noteerrordiv">
+                                        <span id="error_icon">&nbsp;</span>
+                                        <span id="error_content"></span>
+                                    </div>
+                                    <div class="notecontainer" >
+                                        <div id="event_time_controls2">
+                                            <input id="id_event_time" name="event_time" class="mr-1" type="text" style="display: inline-block;" placeholder="time">
+                                            <button name="Now" id="nowButton" class="btn btn-primary mt-1">Now</button>
+                                        </div>
+                                        <textarea class="noteinput"  id="id_content" type="text" name="content" maxlength="500" placeholder="Enter notes here"></textarea>
+                                        <input class="taginput"  id="id_tags" placeholder="Choose tags" type="text" />
+                                        <div >
+                                        <div style="display: inline-block; font-size: .8rem;">
+                                            <input id="save_note" type="submit" value="Save" class="btn btn-primary noteSubmit"><br/>
+                                            <input id="id_show_on_map" name="show_on_map" type="checkbox" class="mr-1">Show in GE</input><br/>
+                                            <input id="id_keep_tags" name="keep_tags" type="checkbox" class="mr-1" >Don't clear tags</input></div>
+                                        </div>
+                                    </div>
+                              </form>
+                            </div>
+                        </div>
+                   </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endif %}

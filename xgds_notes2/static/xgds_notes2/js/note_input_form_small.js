@@ -301,8 +301,17 @@ $.extend(xgds_notes,{
 			    event.preventDefault();
 			    var tar = $(event.target);
 			    var notes_content_div = $(tar.siblings(".notes_content")[0]);
-			    notes_content_div.show();
-			    $(notes_content_div.children('.notediv')[0]).toggle()
+			    if (notes_content_div.length == 1 && notes_content_div[0].id == "add_note_modal") {
+			    	if (notes_content_div.is(':visible')){
+			    		notes_content_div.modal('hide');
+					} else {
+			    		notes_content_div.modal('show');
+					}
+				} else {
+                    notes_content_div.show();
+                }
+                $(notes_content_div.children('.notediv')[0]).toggle()
+
 			});
 		}
 	},
