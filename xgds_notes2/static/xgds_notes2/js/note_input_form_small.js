@@ -322,6 +322,7 @@ $.extend(xgds_notes,{
 			    	if (notes_content_div.is(':visible')){
 			    		notes_content_div.modal('hide');
 					} else {
+			    		xgds_notes.hideError(notes_content_div);
 			    		notes_content_div.modal('show');
 					}
 				} else {
