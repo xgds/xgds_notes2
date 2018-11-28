@@ -210,6 +210,8 @@ $.extend(xgds_notes,{
 	},
 	editUserSession: function(nextFunction, context) {
 		var edit_user_session_div = $('#edit_user_session_div');
+		var anm = $("#add_note_modal");
+
 		if (edit_user_session_div.length > 0){
 		  edit_user_session_div.dialog({
 	        dialogClass: 'no-close',
@@ -217,12 +219,15 @@ $.extend(xgds_notes,{
 	        resizable: true,
 	        width: 400,
 	        closeOnEscape: true,
-	        title: "Configure Note Recording",
+	        title: "Configure Role/Location",
 	        buttons: [
 	                  {
 	                    text: "Cancel",
 	                    click: function() {
 	                      $( this ).dialog( "close" );
+	                      if (anm.length == 1){
+		  					anm.modal("show");
+		  					}
 	                    }
 	                  },
 	                  {
@@ -260,6 +265,9 @@ $.extend(xgds_notes,{
 		    		                  		rlr.text(text);
 										}
 										xgds_notes.genericFunction(nextFunction)(context, data);
+		    		                    if (anm.length == 1){
+		  									anm.modal("show");
+		  								}
 
 		    		                },
 		    		                error: function(data)
@@ -271,6 +279,9 @@ $.extend(xgds_notes,{
 		                  }
 	                ]
 	    });
+		  if (anm.length == 1){
+		  	anm.modal("hide");
+		  }
 		}
 	},
 	hookNoteSubmit: function(container) {
@@ -289,6 +300,12 @@ $.extend(xgds_notes,{
 	    });
 	},
 	hookAddNoteButton: function(container) {
+		$('.modal-content').resizable({
+    		alsoResize: ".modal-header, .modal-body, .modal-footer"
+		});
+		$(".modal-dialog").draggable({
+    		handle: ".modal-header"
+		});
 		var addNoteButton = undefined;
 		if (container === undefined){
 			addNoteButton = $('.add_note_button');
