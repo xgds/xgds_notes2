@@ -213,9 +213,9 @@ $.extend(xgds_notes,{
 		var anm = $("#add_note_modal");
 
 		if (edit_user_session_div.length > 0){
-		  edit_user_session_div.dialog({
+		  var usm = edit_user_session_div.dialog({
 	        dialogClass: 'no-close',
-	        modal: false,
+	        modal: true,
 	        resizable: true,
 	        width: 400,
 	        closeOnEscape: true,

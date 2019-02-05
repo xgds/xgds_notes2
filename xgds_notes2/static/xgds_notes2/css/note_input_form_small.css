@@ -66,3 +66,7 @@ blocky div label input{
 .noteitem.stretch {
 	align-self: stretch;
 }
+
+.ui-dialog {
+	z-index: 1100 !important;
+}
