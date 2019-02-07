@@ -222,7 +222,8 @@ class NoteMixin(object):
     notes = "set to DEFAULT_NOTES_GENERIC_RELATION() or similar in derived classes"
 
 
-class AbstractMessage(models.Model, SearchableModel, BroadcastMixin, HasFlight, IsFlightChild, IsFlightData):
+class AbstractMessage(models.Model, SearchableModel, BroadcastMixin, HasFlight, IsFlightChild, IsFlightData,
+                      NoteMixin, NoteLinksMixin):
     """
     Abstract base class for simple messages
     """
@@ -373,7 +374,7 @@ class AbstractMessage(models.Model, SearchableModel, BroadcastMixin, HasFlight, 
         )
 
 
-class AbstractNote(AbstractMessage, NoteMixin, NoteLinksMixin, IsFlightChild):
+class AbstractNote(AbstractMessage, IsFlightChild):
     """ Abstract base class for notes
     """
 
@@ -720,6 +721,7 @@ class LocatedMessage(AbstractMessage, PositionMixin):
     # null if we this field was created after this note existed or we have not tried looking.
     position_found = models.NullBooleanField(default=None)
 
+    notes = DEFAULT_NOTES_GENERIC_RELATION()
 
     @classmethod
     def getSearchFormFields(cls):
