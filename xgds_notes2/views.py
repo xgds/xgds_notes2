@@ -110,7 +110,9 @@ def editUserSession(request, ajax=False):
             request,
             template,
             {
-                'form': form
+                'form': form,
+                'title': settings.XGDS_NOTES_MONIKER,
+                'help_content_path': 'xgds_notes2/help/recordSession.rst'
             },
         )
 
@@ -364,7 +366,9 @@ def editTags(request):
     return render(
                 request,
                 'xgds_notes2/tags_tree.html',
-                {'addTagForm': TagForm()},
+                {'addTagForm': TagForm(),
+                 'title': settings.XGDS_NOTES_MONIKER,
+                 'help_content_path': 'xgds_notes2/help/editTags.rst'},
             )
 
 def tagsGetRootTreesJson(root):
@@ -553,7 +557,9 @@ def importNotes(request):
         'xgds_notes2/import_notes.html',
         {
             'form': ImportNotesForm(),
-            'errorstring': errors
+            'errorstring': errors,
+            'title': settings.XGDS_NOTES_MONIKER,
+            'help_content_path': 'xgds_notes2/help/import.rst'
         },
     )
 
