@@ -177,7 +177,7 @@ $.extend(recordedNotes,{
 					order: [[ 0, this.ordering ]],
 					scrollX: "100%",
 					scrollY:  this.calcDataTableHeight(),
-					lengthMenu: [[10, 20, 40, -1], [10, 20, 40, "All"]],
+					lengthMenu: [[5, 10, 20, 40, -1], [5, 10, 20, 40, "All"]],
 					language: {
 						lengthMenu: "Display _MENU_"
 					},
