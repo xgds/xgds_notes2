@@ -232,6 +232,9 @@ class AbstractMessage(models.Model, SearchableModel, BroadcastMixin, HasFlight, 
     author = models.ForeignKey(User)
     content = models.TextField(blank=True, null=True)
 
+    def get_description(self):
+        return self.content
+
     @classmethod
     def cls_type(cls):
         return settings.XGDS_NOTES_MESSAGE_MODEL_NAME
@@ -309,10 +312,10 @@ class AbstractMessage(models.Model, SearchableModel, BroadcastMixin, HasFlight, 
     def author_name(self):
         return getUserName(self.author)
 
-    def to_kml(self, animated=False, timestampLabels=False, ignoreLabels=None):
-        """Define me, or override in your subclass
-        """
-        raise NotImplementedError
+    # def to_kml(self, animated=False, timestampLabels=False, ignoreLabels=None):
+    #     """Define me, or override in your subclass
+    #     """
+    #     raise NotImplementedError
 
     @property
     def name(self):
@@ -648,31 +651,31 @@ class AbstractLocatedNote(AbstractNote, PositionMixin):
         result.append('place')
         return result
 
-    def to_kml(self, animated=False, timestampLabels=False, ignoreLabels=None):
-        if ignoreLabels is None:
-            ignoreLabels = []
-        # if no label is associated with the note, we'll fall back to a timetamp-based label anyway.
-        notelabel = None
-        if timestampLabels or (self.label and self.label.value in ignoreLabels):
-            atime = self.adjustedEventTime()
-            notelabel = "%02d:%02d" % (atime.hour, atime.minute)
-        else:
-            notelabel = self.getLabel()
-  
-        if not notelabel:
-            atime = self.adjustedEventTime()
-            try:
-                altitude = self.position.altitude
-                notelabel = "%s %02d:%02d" % (altitude, atime.hour, atime.minute)
-            except:
-                notelabel = "%02d:%02d" % (atime.hour, atime.minute)
-  
-        return get_template('note.kml').render(Context({
-            'note': self,
-            'animated': animated,
-            'notelabel': notelabel,
-        }))
-          
+    # def to_kml(self, animated=False, timestampLabels=False, ignoreLabels=None):
+    #     if ignoreLabels is None:
+    #         ignoreLabels = []
+    #     # if no label is associated with the note, we'll fall back to a timetamp-based label anyway.
+    #     notelabel = None
+    #     if timestampLabels or (hasattr(self, 'label') and self.label and self.label.value in ignoreLabels):
+    #         atime = self.adjustedEventTime()
+    #         notelabel = "%02d:%02d" % (atime.hour, atime.minute)
+    #     else:
+    #         notelabel = self.getLabel()
+    #
+    #     if not notelabel:
+    #         atime = self.adjustedEventTime()
+    #         try:
+    #             altitude = self.position.altitude
+    #             notelabel = "%s %02d:%02d" % (altitude, atime.hour, atime.minute)
+    #         except:
+    #             notelabel = "%02d:%02d" % (atime.hour, atime.minute)
+    #
+    #     return get_template('xgds_notes2/notes/note.kml').render({
+    #         'note': self,
+    #         'animated': animated,
+    #         'notelabel': notelabel,
+    #     })
+    #
 
     @staticmethod
     def getMapBoundedQuery(minLon, minLat, maxLon, maxLat, today=False):
