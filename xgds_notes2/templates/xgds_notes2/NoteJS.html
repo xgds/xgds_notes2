@@ -1,7 +1,9 @@
 {% load static %}
 <script type="text/javascript">
 	    server_time_url = "{% url 'server_time' %}";
-	    user_session_exists = false;
+		user_session_exists = false;
+		// global name of a Note
+		note_model_name = "{{ settings.XGDS_NOTES_MODEL_NAME }}";
 </script>
 {% include "xgds_core/timeJS.html" %}
 <!--  TODO remove the below 2 lines once we switch to bootstrap -->

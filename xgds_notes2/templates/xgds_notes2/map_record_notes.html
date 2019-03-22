@@ -10,6 +10,7 @@
 {% block scripts %}
 	{{block.super}}
     <script type="text/javascript" src="{% static 'xgds_notes2/js/note_create_form.js' %}"></script>
+    <script type="text/javascript" src="{% static 'xgds_notes2/js/noteSseUtils.js' %}"></script>
 {% endblock scripts %}
 {% block postscripts %}
 {% endblock postscripts %}
@@ -83,7 +84,8 @@ xgds_notes.postSubmit = function(data) {
 xgds_notes.cleanData = function(data, containerDiv){
 	var fnc = containerDiv.closest('#full_notes_content');
 	if (fnc.length > 0){
-		var columns = app.options.searchModels.Note.columns;
+		// this line uses the `note_model_name` global variable defined in `NoteJS.html`
+		var columns = app.options.searchModels[note_model_name].columns;
 		result = [];
 		for (var i=0; i < columns.length; i++) {
 			result.push(data[columns[i]]);
