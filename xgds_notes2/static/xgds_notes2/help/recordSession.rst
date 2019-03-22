@@ -1,15 +1,16 @@
 
-**Record Session** lets you TODO.
+**Record Session** lets you modify your role and location for recording {{ settings.XGDS_NOTES_MONIKER }}.
 
-Part A:
----------------------
+Modifying Role and Location:
+----------------------------
 
-TODO write help
+Role and location are very important to store where you were and what role you were in at the time of recording {{ settings.XGDS_NOTES_MONIKER }}s.
 
-Part B:
------------------
+ * If you have already set a role and location since logging in, they will be selected in the dropdowns
+ * Select the correct role and location
+ * Press Save
 
-TODO write more help
+Once you have set this, it will stick until you log out or quit your web browser.
 
 
 
