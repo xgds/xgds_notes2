@@ -153,11 +153,6 @@ $.extend(xgds_notes,{
 					xgds_notes.doSaveTag(mode, node);
 				}
 			},
-			position: {
-				my: 'left top',
-				at: 'right bottom',
-				of: start_position
-			},
 			dialogClass: 'saveAs'
 		});
 	},
