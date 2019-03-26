@@ -51,7 +51,8 @@ from xgds_map_server.models import Place
 import json
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from xgds_core.redisUtil import publishRedisSSE
+if settings.XGDS_CORE_REDIS:
+    from xgds_core.redisUtil import publishRedisSSE
 
 DEFAULT_TAGGED_NOTE_FIELD = lambda: models.ForeignKey(settings.XGDS_NOTES_NOTE_MODEL, related_name='%(app_label)s_%(class)s_related')
 DEFAULT_VEHICLE_FIELD = lambda: models.ForeignKey(settings.XGDS_CORE_VEHICLE_MODEL, related_name='%(app_label)s_%(class)s_related',
