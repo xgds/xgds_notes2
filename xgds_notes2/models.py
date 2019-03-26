@@ -302,11 +302,17 @@ class AbstractMessage(models.Model, SearchableModel, BroadcastMixin, HasFlight, 
             return None
 
     def getSseType(self):
-        return settings.XGDS_NOTES_MESSAGE_CHANNEL
+        return settings.XGDS_NOTES_MESSAGE_SSE_TYPE
 
+    def getBroadcastChannel(self):
+        if self.flight:
+            return self.flight.vehicle.shortName
+        return 'sse'
+
+    @classmethod
     def getChannels(self):
         """ for sse, return a list of channels """
-        return [settings.XGDS_NOTES_MESSAGE_CHANNEL]
+        return settings.XGDS_SSE_NOTE_MESSAGE_CHANNELS
 
     @property
     def author_name(self):
@@ -402,6 +408,11 @@ class AbstractNote(AbstractMessage, IsFlightChild):
     content_object = GenericForeignKey('content_type', 'object_id')
 
     @classmethod
+    def getChannels(self):
+        """ for sse, return a list of channels """
+        return settings.XGDS_SSE_NOTE_CHANNELS
+
+    @classmethod
     def get_moniker(cls):
         return settings.XGDS_NOTES_NOTE_MONIKER
 
@@ -426,7 +437,7 @@ class AbstractNote(AbstractMessage, IsFlightChild):
         return None
 
     def getSseType(self):
-        return settings.XGDS_NOTES_NOTE_CHANNEL
+        return settings.XGDS_NOTES_NOTE_SSE_TYPE
 
     @property
     def object_type(self):
@@ -441,7 +452,6 @@ class AbstractNote(AbstractMessage, IsFlightChild):
     @classmethod
     def get_object_name(cls):
         return 'XGDS_NOTES_NOTE_MODEL'
-
 
     @property
     def tag_ids(self):
@@ -546,7 +556,7 @@ class AbstractNote(AbstractMessage, IsFlightChild):
 
     def getChannels(self):
         """ for sse, return a list of channels """
-        return [settings.XGDS_NOTES_NOTE_CHANNEL]
+        return [settings.XGDS_NOTES_NOTE_SSE_TYPE]
 
     @classmethod
     def get_tree_json(cls, parent_class, parent_pk):
@@ -631,7 +641,7 @@ class AbstractLocatedNote(AbstractNote, PositionMixin):
         if self.show_on_map:
             return settings.XGDS_NOTES_MAP_NOTE_CHANNEL
         else:
-            return settings.XGDS_NOTES_NOTE_CHANNEL
+            return settings.XGDS_NOTES_NOTE_SSE_TYPE
 
     @classmethod
     def getFormFields(cls):
