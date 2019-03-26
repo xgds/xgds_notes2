@@ -19,7 +19,7 @@ $(document).ready(function () {
 	// that arrive from the SSE note channels
 	$.getJSON("/notes/sseNoteChannels", function (data) {
 		sse.subscribe(
-			"new_note",
+			"note",
 			function () {
 				window.theDataTable.ajax.reload();
 			},

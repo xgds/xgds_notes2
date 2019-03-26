@@ -128,19 +128,7 @@ XGDS_DATA_MASKED_FIELDS['xgds_notes'] = {'Note': ['uuid',
                                                   ]
                                         }
 
-# XGDS_DATA_EXPAND_RELATED = getOrCreateDict('XGDS_DATA_EXPAND_RELATED')
-# XGDS_DATA_EXPAND_RELATED['xgds_notes'] = {  'Note': [('asset_position', 'depth', 'Depth'),
-#                                                      ('new_asset_position', 'depthMeters', 'New Depth'),
-#                                                      ('tags', 'all', 'Tags'),
-#                                                      ],
-#  
-#                                             }
 
-# TODO override this to expose the sse channels for notes
-# Typically they will be broadcast per vehicle, so for example if you have
-# tracked vehicles A and B, it will be ['A','B']
-
-XGDS_SSE_NOTE_CHANNELS = []
 XGDS_NOTES_CURRENT_MAPPED_FUNCTION = 'xgds_notes.views.defaultCurrentMapNotes'
 
 XGDS_NOTES_MAP_NOTE_CHANNEL = 'map_note'
@@ -148,4 +136,6 @@ XGDS_NOTES_NOTE_CHANNEL = 'note'
 XGDS_NOTES_MESSAGE_CHANNEL = 'message'
 
 XGDS_NOTES_SHOW_ON_MAP_CHECKBOX = True
+
+XGDS_SSE_NOTE_CHANNELS = [XGDS_NOTES_MAP_NOTE_CHANNEL, XGDS_NOTES_NOTE_CHANNEL, XGDS_NOTES_MESSAGE_CHANNEL]
 
