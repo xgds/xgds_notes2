@@ -48,6 +48,10 @@ from django.contrib.contenttypes.fields import GenericRelation
 
 from xgds_map_server.models import Place
 
+import json
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from xgds_core.redisUtil import publishRedisSSE
 
 DEFAULT_TAGGED_NOTE_FIELD = lambda: models.ForeignKey(settings.XGDS_NOTES_NOTE_MODEL, related_name='%(app_label)s_%(class)s_related')
 DEFAULT_VEHICLE_FIELD = lambda: models.ForeignKey(settings.XGDS_CORE_VEHICLE_MODEL, related_name='%(app_label)s_%(class)s_related',
@@ -608,6 +612,11 @@ class AbstractNote(AbstractMessage, IsFlightChild):
     def __unicode__(self):
         # return "%s: %s" % (self.event_time, unicodedata.normalize('NFKD', unicode(self.content, 'utf-8')).encode('ascii','ignore'))
         return "%s: %s" % (self.event_time, self.content)
+
+    @receiver(post_save)
+    def publishAfterSave(sender, **kwargs):
+        if settings.XGDS_CORE_REDIS:
+            publishRedisSSE(settings.XGDS_NOTES_NOTE_CHANNEL, "note", json.dumps({}))
 
 
 DEFAULT_POSITION_FIELD = lambda: models.ForeignKey(settings.GEOCAM_TRACK_PAST_POSITION_MODEL, null=True, blank=True, related_name="%(app_label)s_%(class)s_notes_set"  )

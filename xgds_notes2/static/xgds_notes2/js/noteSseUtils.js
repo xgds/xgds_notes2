@@ -14,59 +14,16 @@
 //specific language governing permissions and limitations under the License.
 // __END_LICENSE__
 
-var notesSse = notesSse || {};
-$.extend(notesSse,{
-	topics: ['map_note', 'note'],
-	initialize: function(topics) {
-		if (_.isUndefined(topics)){
-			topics = notesSse.topics;
-		}
-		notesSse.getChannels();
-
-		//notesSse.subscribe(topics, notesSse.handleNoteEvent);
-		//notesSse.getCurrentNotes(notesSse.drawNotes);
-	},
-	getChannels: function() {
-		// get the active channels over AJAX
-		if (this.activeChannels === undefined){
-			$.ajax({
-	            url: '/notes/sseNoteChannels',
-	            dataType: 'json',
-	            async: false,
-	            success: $.proxy(function(data) {
-	                this.activeChannels = data;
-	            }, this)
-	          });
-		}
-		return this.activeChannels;
-	},
-	subscribe: function(topics, theFunction) {
-		_.each(topics, function(topic){
-			sse.subscribe(topic, theFunction, notesSse.getChannels());
-		});
-
-	},
-	drawNotes: function(data){
-		//TODO implement
-		console.log(data);
-	},
-	handleNoteEvent: function(event){
-		try {
-			var receivedNote = JSON.parse(event.data);
-			//TOD draw this somewhere, in the table ...
-		} catch(err){
-			// bad stuff
-		}
-	},
-	getCurrentNotes: function(theFunction) {
-		$.ajax({
-            url: '/notes/currentMapNotes.json',
-            dataType: 'json',
-            success: $.proxy(function(data) {
-            	if (!_.isEmpty(data)){
-            		theFunction({'data':data});
-            	}
-            }, this)
-          });
-	}
+$(document).ready(function () {
+	// automatically update the datatable with new notes
+	// that arrive from the SSE note channels
+	$.getJSON("/notes/sseNoteChannels", function (data) {
+		sse.subscribe(
+			"note",
+			function () {
+				window.theDataTable.ajax.reload();
+			},
+			data,
+		);
+	});
 });

@@ -128,13 +128,6 @@ XGDS_DATA_MASKED_FIELDS['xgds_notes'] = {'Note': ['uuid',
                                                   ]
                                         }
 
-# XGDS_DATA_EXPAND_RELATED = getOrCreateDict('XGDS_DATA_EXPAND_RELATED')
-# XGDS_DATA_EXPAND_RELATED['xgds_notes'] = {  'Note': [('asset_position', 'depth', 'Depth'),
-#                                                      ('new_asset_position', 'depthMeters', 'New Depth'),
-#                                                      ('tags', 'all', 'Tags'),
-#                                                      ],
-#  
-#                                             }
 
 # TODO override this to expose the sse channels for notes
 # Typically they will be broadcast per vehicle, so for example if you have
