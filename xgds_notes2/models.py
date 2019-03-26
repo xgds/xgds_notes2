@@ -617,7 +617,9 @@ class AbstractNote(AbstractMessage, IsFlightChild):
     @receiver(post_save)
     def publishAfterSave(sender, **kwargs):
         if settings.XGDS_CORE_REDIS:
-            publishRedisSSE(settings.XGDS_SSE_NOTE_CHANNELS, "note", json.dumps({}))
+            # TODO this should really be one channel?
+            for channel in settings.XGDS_SSE_NOTE_CHANNELS:
+                publishRedisSSE(channel, "note", json.dumps({}))
 
 
 DEFAULT_POSITION_FIELD = lambda: models.ForeignKey(settings.GEOCAM_TRACK_PAST_POSITION_MODEL, null=True, blank=True, related_name="%(app_label)s_%(class)s_notes_set"  )
