@@ -306,7 +306,8 @@ class AbstractMessage(models.Model, SearchableModel, BroadcastMixin, HasFlight, 
         except ObjectDoesNotExist:
             return None
 
-    def getSseType(self):
+    @classmethod
+    def getSseType(cls):
         return settings.XGDS_NOTES_MESSAGE_SSE_TYPE
 
     def getBroadcastChannel(self):
@@ -315,9 +316,16 @@ class AbstractMessage(models.Model, SearchableModel, BroadcastMixin, HasFlight, 
         return 'sse'
 
     @classmethod
-    def getChannels(self):
+    def getChannels(cls):
         """ for sse, return a list of channels """
         return settings.XGDS_SSE_NOTE_MESSAGE_CHANNELS
+
+    @receiver(post_save)
+    def publishAfterSave(sender, **kwargs):
+        if settings.XGDS_CORE_REDIS:
+            # TODO this should really be one channel?
+            for channel in settings.XGDS_SSE_NOTE_CHANNELS:
+                publishRedisSSE(channel, settings.XGDS_NOTES_MESSAGE_SSE_TYPE.lower(), json.dumps({}))
 
     @property
     def author_name(self):
@@ -619,7 +627,7 @@ class AbstractNote(AbstractMessage, IsFlightChild):
         if settings.XGDS_CORE_REDIS:
             # TODO this should really be one channel?
             for channel in settings.XGDS_SSE_NOTE_CHANNELS:
-                publishRedisSSE(channel, "note", json.dumps({}))
+                publishRedisSSE(channel, settings.XGDS_NOTES_NOTE_SSE_TYPE.lower(), json.dumps({}))
 
 
 DEFAULT_POSITION_FIELD = lambda: models.ForeignKey(settings.GEOCAM_TRACK_PAST_POSITION_MODEL, null=True, blank=True, related_name="%(app_label)s_%(class)s_notes_set"  )
