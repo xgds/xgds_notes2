@@ -622,13 +622,6 @@ class AbstractNote(AbstractMessage, IsFlightChild):
         # return "%s: %s" % (self.event_time, unicodedata.normalize('NFKD', unicode(self.content, 'utf-8')).encode('ascii','ignore'))
         return "%s: %s" % (self.event_time, self.content)
 
-    @receiver(post_save)
-    def publishAfterSave(sender, **kwargs):
-        if settings.XGDS_CORE_REDIS:
-            # TODO this should really be one channel?
-            for channel in settings.XGDS_SSE_NOTE_CHANNELS:
-                publishRedisSSE(channel, settings.XGDS_NOTES_NOTE_SSE_TYPE.lower(), json.dumps({}))
-
 
 DEFAULT_POSITION_FIELD = lambda: models.ForeignKey(settings.GEOCAM_TRACK_PAST_POSITION_MODEL, null=True, blank=True, related_name="%(app_label)s_%(class)s_notes_set"  )
 
@@ -768,6 +761,13 @@ class LocatedMessage(AbstractMessage, PositionMixin):
         result.append('flight__vehicle')
         return result
 
+@receiver(post_save, sender=LocatedMessage)
+def publishAfterSave(sender, instance, **kwargs):
+    if settings.XGDS_CORE_REDIS:
+        # TODO this should really be one channel?
+        for channel in settings.XGDS_SSE_NOTE_CHANNELS:
+            publishRedisSSE(channel, settings.XGDS_NOTES_MESSAGE_SSE_TYPE.lower(), json.dumps({}))
+
 
 class LocatedNote(AbstractLocatedNote):
     """ This is the default note class, which can have tags and can have notes on it."""
@@ -787,3 +787,11 @@ class LocatedNote(AbstractLocatedNote):
         result = super(LocatedNote, cls).getSearchFieldOrder()
         result.append('flight__vehicle')
         return result
+    
+@receiver(post_save, sender=LocatedNote)
+def publishAfterSave(sender, instance, **kwargs):
+    if settings.XGDS_CORE_REDIS:
+        # TODO this should really be one channel?
+        for channel in settings.XGDS_SSE_NOTE_CHANNELS:
+            publishRedisSSE(channel, settings.XGDS_NOTES_NOTE_SSE_TYPE.lower(), json.dumps({}))
+
