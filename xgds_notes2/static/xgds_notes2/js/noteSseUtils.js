@@ -14,6 +14,7 @@
 //specific language governing permissions and limitations under the License.
 // __END_LICENSE__
 
+//TODO this is not the pattern we use
 $(document).ready(function () {
 	// automatically update the datatable with new notes
 	// that arrive from the SSE note channels
