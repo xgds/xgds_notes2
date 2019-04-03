@@ -47,7 +47,6 @@ from xgds_core.models import SearchableModel, BroadcastMixin, HasFlight, HasVehi
 from django.contrib.contenttypes.fields import GenericRelation
 
 from xgds_map_server.models import Place
-
 import json
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -319,13 +318,6 @@ class AbstractMessage(models.Model, SearchableModel, BroadcastMixin, HasFlight, 
     def getChannels(cls):
         """ for sse, return a list of channels """
         return settings.XGDS_SSE_NOTE_MESSAGE_CHANNELS
-
-    @receiver(post_save)
-    def publishAfterSave(sender, **kwargs):
-        if settings.XGDS_CORE_REDIS:
-            # TODO this should really be one channel?
-            for channel in settings.XGDS_SSE_NOTE_CHANNELS:
-                publishRedisSSE(channel, settings.XGDS_NOTES_MESSAGE_SSE_TYPE.lower(), json.dumps({}))
 
     @property
     def author_name(self):
