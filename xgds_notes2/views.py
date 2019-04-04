@@ -507,6 +507,7 @@ def moveTag(request):
             except:
                 return HttpResponse(json.dumps({'failed': 'badness.'}), content_type='application/json', status=406)
 
+
 def doImportNotes(request, sourceFile, tz, vehicle):
     dictreader = csv.DictReader(sourceFile)
     for row in dictreader:

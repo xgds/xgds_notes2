@@ -311,13 +311,8 @@ class AbstractMessage(models.Model, SearchableModel, BroadcastMixin, HasFlight, 
 
     def getBroadcastChannel(self):
         if self.flight:
-            return self.flight.vehicle.shortName
+            return self.flight.vehicle.name.lower()
         return 'sse'
-
-    @classmethod
-    def getChannels(cls):
-        """ for sse, return a list of channels """
-        return settings.XGDS_SSE_NOTE_MESSAGE_CHANNELS
 
     @property
     def author_name(self):
@@ -411,11 +406,6 @@ class AbstractNote(AbstractMessage, IsFlightChild):
     content_type = models.ForeignKey(ContentType, null=True, blank=True)
     object_id = models.CharField(max_length=128, null=True, blank=True, db_index=True)
     content_object = GenericForeignKey('content_type', 'object_id')
-
-    @classmethod
-    def getChannels(self):
-        """ for sse, return a list of channels """
-        return settings.XGDS_SSE_NOTE_CHANNELS
 
     @classmethod
     def get_moniker(cls):
@@ -558,10 +548,6 @@ class AbstractNote(AbstractMessage, IsFlightChild):
         Implement this in your note that has a position to return a query that will filter notes by position
         """
         return None
-
-    def getChannels(self):
-        """ for sse, return a list of channels """
-        return [settings.XGDS_NOTES_NOTE_SSE_TYPE]
 
     @classmethod
     def get_tree_json(cls, parent_class, parent_pk):
@@ -753,12 +739,12 @@ class LocatedMessage(AbstractMessage, PositionMixin):
         result.append('flight__vehicle')
         return result
 
-@receiver(post_save, sender=LocatedMessage)
-def publishAfterSave(sender, instance, **kwargs):
-    if settings.XGDS_CORE_REDIS:
-        # TODO this should really be one channel?
-        for channel in settings.XGDS_SSE_NOTE_CHANNELS:
-            publishRedisSSE(channel, settings.XGDS_NOTES_MESSAGE_SSE_TYPE.lower(), json.dumps({}))
+# @receiver(post_save, sender=LocatedMessage)
+# def publishAfterSave(sender, instance, **kwargs):
+#     if settings.XGDS_CORE_REDIS:
+#         # TODO this should really be one channel?
+#         for channel in settings.XGDS_SSE_NOTE_CHANNELS:
+#             publishRedisSSE(channel, settings.XGDS_NOTES_MESSAGE_SSE_TYPE.lower(), json.dumps({}))
 
 
 class LocatedNote(AbstractLocatedNote):
@@ -780,10 +766,10 @@ class LocatedNote(AbstractLocatedNote):
         result.append('flight__vehicle')
         return result
     
-@receiver(post_save, sender=LocatedNote)
-def publishAfterSave(sender, instance, **kwargs):
-    if settings.XGDS_CORE_REDIS:
-        # TODO this should really be one channel?
-        for channel in settings.XGDS_SSE_NOTE_CHANNELS:
-            publishRedisSSE(channel, settings.XGDS_NOTES_NOTE_SSE_TYPE.lower(), json.dumps({}))
+# @receiver(post_save, sender=LocatedNote)
+# def publishAfterSave(sender, instance, **kwargs):
+#     if settings.XGDS_CORE_REDIS:
+#         # TODO this should really be one channel?
+#         for channel in settings.XGDS_SSE_NOTE_CHANNELS:
+#             publishRedisSSE(channel, settings.XGDS_NOTES_NOTE_SSE_TYPE.lower(), json.dumps({}))
 
