@@ -309,11 +309,6 @@ class AbstractMessage(models.Model, SearchableModel, BroadcastMixin, HasFlight, 
     def getSseType(cls):
         return settings.XGDS_NOTES_MESSAGE_SSE_TYPE
 
-    def getBroadcastChannel(self):
-        if self.flight:
-            return self.flight.vehicle.name.lower()
-        return 'sse'
-
     @property
     def author_name(self):
         return getUserName(self.author)
