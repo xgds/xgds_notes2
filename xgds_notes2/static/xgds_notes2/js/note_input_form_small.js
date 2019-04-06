@@ -188,7 +188,11 @@ $.extend(xgds_notes,{
 	                if ( !$.fn.DataTable.isDataTable( '#'+table_id) ) {
 	                	xgds_notes.setupNotesTable(containerDiv.id, theNotesTable, cleanData);
 	                } else {
-	                	$(theNotesTable).dataTable().fnAddData(cleanData);
+	                	if (table_id == "searchResultsTable") {
+							app.vent.trigger("reloadDataTableAjax");
+						} else {
+							$(theNotesTable).dataTable().fnAddData(cleanData);
+						}
 	                }
 	                xgds_notes.postSubmit(data);
 	            } 
