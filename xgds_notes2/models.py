@@ -307,7 +307,7 @@ class AbstractMessage(models.Model, SearchableModel, BroadcastMixin, HasFlight, 
 
     @classmethod
     def getSseType(cls):
-        return settings.XGDS_NOTES_MESSAGE_SSE_TYPE
+        return settings.XGDS_NOTES_MESSAGE_SSE_TYPE.lower()
 
     @property
     def author_name(self):
