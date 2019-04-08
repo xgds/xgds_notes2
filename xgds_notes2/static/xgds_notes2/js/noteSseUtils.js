@@ -42,7 +42,7 @@ $.extend(notesSse,{
 	},
 	subscribe: function(topics, theFunction) {
 		_.each(topics, function(topic){
-			sse.subscribe(topic, theFunction, notesSse.getChannels());
+			sse.subscribe(topic, theFunction, "notesSse", notesSse.getChannels());
 		});
 
 	},
