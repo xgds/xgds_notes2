@@ -427,7 +427,7 @@ class AbstractNote(AbstractMessage, IsFlightChild):
         return None
 
     def getSseType(self):
-        return settings.XGDS_NOTES_NOTE_SSE_TYPE
+        return settings.XGDS_NOTES_NOTE_SSE_TYPE.lower()
 
     @property
     def object_type(self):
@@ -625,9 +625,9 @@ class AbstractLocatedNote(AbstractNote, PositionMixin):
 
     def getSseType(self):
         if self.show_on_map:
-            return settings.XGDS_NOTES_MAP_NOTE_CHANNEL
+            return settings.XGDS_NOTES_MAP_NOTE_CHANNEL.lower()
         else:
-            return settings.XGDS_NOTES_NOTE_SSE_TYPE
+            return settings.XGDS_NOTES_NOTE_SSE_TYPE.lower()
 
     @classmethod
     def getFormFields(cls):
