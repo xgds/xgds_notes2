@@ -426,7 +426,8 @@ class AbstractNote(AbstractMessage, IsFlightChild):
             return {'tags__in': found_tags}
         return None
 
-    def getSseType(self):
+    @classmethod
+    def getSseType(cls):
         return settings.XGDS_NOTES_NOTE_SSE_TYPE.lower()
 
     @property
@@ -623,11 +624,9 @@ class AbstractLocatedNote(AbstractNote, PositionMixin):
     # null if we this field was created after this note existed or we have not tried looking.
     position_found = models.NullBooleanField(default=None)
 
-    def getSseType(self):
-        if self.show_on_map:
-            return settings.XGDS_NOTES_MAP_NOTE_CHANNEL.lower()
-        else:
-            return settings.XGDS_NOTES_NOTE_SSE_TYPE.lower()
+    @classmethod
+    def getSseType(cls):
+        return settings.XGDS_NOTES_NOTE_SSE_TYPE.lower()
 
     @classmethod
     def getFormFields(cls):
