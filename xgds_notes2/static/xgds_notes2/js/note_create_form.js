@@ -57,7 +57,9 @@ $.extend(xgds_notes,{
 	    } else {
 	    	$("#nowButton").click(function(e) {
 			    e.preventDefault();
+			    app.freeze_time = false;
 			    xgds_notes.set_event_time();
+			    app.freeze_time = true;
 			});
 	    }
 	},

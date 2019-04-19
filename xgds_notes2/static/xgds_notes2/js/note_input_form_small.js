@@ -172,6 +172,9 @@ $.extend(xgds_notes,{
 	            if (!keepTags){
 	            	tagInput.tagsinput('removeAll');
 	            }
+	            app.freeze_time = false;
+			    xgds_notes.set_event_time();
+			    app.freeze_time = true;
 	            if (showonmap.length > 0){
 	            	showonmap.prop("checked", false);
 	    	    }
@@ -324,8 +327,10 @@ $.extend(xgds_notes,{
 			    var notes_content_div = $(tar.siblings(".notes_content")[0]);
 			    if (notes_content_div.length == 1 && notes_content_div[0].id == "add_note_modal") {
 			    	if (notes_content_div.is(':visible')){
+			    		app.freeze_time = false;
 			    		notes_content_div.modal('hide');
 					} else {
+			    		app.freeze_time = true;
 			    		xgds_notes.hideError(notes_content_div);
 			    		notes_content_div.modal('show');
 					}
@@ -336,6 +341,10 @@ $.extend(xgds_notes,{
 
 			});
 		}
+
+		$('#add_note_modal').on('hide.bs.modal', function (e) {
+			app.freeze_time = false;
+		});
 	},
 	setupNotesUI: function(container){
 		var input = undefined;
