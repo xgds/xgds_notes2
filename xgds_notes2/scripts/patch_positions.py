@@ -36,12 +36,22 @@ def patch():
     :return:
     """
 
-    min_time = timezone.now() - timedelta(TIME_WINDOW_HOURS, 'hours')
+    min_time = timezone.now() - timedelta(hours=TIME_WINDOW_HOURS)
     notes_without_position = NOTE_MODEL.get().objects.filter(event_time__gte=min_time).exclude(position_found=1)
     for n in notes_without_position:
-        position = n.lookupPosition()
-        if position:
+        if not n.position:
+            position = n.lookupPosition()
+            if position:
+                print('**PATCHED** %s' % n)
+                n.position_found = 1
+            else:
+                n.position_found = 0
+                print('POSITION NOT FOUND: flight %d event_time %s pk %d' % (n.flight_id, n.event_time.isoformat(), n.pk))
             n.save()
+        else:
+            n.position_found = 1
+            n.save()
+         
 
 
 if __name__ == '__main__':
