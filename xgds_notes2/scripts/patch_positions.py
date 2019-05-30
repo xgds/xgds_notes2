@@ -46,12 +46,11 @@ def patch():
                 n.position_found = 1
             else:
                 n.position_found = 0
-                print('POSITION NOT FOUND: flight %d event_time %s pk %d' % (n.flight_id, n.event_time.isoformat(), n.pk))
+                print('POSITION NOT FOUND: flight %s event_time %s pk %d' % (str(n.flight_id), n.event_time.isoformat(), n.pk))
             n.save()
         else:
             n.position_found = 1
             n.save()
-         
 
 
 if __name__ == '__main__':
