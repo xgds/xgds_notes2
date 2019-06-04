@@ -74,6 +74,7 @@ var Message = {
                 geometry: new ol.geom.Point(coords)
             });
             feature.setStyle(this.getStyles(messageJson));
+            feature.setId(messageJson.type + messageJson.pk);
             this.setupPopup(feature, messageJson);
             return feature;
         },
