@@ -722,6 +722,10 @@ class LocatedMessage(AbstractMessage, PositionMixin):
     notes = DEFAULT_NOTES_GENERIC_RELATION()
 
     @classmethod
+    def getSseType(cls):
+        return settings.XGDS_NOTES_MESSAGE_SSE_TYPE.lower()
+
+    @classmethod
     def getSearchFormFields(cls):
         result = super(LocatedMessage, cls).getSearchFormFields()
         result.append('flight__vehicle')
