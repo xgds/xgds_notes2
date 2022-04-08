@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "moment": "^2.19.3",
+    "moment": "^2.29.2",
     "jquery.fancytree": "2.25.0",
     "ui-contextmenu": "^1.18.1",
     "bootstrap-tagsinput": "github:xgds/bootstrap-tagsinput#master",
